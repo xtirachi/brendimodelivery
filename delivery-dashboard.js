@@ -79,7 +79,7 @@ function loadOrdersByDate(date) {
               </div>
               <div id="orderDetails-${order[0]}" class="order-details">
                 <label for="status-${order[0]}">Sifariş Statusu:</label>
-                <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]})">
+                <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]}, '${order[8]}')">
                   <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
                   <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
                 </select>
@@ -110,19 +110,17 @@ function loadOrdersByDate(date) {
 }
 
 // Update the order status and ensure no other fields (like the date) are cleared
-function changeStatus(orderId) {
+function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
-  // Fetch the original order date and pass it back when updating status to avoid clearing the date
-  const orderDate = document.getElementById('orderDateFilter').value; // Assuming the date comes from here
-
+  // Use the original order date to ensure it's not cleared in the update
   fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
       status: status,
-      orderDate: orderDate // Include the date in the request to preserve it
+      orderDate: orderDate // Use the original order date to preserve it
     })
   })
   .then(response => response.json())
@@ -180,3 +178,4 @@ document.getElementById('orderDateFilter').addEventListener('change', function()
   const selectedDate = this.value;
   loadOrdersByDate(selectedDate); // Reload orders when the date is changed, the username is fetched inside
 });
+
