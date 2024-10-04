@@ -1,6 +1,6 @@
 // Fetch users with Delivery role from the Users Sheet
 function fetchDeliveryUsers() {
-  return fetch('https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec?action=getDeliveryUsers')
+  return fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec?action=getDeliveryUsers')
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -15,7 +15,7 @@ function fetchDeliveryUsers() {
 // Load today's orders for the Admin
 function loadOrders() {
   fetchDeliveryUsers().then(deliveryUsers => {
-    fetch('https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec?action=getTodaysOrders&role=Admin')
+    fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec?action=getTodaysOrders&role=Admin')
       .then(response => response.json())
       .then(data => {
         if (data.success) {
@@ -64,7 +64,7 @@ function updateOrder(orderId) {
   const assignedTo = document.getElementById(`assign-${orderId}`).value;
   const status = document.getElementById(`status-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'assignOrder',
@@ -93,7 +93,7 @@ function toggleOrderDetails(orderId) {
 
 // Calculate total amount of today's orders
 function calculateTotalAmount() {
-  fetch('https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec?action=calculateTotalAmount&role=Admin')
+  fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec?action=calculateTotalAmount&role=Admin')
     .then(response => response.json())
     .then(data => {
       if (data.success) {
