@@ -1,6 +1,6 @@
 // Load today's orders for Delivery personnel
 function loadOrders(username) {
-  fetch(`https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec?action=getTodaysOrders&role=Delivery&username=${username}`)
+  fetch(`https://script.google.com/macros/s/AKfycbzqjSSQ-BDRTLY9rkdSwyQ6ZWR9-iTTvWcERyTDF0gNFrJ6d6JJ79wVYasgNlJAsJsJ/exec?action=getTodaysOrders&role=Delivery&username=${username}`)
   .then(response => response.json())
   .then(data => {
     if (data.success) {
@@ -32,7 +32,7 @@ function loadOrders(username) {
 function updateOrder(orderId) {
   const paymentMethod = document.getElementById(`payment-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbzqjSSQ-BDRTLY9rkdSwyQ6ZWR9-iTTvWcERyTDF0gNFrJ6d6JJ79wVYasgNlJAsJsJ/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
@@ -51,7 +51,7 @@ function updateOrder(orderId) {
 
 // Calculate total amount delivered by the delivery person
 function calculateTotalDelivered(username) {
-  fetch(`https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec?action=calculateTotalAmount&role=Delivery&username=${username}`)
+  fetch(`https://script.google.com/macros/s/AKfycbzqjSSQ-BDRTLY9rkdSwyQ6ZWR9-iTTvWcERyTDF0gNFrJ6d6JJ79wVYasgNlJAsJsJ/exec?action=calculateTotalAmount&role=Delivery&username=${username}`)
   .then(response => response.json())
   .then(data => {
     if (data.success) {
