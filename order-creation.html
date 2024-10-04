@@ -38,6 +38,13 @@
         <label for="productSalesPrice" class="form-label">Məhsulun Qiyməti (AZN)</label>
         <input type="number" class="form-control" id="productSalesPrice" min="0" step="0.01" required>
       </div>
+      <div class="mb-3">
+        <label for="paymentMethod" class="form-label">Ödəniş Metodu</label>
+        <select id="paymentMethod" class="form-control" required>
+          <option value="cash">Nağd</option>
+          <option value="card">Karta</option>
+        </select>
+      </div>
       <button type="submit" class="btn btn-primary">Sifariş Yarat</button>
     </form>
     <div id="orderSuccess" class="text-success mt-3" style="display: none;">Sifariş müvəffəqiyyətlə yaradıldı!</div>
