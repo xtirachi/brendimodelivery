@@ -1,46 +1,71 @@
+// Load today's orders for the Admin
 function loadOrders() {
-  fetch('https://script.google.com/macros/s/AKfycbwXFf2Ot4trb60iRLLIQVC2GnbGZC4N02-8ahdzpQ6E9O_cgJG6l6z6lrby9k2J2jXB/exec')
+  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec?action=getTodaysOrders&role=Admin')
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      const orders = data.data;
-      let html = '<table class="table"><thead><tr><th>ID</th><th>Ad</th><th>Status</th><th>Əməliyyatlar</th></tr></thead><tbody>';
+      const orders = data.orders;
+      let html = '<table class="table"><thead><tr><th>ID</th><th>Müştəri Adı</th><th>Status</th><th>Çatdırılma üçün</th><th>Ödəniş Metodu</th><th>Əməliyyatlar</th></tr></thead><tbody>';
       orders.forEach(order => {
         html += `<tr>
                   <td>${order[0]}</td>
                   <td>${order[1]}</td>
-                  <td>${order[5]}</td>
+                  <td>${order[6]}</td>
                   <td>
-                    <button class="btn btn-primary" onclick="updateOrderStatus(${order[0]}, 'Ready for Delivery')">Hazır</button>
-                    <button class="btn btn-success" onclick="updateOrderStatus(${order[0]}, 'Out for Delivery')">Çatdırılma üçün</button>
-                    <button class="btn btn-warning" onclick="updateOrderStatus(${order[0]}, 'Delivered')">Çatdırıldı</button>
+                    <input type="text" class="form-control" id="assign-${order[0]}" placeholder="Çatdırıcı seçin">
+                  </td>
+                  <td>
+                    <select id="payment-${order[0]}" class="form-control">
+                      <option value="cash">Nağd</option>
+                      <option value="card">Karta</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
                   </td>
                  </tr>`;
       });
       html += '</tbody></table>';
       document.getElementById('orderList').innerHTML = html;
     }
-  })
-  .catch(err => console.error('Order load error:', err));
+  });
 }
 
-function updateOrderStatus(orderId, status) {
-  fetch('https://script.google.com/macros/s/AKfycbwXFf2Ot4trb60iRLLIQVC2GnbGZC4N02-8ahdzpQ6E9O_cgJG6l6z6lrby9k2J2jXB/exec', {
+// Update order status and assign delivery person
+function updateOrder(orderId) {
+  const assignedTo = document.getElementById(`assign-${orderId}`).value;
+  const paymentMethod = document.getElementById(`payment-${orderId}`).value;
+
+  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec', {
     method: 'POST',
     body: new URLSearchParams({
-      action: 'updateOrderStatus',
+      action: 'assignOrder',
       orderId: orderId,
-      status: status
+      assignedTo: assignedTo,
+      paymentMethod: paymentMethod
     })
   })
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      loadOrders();
+      loadOrders(); // Reload orders after update
     }
-  })
-  .catch(err => console.error('Status update error:', err));
+  });
 }
 
-window.onload = loadOrders;
+// Calculate total amount of today's orders
+function calculateTotalAmount() {
+  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec?action=calculateTotalAmount&role=Admin')
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('totalAmount').innerText = `Toplam Məbləğ: ${data.totalAmount} AZN, Çatdırılmış: ${data.totalDelivered} AZN`;
+    }
+  });
+}
 
+// Load orders and calculate total amount when page is ready
+window.onload = function() {
+  loadOrders();
+  calculateTotalAmount();
+};
