@@ -94,15 +94,20 @@ function loadOrdersByDate(date, username) {
 }
 
 // Update the order status and change the card color dynamically
+// Update the order status and ensure no other fields (like the date) are cleared
 function changeStatus(orderId) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
+
+  // Fetch the original order date and pass it back when updating status to avoid clearing the date
+  const orderDate = document.getElementById('orderDateFilter').value; // Assuming the date comes from here
 
   fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
-      status: status
+      status: status,
+      orderDate: orderDate // Include the date in the request to preserve it
     })
   })
   .then(response => response.json())
@@ -123,6 +128,7 @@ function changeStatus(orderId) {
     }
   });
 }
+
 
 // Change the payment method and recalculate the total cash on hand
 function changePaymentMethod(orderId) {
