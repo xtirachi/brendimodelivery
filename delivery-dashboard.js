@@ -1,5 +1,5 @@
-// Retrieve the logged-in delivery person's username from localStorage
-const username = localStorage.getItem('delivery_username').trim(); // Ensure no leading/trailing spaces
+// Retrieve the logged-in delivery person's username from localStorage and store it in a global variable
+let username = localStorage.getItem('delivery_username').trim(); // Ensure no leading/trailing spaces
 
 // Check if the username exists, if not redirect to login page
 if (!username) {
@@ -22,7 +22,7 @@ function loadOrdersByDate(date, username) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // Add console log for debugging username filtering
+        // Debugging: Ensure the correct username and orders are being filtered
         console.log("Logged-in user:", username);
         console.log("Orders data:", data.orders);
 
@@ -155,3 +155,9 @@ function toggleOrderDetails(orderId) {
     details.style.display = 'none'; // Hide details
   }
 }
+
+// Add an event listener to date picker to reload orders on date change
+document.getElementById('orderDateFilter').addEventListener('change', function() {
+  const selectedDate = this.value;
+  loadOrdersByDate(selectedDate, username); // Reload orders when the date is changed, retaining the username
+});
