@@ -6,9 +6,11 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   const deliveryAddress = document.getElementById('deliveryAddress').value;
   const orderDetails = document.getElementById('orderDetails').value;
   const specialInstructions = document.getElementById('specialInstructions').value;
+  const orderDate = document.getElementById('orderDate').value;
+  const productSalesPrice = parseFloat(document.getElementById('productSalesPrice').value);
 
   // Send the data to Google Apps Script to create the order
-  fetch('https://script.google.com/macros/s/AKfycbwXFf2Ot4trb60iRLLIQVC2GnbGZC4N02-8ahdzpQ6E9O_cgJG6l6z6lrby9k2J2jXB/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'createOrder',
@@ -16,7 +18,9 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
       contactInfo: contactInfo,
       deliveryAddress: deliveryAddress,
       orderDetails: orderDetails,
-      specialInstructions: specialInstructions
+      specialInstructions: specialInstructions,
+      orderDate: orderDate,
+      productSalesPrice: productSalesPrice
     })
   })
   .then(response => response.json())
@@ -36,3 +40,8 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     console.error('Order creation error:', err);
   });
 });
+
+// Set tomorrow as the default order date
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+document.getElementById('orderDate').value = tomorrow.toISOString().split('T')[0];
