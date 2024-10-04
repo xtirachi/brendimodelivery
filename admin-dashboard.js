@@ -107,3 +107,5 @@ function toggleOrderDetails(orderId) {
 window.onload = function() {
   loadOrders(); // Initially load today's orders
 };
+
+
