@@ -18,6 +18,7 @@ function loadOrdersByDate(date) {
         let html = '';
         let totalAmount = 0;
         let courierAmounts = {}; // Object to store total money to be returned by each courier
+        let netCashPerCourier = {}; // Object to store Net Nağd Məbləğ for each courier
 
         orders.forEach(order => {
           const orderAmount = parseFloat(order[10]) || 0;  // Assuming Column K is Order Amount
@@ -36,9 +37,15 @@ function loadOrdersByDate(date) {
             if (!courierAmounts[courier]) {
               courierAmounts[courier] = 0;
             }
+            if (!netCashPerCourier[courier]) {
+              netCashPerCourier[courier] = 0;
+            }
 
-            // Add the returnAmount to the courier's total
-            courierAmounts[courier] += returnAmount;
+            // Add the full order amount to courier's total cash
+            courierAmounts[courier] += orderAmount;
+
+            // Deduct 6 AZN for each delivered cash order
+            netCashPerCourier[courier] += returnAmount;
           }
 
           // Add the order to the HTML
@@ -92,9 +99,9 @@ function loadOrdersByDate(date) {
         document.getElementById('totalAmount').innerText = `Toplam Məbləğ: ${totalAmount.toFixed(2)} AZN`;
 
         // Show the total amount that each courier has to return (after deducting 6 AZN per delivered order)
-        let perCourierHtml = 'Çatdırıcıların geri qaytarmalı olduqları məbləğ:<br>';
-        for (const courier in courierAmounts) {
-          perCourierHtml += `${courier}: ${courierAmounts[courier].toFixed(2)} AZN<br>`;
+        let perCourierHtml = 'Net Nağd Məbləğ (hər bir çatdırıcıya):<br>';
+        for (const courier in netCashPerCourier) {
+          perCourierHtml += `${courier}: ${netCashPerCourier[courier].toFixed(2)} AZN<br>`;
         }
         document.getElementById('totalPerCourier').innerHTML = perCourierHtml;
       } else {
