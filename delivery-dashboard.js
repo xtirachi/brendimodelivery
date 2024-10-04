@@ -142,7 +142,6 @@ function changeStatus(orderId, orderDate) {
   });
 }
 
-
 // Change the payment method and recalculate the total cash on hand
 function changePaymentMethod(orderId) {
   const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
