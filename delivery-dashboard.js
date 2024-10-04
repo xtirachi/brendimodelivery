@@ -1,6 +1,6 @@
 // Load today's orders for the Delivery personnel
 function loadOrders(username) {
-  fetch(`https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec?action=getTodaysOrders&role=Delivery&username=${username}`)
+  fetch(`https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec?action=getTodaysOrders&role=Delivery&username=${username}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -9,18 +9,18 @@ function loadOrders(username) {
         orders.forEach(order => {
           html += `
             <div class="order-card">
-              <div class="order-info">
+              <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
                 <h3>Sifariş ID: ${order[0]}</h3>
                 <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
                 <p><strong>Status:</strong> ${order[6]}</p>
                 <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                 <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
               </div>
-              <div class="order-actions">
-                <label for="payment-${order[0]}">Ödəniş Metodu:</label>
-                <select id="payment-${order[0]}" class="form-control">
-                  <option value="cash">Nağd</option>
-                  <option value="card">Karta</option>
+              <div id="orderDetails-${order[0]}" class="order-details">
+                <label for="status-${order[0]}">Sifariş Statusu:</label>
+                <select id="status-${order[0]}" class="form-control">
+                  <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+                  <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
                 </select>
 
                 <button class="btn btn-primary" onclick="updateOrderStatus(${order[0]})">Yenilə</button>
@@ -35,41 +35,38 @@ function loadOrders(username) {
     });
 }
 
-// Update order status and payment method for Delivery personnel
+// Update order status for the delivery personnel
 function updateOrderStatus(orderId) {
-  const paymentMethod = document.getElementById(`payment-${orderId}`).value;
+  const status = document.getElementById(`status-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
-      status: 'Delivered', // Delivery personnel deliver the order
-      paymentMethod: paymentMethod
+      status: status
     })
   })
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      loadOrders('delivery_person_username'); // Replace with logged-in delivery person's username
+      loadOrders('delivery_person_username'); // Replace with the actual logged-in delivery person’s username
     }
   });
 }
 
-// Calculate total amount delivered by the delivery person
-function calculateTotalDelivered(username) {
-  fetch(`https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec?action=calculateTotalAmount&role=Delivery&username=${username}`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        document.getElementById('totalDelivered').innerText = `Çatdırılmış: ${data.totalDelivered} AZN`;
-      }
-    });
+// Toggle visibility of order details
+function toggleOrderDetails(orderId) {
+  const details = document.getElementById(`orderDetails-${orderId}`);
+  if (details.style.display === 'none' || details.style.display === '') {
+    details.style.display = 'block'; // Show details
+  } else {
+    details.style.display = 'none'; // Hide details
+  }
 }
 
 // Load orders and calculate total delivered when page is ready
 window.onload = function() {
-  const username = 'delivery_person_username'; // Replace with logged-in delivery person's username
+  const username = 'delivery_person_username'; // Replace with the logged-in delivery person’s username
   loadOrders(username);
-  calculateTotalDelivered(username);
 };
