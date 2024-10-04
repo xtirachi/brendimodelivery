@@ -10,7 +10,7 @@ function loadOrders() {
         html += `<tr>
                   <td>${order[0]}</td>
                   <td>${order[1]}</td>
-                  <td>${order[6]}</td>
+                  <td>${order[7]}</td>
                   <td>
                     <button class="btn btn-danger" onclick="cancelOrder(${order[0]})">Ləğv et</button>
                   </td>
