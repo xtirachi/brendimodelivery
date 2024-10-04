@@ -112,16 +112,18 @@ function loadOrdersByDate(date) {
     });
 }
 
-// Update the order status and change the card color dynamically
-function changeStatus(orderId) {
+// Update the order status and ensure no other fields (like the date) are cleared
+function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
+  // Fetch the original order date and include it in the request
+  fetch('https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
-      status: status
+      status: status,
+      orderDate: orderDate // Include the order date to ensure it is not cleared
     })
   })
   .then(response => response.json())
@@ -138,13 +140,11 @@ function changeStatus(orderId) {
       } else if (status === 'Out for Delivery') {
         orderCard.classList.remove('soft-green', 'soft-red');
         orderCard.classList.add('soft-yellow');
-      } else if (status === 'Canceled') {
-        orderCard.classList.remove('soft-green', 'soft-yellow');
-        orderCard.classList.add('soft-red');
       }
     }
   });
 }
+
 
 // Assign courier to the order
 function assignCourier(orderId) {
