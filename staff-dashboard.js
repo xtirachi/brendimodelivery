@@ -1,6 +1,6 @@
 // Load today's orders for Staff
 function loadOrders() {
-  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec?action=getTodaysOrders&role=Staff')
+  fetch('https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec?action=getTodaysOrders&role=Staff')
   .then(response => response.json())
   .then(data => {
     if (data.success) {
@@ -24,7 +24,7 @@ function loadOrders() {
 
 // Cancel order
 function cancelOrder(orderId) {
-  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatus',
