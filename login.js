@@ -1,5 +1,6 @@
 document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+  e.preventDefault();  // Prevent form from submitting the default way
+  
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
 
@@ -19,21 +20,17 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
       } else if (data.role === 'Staff') {
         window.location.href = 'staff-dashboard.html';
       } else if (data.role === 'Delivery') {
+        // Store the delivery person's username in localStorage
+        localStorage.setItem('delivery_username', username);
+        
+        // Redirect to the delivery dashboard
         window.location.href = 'delivery-dashboard.html';
       }
     } else {
+      // Show an error if login fails
       document.getElementById('loginError').style.display = 'block';
       document.getElementById('loginError').innerText = 'Yanlış giriş məlumatları';
     }
   })
   .catch(err => console.error('Login error:', err));
 });
-
-// Assuming you have some login logic
-function loginUser(username) {
-  // Store the logged-in username in localStorage
-  localStorage.setItem('delivery_username', username);
-
-  // Redirect to the delivery dashboard after login
-  window.location.href = 'delivery-dashboard.html';
-}
