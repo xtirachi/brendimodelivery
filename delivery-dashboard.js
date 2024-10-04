@@ -1,16 +1,23 @@
+// Retrieve the logged-in delivery person's username from localStorage
+const username = localStorage.getItem('delivery_username');
+
+// Check if the username exists, if not redirect to login page
+if (!username) {
+  window.location.href = 'login.html'; // Redirect to login page if not logged in
+}
+
 // Set today's date as default in the date picker and load today's orders automatically
 window.onload = function() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('orderDateFilter').value = today;
-  
-  const username = 'delivery_person_username'; // Replace with the actual logged-in delivery person's username
+
   loadOrdersByDate(today, username); // Load today's orders on page load
 };
 
 // Load orders for the selected date and logged-in delivery person
 function loadOrdersByDate(date, username) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
-  
+
   fetch(`https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
     .then(response => response.json())
     .then(data => {
@@ -75,7 +82,6 @@ function updateOrderStatus(orderId) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      const username = 'delivery_person_username'; // Replace with the actual logged-in delivery person’s username
       loadOrdersByDate(null, username); // Reload orders after status update
     }
   });
