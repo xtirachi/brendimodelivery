@@ -52,17 +52,20 @@ function loadOrdersByDate(date) {
           }
 
           html += `
-            <div class="order-card ${cardColor}">
+            <div class="order-card ${cardColor}" id="order-${order[0]}">
               <div class="order-info">
                 <h3>Sifariş ID: ${order[0]}</h3>
                 <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
-                <p><strong>Status:</strong> ${status}</p>
-                <p><strong>Çatdırıcı:</strong> ${courier}</p>
+                <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
+                <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
                 <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                 <p><strong>Qiymət:</strong> ${orderAmount} AZN</p>
                 <p><strong>Ödəniş Metodu:</strong> ${paymentMethod}</p>
               </div>
+
+              <!-- Status and Courier Assignment Controls -->
               <div id="orderDetails-${order[0]}" class="order-details">
+                <!-- Status Update -->
                 <label for="status-${order[0]}">Sifariş Statusu:</label>
                 <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]})">
                   <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
@@ -70,16 +73,19 @@ function loadOrdersByDate(date) {
                   <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
                 </select>
 
-                <label for="payment-${order[0]}">Ödəniş Metodu:</label>
-                <select id="paymentSelect-${order[0]}" class="form-control" onchange="changePaymentMethod(${order[0]})">
-                  <option value="Cash" ${paymentMethod === 'Cash' ? 'selected' : ''}>Nağd</option>
-                  <option value="Card" ${paymentMethod === 'Card' ? 'selected' : ''}>Karta</option>
+                <!-- Courier Assignment -->
+                <label for="courier-${order[0]}">Çatdırıcı Təyinatı:</label>
+                <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
+                  <option value="">Çatdırıcı seçin</option>
                 </select>
 
                 <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
             </div>
           `;
+
+          // Fetch and populate couriers in the select dropdown
+          fetchDeliveryUsers(order[0]);
         });
 
         document.getElementById('orderList').innerHTML = html;
@@ -129,6 +135,44 @@ function changeStatus(orderId) {
       }
     }
   });
+}
+
+// Assign courier to the order
+function assignCourier(orderId) {
+  const courier = document.getElementById(`courierSelect-${orderId}`).value;
+
+  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'assignOrder',
+      orderId: orderId,
+      assignedTo: courier
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update the courier text in the card
+      document.getElementById(`courier-${orderId}`).innerText = courier;
+    }
+  });
+}
+
+// Fetch delivery users to populate courier dropdowns
+function fetchDeliveryUsers(orderId) {
+  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec?action=getDeliveryUsers')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const select = document.getElementById(`courierSelect-${orderId}`);
+        data.users.forEach(user => {
+          const option = document.createElement('option');
+          option.value = user.username;
+          option.text = user.username;
+          select.appendChild(option);
+        });
+      }
+    });
 }
 
 // Change the payment method and recalculate the total cash on hand
