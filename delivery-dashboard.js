@@ -1,9 +1,15 @@
-// Retrieve the logged-in delivery person's username from localStorage and store it in a global variable
-let username = localStorage.getItem('delivery_username').trim(); // Ensure no leading/trailing spaces
+// Function to get the username from localStorage
+function getUsername() {
+  return localStorage.getItem('delivery_username');
+}
 
-// Check if the username exists, if not redirect to login page
-if (!username) {
-  window.location.href = 'login.html'; // Redirect to login page if not logged in
+// Function to check if the courier is logged in, otherwise redirect to the login page
+function checkLoginStatus() {
+  const username = getUsername();
+  if (!username) {
+    window.location.href = 'login.html'; // Redirect to login page if not logged in
+  }
+  return username;
 }
 
 // Set today's date as default in the date picker and load today's orders automatically
@@ -11,6 +17,7 @@ window.onload = function() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('orderDateFilter').value = today;
 
+  const username = checkLoginStatus(); // Ensure username is available
   loadOrdersByDate(today, username); // Load today's orders on page load
 };
 
@@ -22,19 +29,11 @@ function loadOrdersByDate(date, username) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // Debugging: Ensure the correct username and orders are being filtered
-        console.log("Logged-in user:", username);
+        console.log("Logged-in user:", username); // Debugging
         console.log("Orders data:", data.orders);
 
         // Filter orders where Column H (index 7) matches the logged-in courier's username
-        const orders = data.orders.filter(order => {
-          console.log("Comparing order courier:", order[7], "with username:", username);
-          return order[7].trim() === username; // Trim spaces to ensure matching
-        });
-
-        if (orders.length === 0) {
-          console.log("No matching orders found for:", username);
-        }
+        const orders = data.orders.filter(order => order[7].trim() === username);
 
         let html = '';
         let totalCashOnHand = 0; // To track cash on hand
@@ -141,7 +140,7 @@ function changePaymentMethod(orderId) {
   .then(data => {
     if (data.success) {
       // Recalculate the cash on hand based on the new payment method
-      loadOrdersByDate(null, username); // Reload the orders and recalculate
+      loadOrdersByDate(null, getUsername()); // Reload the orders and recalculate
     }
   });
 }
@@ -159,5 +158,6 @@ function toggleOrderDetails(orderId) {
 // Add an event listener to date picker to reload orders on date change
 document.getElementById('orderDateFilter').addEventListener('change', function() {
   const selectedDate = this.value;
+  const username = getUsername(); // Fetch username again when date changes
   loadOrdersByDate(selectedDate, username); // Reload orders when the date is changed, retaining the username
 });
