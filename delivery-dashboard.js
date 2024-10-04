@@ -67,6 +67,7 @@ function toggleOrderDetails(orderId) {
 
 // Load orders and calculate total delivered when page is ready
 window.onload = function() {
-  const username = 'delivery_person_username'; // Replace with the logged-in delivery person’s username
+  const username = 'delivery_person_username'; // Replace with the actual username
   loadOrders(username);
 };
+
