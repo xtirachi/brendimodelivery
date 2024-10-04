@@ -120,7 +120,6 @@ function changeStatus(orderId, orderDate) {
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
       status: status,
-      orderDate: orderDate // Ensure the order date is not cleared
     })
   })
   .then(response => response.json())
