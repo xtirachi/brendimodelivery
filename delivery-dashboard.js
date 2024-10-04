@@ -120,6 +120,7 @@ function changeStatus(orderId, orderDate) {
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
       status: status,
+      orderDate: orderDate
     })
   })
   .then(response => response.json())
@@ -150,7 +151,8 @@ function changePaymentMethod(orderId) {
     body: new URLSearchParams({
       action: 'updatePaymentMethod',
       orderId: orderId,
-      paymentMethod: paymentMethod
+      paymentMethod: paymentMethod,
+      orderDate: orderDate
     })
   })
   .then(response => response.json())
