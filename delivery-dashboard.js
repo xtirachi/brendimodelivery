@@ -5,15 +5,16 @@ function setUsername(username) {
 
 // Function to get the username from localStorage
 function getUsername() {
-  return localStorage.getItem('delivery_username');
+  const username = localStorage.getItem('delivery_username');
+  if (!username) {
+    window.location.href = 'login.html'; // Redirect to login page if username is missing
+  }
+  return username;
 }
 
 // Function to check if the courier is logged in, otherwise redirect to the login page
 function checkLoginStatus() {
   const username = getUsername();
-  if (!username) {
-    window.location.href = 'login.html'; // Redirect to login page if not logged in
-  }
   return username;
 }
 
@@ -23,12 +24,13 @@ window.onload = function() {
   document.getElementById('orderDateFilter').value = today;
 
   const username = checkLoginStatus(); // Ensure username is available
-  loadOrdersByDate(today, username); // Load today's orders on page load
+  loadOrdersByDate(today); // Load today's orders on page load
 };
 
 // Load orders for the selected date and logged-in delivery person
-function loadOrdersByDate(date, username) {
+function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
+  const username = getUsername(); // Always get the username from localStorage to ensure it's not lost
 
   fetch(`https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
     .then(response => response.json())
@@ -149,7 +151,7 @@ function changePaymentMethod(orderId) {
   .then(data => {
     if (data.success) {
       // Recalculate the cash on hand based on the new payment method
-      loadOrdersByDate(null, getUsername()); // Reload the orders and recalculate
+      loadOrdersByDate(null); // Reload the orders and recalculate
     }
   });
 }
@@ -167,6 +169,5 @@ function toggleOrderDetails(orderId) {
 // Add an event listener to date picker to reload orders on date change
 document.getElementById('orderDateFilter').addEventListener('change', function() {
   const selectedDate = this.value;
-  const username = getUsername(); // Fetch username again when date changes
-  loadOrdersByDate(selectedDate, username); // Reload orders when the date is changed, retaining the username
+  loadOrdersByDate(selectedDate); // Reload orders when the date is changed, the username is fetched inside
 });
