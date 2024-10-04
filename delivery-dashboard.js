@@ -24,27 +24,35 @@ function loadOrdersByDate(date, username) {
       if (data.success) {
         const orders = data.orders.filter(order => order[7] === username); // Filter orders where Column H matches the delivery person
         let html = '';
-        let totalDelivered = 0;
+        let totalCashOnHand = 0; // To track cash on hand
 
         orders.forEach(order => {
           let cardColor = '';
           if (order[6] === 'Delivered') {
             cardColor = 'soft-green';
-            totalDelivered += parseFloat(order[10]) || 0;
           } else if (order[6] === 'Out for Delivery') {
             cardColor = 'soft-yellow';
           } else if (order[6] === 'Canceled') {
             cardColor = 'soft-red';
           }
 
+          // Calculate cash on hand (exclude orders paid via Card)
+          if (order[9] !== 'Card') {  // Assuming Column J (index 9) holds payment method
+            totalCashOnHand += parseFloat(order[10]) || 0; // Assuming Column K (index 10) holds order amount
+          }
+
+          // Build the order card with additional information
           html += `
             <div class="order-card ${cardColor}" id="order-${order[0]}">
               <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
                 <h3>Sifariş ID: ${order[0]}</h3>
                 <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
+                <p><strong>Telefon:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>  <!-- Column C for Phone Number -->
                 <p><strong>Status:</strong> <span id="status-${order[0]}">${order[6]}</span></p>
                 <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                 <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
+                <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>  <!-- Column E for Order Details -->
+                <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>  <!-- Column F for Special Instructions -->
               </div>
               <div id="orderDetails-${order[0]}" class="order-details">
                 <label for="status-${order[0]}">Sifariş Statusu:</label>
@@ -52,13 +60,21 @@ function loadOrdersByDate(date, username) {
                   <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
                   <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
                 </select>
+
+                <label for="payment-${order[0]}">Ödəniş Metodu:</label>
+                <select id="paymentSelect-${order[0]}" class="form-control" onchange="changePaymentMethod(${order[0]})">
+                  <option value="Cash" ${order[9] === 'Cash' ? 'selected' : ''}>Nağd</option>
+                  <option value="Card" ${order[9] === 'Card' ? 'selected' : ''}>Karta</option>
+                </select>
+
+                <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
             </div>
           `;
         });
 
         document.getElementById('orderList').innerHTML = html;
-        document.getElementById('totalDelivered').innerText = `Çatdırılmış Toplam Məbləğ: ${totalDelivered.toFixed(2)} AZN`;
+        document.getElementById('totalDelivered').innerText = `Nağd Məbləğ: ${totalCashOnHand.toFixed(2)} AZN`; // Show cash on hand
       } else {
         document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
       }
@@ -92,6 +108,27 @@ function changeStatus(orderId) {
         orderCard.classList.remove('soft-green', 'soft-red');
         orderCard.classList.add('soft-yellow');
       }
+    }
+  });
+}
+
+// Change the payment method and recalculate the total cash on hand
+function changePaymentMethod(orderId) {
+  const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
+
+  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'updatePaymentMethod',
+      orderId: orderId,
+      paymentMethod: paymentMethod
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Recalculate the cash on hand based on the new payment method
+      loadOrdersByDate(null, username); // Reload the orders and recalculate
     }
   });
 }
