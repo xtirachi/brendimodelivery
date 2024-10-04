@@ -24,23 +24,26 @@ function loadOrders() {
           orders.forEach(order => {
             html += `
               <div class="order-card">
-                <div class="order-info">
+                <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
                   <h3>Sifariş ID: ${order[0]}</h3>
                   <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
                   <p><strong>Status:</strong> ${order[6]}</p>
                   <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                   <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
                 </div>
-                <div class="order-actions">
+                <div id="orderDetails-${order[0]}" class="order-details">
                   <label for="assign-${order[0]}">Çatdırıcı:</label>
                   <select id="assign-${order[0]}" class="form-control">
                     ${deliveryUsers.map(user => `<option value="${user.username}">${user.username}</option>`).join('')}
                   </select>
 
-                  <label for="payment-${order[0]}">Ödəniş Metodu:</label>
-                  <select id="payment-${order[0]}" class="form-control">
-                    <option value="cash">Nağd</option>
-                    <option value="card">Karta</option>
+                  <label for="status-${order[0]}">Sifariş Statusu:</label>
+                  <select id="status-${order[0]}" class="form-control">
+                    <option value="Preparing" ${order[6] === 'Preparing' ? 'selected' : ''}>Hazırlanır</option>
+                    <option value="Ready for Delivery" ${order[6] === 'Ready for Delivery' ? 'selected' : ''}>Çatdırılmaya Hazır</option>
+                    <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+                    <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
+                    <option value="Canceled" ${order[6] === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
                   </select>
 
                   <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
@@ -59,7 +62,7 @@ function loadOrders() {
 // Update order status and assign delivery person
 function updateOrder(orderId) {
   const assignedTo = document.getElementById(`assign-${orderId}`).value;
-  const paymentMethod = document.getElementById(`payment-${orderId}`).value;
+  const status = document.getElementById(`status-${orderId}`).value;
 
   fetch('https://script.google.com/macros/s/AKfycbyh_pGkht7jcRwlA-yzbBfgbRKvkyAXBCZblWEAe0ZQ2vP81rk8hqBC0nuumLVXrC37/exec', {
     method: 'POST',
@@ -67,7 +70,7 @@ function updateOrder(orderId) {
       action: 'assignOrder',
       orderId: orderId,
       assignedTo: assignedTo,
-      paymentMethod: paymentMethod
+      status: status
     })
   })
   .then(response => response.json())
@@ -76,6 +79,16 @@ function updateOrder(orderId) {
       loadOrders(); // Reload orders after update
     }
   });
+}
+
+// Toggle visibility of order details
+function toggleOrderDetails(orderId) {
+  const details = document.getElementById(`orderDetails-${orderId}`);
+  if (details.style.display === 'none' || details.style.display === '') {
+    details.style.display = 'block'; // Show details
+  } else {
+    details.style.display = 'none'; // Hide details
+  }
 }
 
 // Calculate total amount of today's orders
