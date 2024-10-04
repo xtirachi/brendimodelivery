@@ -11,7 +11,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   const paymentMethod = document.getElementById('paymentMethod').value;
 
   // Send the data to Google Apps Script to create the order
-  fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'createOrder',
