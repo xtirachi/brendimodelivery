@@ -5,27 +5,32 @@ function loadOrders() {
   .then(data => {
     if (data.success) {
       const orders = data.orders;
-      let html = '<table class="table"><thead><tr><th>ID</th><th>Müştəri Adı</th><th>Status</th><th>Çatdırılma üçün</th><th>Ödəniş Metodu</th><th>Əməliyyatlar</th></tr></thead><tbody>';
+      let html = ''; // Use a string to hold the dynamic HTML
       orders.forEach(order => {
-        html += `<tr>
-                  <td>${order[0]}</td>
-                  <td>${order[1]}</td>
-                  <td>${order[6]}</td>
-                  <td>
-                    <input type="text" class="form-control" id="assign-${order[0]}" placeholder="Çatdırıcı seçin">
-                  </td>
-                  <td>
-                    <select id="payment-${order[0]}" class="form-control">
-                      <option value="cash">Nağd</option>
-                      <option value="card">Karta</option>
-                    </select>
-                  </td>
-                  <td>
-                    <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
-                  </td>
-                 </tr>`;
+        html += `
+          <div class="order-card">
+            <div class="order-info">
+              <h3>Sifariş ID: ${order[0]}</h3>
+              <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
+              <p><strong>Status:</strong> ${order[6]}</p>
+              <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
+              <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
+            </div>
+            <div class="order-actions">
+              <label for="assign-${order[0]}">Çatdırıcı:</label>
+              <input type="text" class="form-control" id="assign-${order[0]}" placeholder="Çatdırıcı seçin">
+
+              <label for="payment-${order[0]}">Ödəniş Metodu:</label>
+              <select id="payment-${order[0]}" class="form-control">
+                <option value="cash">Nağd</option>
+                <option value="card">Karta</option>
+              </select>
+
+              <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
+            </div>
+          </div>
+        `;
       });
-      html += '</tbody></table>';
       document.getElementById('orderList').innerHTML = html;
     } else {
       document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
