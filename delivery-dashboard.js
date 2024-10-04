@@ -33,7 +33,7 @@ function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
   const username = getUsername(); // Always get the username from localStorage to ensure it's not lost
 
-  fetch(`https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
+  fetch(`https://script.google.com/macros/s/AKfycbxZ99ctaNzbItcpTcs6QR4EiwmhMWTuPWf9DWU0mueLX17ijA_GHNCQTEOrTlbxi9y9/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -114,7 +114,7 @@ function loadOrdersByDate(date) {
 function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbxZ99ctaNzbItcpTcs6QR4EiwmhMWTuPWf9DWU0mueLX17ijA_GHNCQTEOrTlbxi9y9/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
@@ -146,7 +146,7 @@ function changeStatus(orderId, orderDate) {
 function changePaymentMethod(orderId) {
   const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbxZ99ctaNzbItcpTcs6QR4EiwmhMWTuPWf9DWU0mueLX17ijA_GHNCQTEOrTlbxi9y9/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updatePaymentMethod',
