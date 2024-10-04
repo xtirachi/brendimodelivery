@@ -28,3 +28,12 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
   })
   .catch(err => console.error('Login error:', err));
 });
+
+// Assuming you have some login logic
+function loginUser(username) {
+  // Store the logged-in username in localStorage
+  localStorage.setItem('delivery_username', username);
+
+  // Redirect to the delivery dashboard after login
+  window.location.href = 'delivery-dashboard.html';
+}
