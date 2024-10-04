@@ -5,10 +5,22 @@ function loadOrders(username) {
     .then(data => {
       if (data.success) {
         const orders = data.orders;
-        let html = ''; // Use a string to hold the dynamic HTML
+        let html = '';
+        let totalDelivered = 0;
+
         orders.forEach(order => {
+          let cardColor = '';
+          if (order[6] === 'Delivered') {
+            cardColor = 'soft-green';
+            totalDelivered += parseFloat(order[10]) || 0;
+          } else if (order[6] === 'Out for Delivery') {
+            cardColor = 'soft-yellow';
+          } else if (order[6] === 'Canceled') {
+            cardColor = 'soft-red';
+          }
+
           html += `
-            <div class="order-card">
+            <div class="order-card ${cardColor}">
               <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
                 <h3>Sifariş ID: ${order[0]}</h3>
                 <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
@@ -28,7 +40,9 @@ function loadOrders(username) {
             </div>
           `;
         });
+
         document.getElementById('orderList').innerHTML = html;
+        document.getElementById('totalDelivered').innerText = `Çatdırılmış Toplam Məbləğ: ${totalDelivered.toFixed(2)} AZN`;
       } else {
         document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
       }
@@ -65,9 +79,8 @@ function toggleOrderDetails(orderId) {
   }
 }
 
-// Load orders and calculate total delivered when page is ready
+// Load orders when page is ready
 window.onload = function() {
   const username = 'delivery_person_username'; // Replace with the actual username
   loadOrders(username);
 };
-
