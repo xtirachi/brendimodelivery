@@ -43,7 +43,9 @@ function loadOrdersByDate(date) {
         const orders = data.orders.filter(order => order[7].trim() === username);
 
         let html = '';
-        let totalCashOnHand = 0; // To track cash on hand
+        let totalCashOnHand = 0; // To track total cash amount
+        let netCashOnHand = 0;   // To track net cash amount (after deducting 6 AZN per delivered order)
+        let deliveredOrdersCount = 0; // Track how many orders were delivered with cash
 
         orders.forEach(order => {
           let cardColor = '';
@@ -56,8 +58,10 @@ function loadOrdersByDate(date) {
           }
 
           // Calculate cash on hand (exclude orders paid via Card)
-          if (order[9] !== 'Card') {  // Assuming Column J (index 9) holds payment method
-            totalCashOnHand += parseFloat(order[10]) || 0; // Assuming Column K (index 10) holds order amount
+          if (order[9] === 'Cash' && order[6] === 'Delivered') {  // Assuming Column J (index 9) holds payment method
+            const orderAmount = parseFloat(order[10]) || 0; // Assuming Column K (index 10) holds order amount
+            totalCashOnHand += orderAmount; // Add to total cash
+            deliveredOrdersCount++; // Increment the delivered cash order count
           }
 
           // Build the order card with additional information
@@ -92,8 +96,13 @@ function loadOrdersByDate(date) {
           `;
         });
 
+        // Calculate Net Nağd Məbləğ: Deduct 6 AZN per delivered order
+        netCashOnHand = totalCashOnHand - (deliveredOrdersCount * 6);
+
+        // Display the total and net cash amounts
         document.getElementById('orderList').innerHTML = html;
-        document.getElementById('totalDelivered').innerText = `Nağd Məbləğ: ${totalCashOnHand.toFixed(2)} AZN`; // Show cash on hand
+        document.getElementById('totalDelivered').innerText = `Nağd Məbləğ: ${totalCashOnHand.toFixed(2)} AZN`;
+        document.getElementById('netCashOnHand').innerText = `Net Nağd Məbləğ: ${netCashOnHand.toFixed(2)} AZN`; // Display net cash on hand
       } else {
         document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
       }
