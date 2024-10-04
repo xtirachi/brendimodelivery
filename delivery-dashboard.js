@@ -28,8 +28,8 @@ function loadOrdersByDate(date, username) {
 
         // Filter orders where Column H (index 7) matches the logged-in courier's username
         const orders = data.orders.filter(order => {
-          console.log("Comparing order courier:", order[8], "with username:", username);
-          return order[8].trim() === username; // Trim spaces to ensure matching
+          console.log("Comparing order courier:", order[7], "with username:", username);
+          return order[7].trim() === username; // Trim spaces to ensure matching
         });
 
         if (orders.length === 0) {
