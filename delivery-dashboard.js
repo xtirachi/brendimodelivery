@@ -1,3 +1,8 @@
+// Function to set the username in localStorage when the user logs in (you should call this on successful login)
+function setUsername(username) {
+  localStorage.setItem('delivery_username', username);
+}
+
 // Function to get the username from localStorage
 function getUsername() {
   return localStorage.getItem('delivery_username');
@@ -93,7 +98,6 @@ function loadOrdersByDate(date, username) {
     });
 }
 
-// Update the order status and change the card color dynamically
 // Update the order status and ensure no other fields (like the date) are cleared
 function changeStatus(orderId) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
@@ -128,7 +132,6 @@ function changeStatus(orderId) {
     }
   });
 }
-
 
 // Change the payment method and recalculate the total cash on hand
 function changePaymentMethod(orderId) {
