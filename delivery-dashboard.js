@@ -18,6 +18,7 @@ function checkLoginStatus() {
   return username;
 }
 
+
 // Set today's date as default in the date picker and load today's orders automatically
 window.onload = function() {
   const today = new Date().toISOString().split('T')[0];
