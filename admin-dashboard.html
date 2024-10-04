@@ -17,19 +17,14 @@
     <!-- Button to show orders for the selected date -->
     <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
 
-    <!-- Total amount of all orders -->
-    <div id="totalAmount" class="mt-3">
-      <h3>Toplam Məbləğ: 0.00 AZN</h3>
-    </div>
-
-    <!-- Total amount per courier after deduction -->
-    <div id="totalPerCourier" class="mt-3">
-      <h3>Çatdırıcıların geri qaytarmalı olduqları məbləğ:</h3>
-    </div>
-
     <!-- Section to display orders -->
-    <div id="orderList" class="mt-4"></div>
+    <div id="orderList"></div>
 
+    <!-- Total amount of all orders -->
+    <div id="totalAmount" class="mt-3"></div>
+
+    <!-- Net Cash to be returned by couriers after 6 AZN deduction per delivered order -->
+    <div id="netCashPerCourier" class="mt-3"></div>
   </div>
 
   <script src="admin-dashboard.js"></script>
