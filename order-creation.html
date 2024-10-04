@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order Creation</title>
+  <title>Yeni Sifariş Yarat</title>
   <link href="styles.css" rel="stylesheet">
 </head>
 <body>
@@ -29,6 +29,14 @@
       <div class="mb-3">
         <label for="specialInstructions" class="form-label">Xüsusi Təlimatlar</label>
         <textarea class="form-control" id="specialInstructions" rows="2"></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="orderDate" class="form-label">Sifariş Tarixi</label>
+        <input type="date" class="form-control" id="orderDate" required>
+      </div>
+      <div class="mb-3">
+        <label for="productSalesPrice" class="form-label">Məhsulun Qiyməti (AZN)</label>
+        <input type="number" class="form-control" id="productSalesPrice" min="0" step="0.01" required>
       </div>
       <button type="submit" class="btn btn-primary">Sifariş Yarat</button>
     </form>
