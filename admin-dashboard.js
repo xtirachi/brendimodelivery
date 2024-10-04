@@ -18,7 +18,7 @@ function loadOrdersByDate(date) {
         let html = '';
         let totalAmount = 0;
         let courierAmounts = {}; // Object to store total money to be returned by each courier
-        let netCashPerCourier = {}; // Object to store Net Nağd Məbləğ for each courier
+        let netCashPerCourier = {}; // Object to store Net Məbləğ for each courier
 
         orders.forEach(order => {
           const orderAmount = parseFloat(order[10]) || 0;  // Assuming Column K is Order Amount
@@ -26,26 +26,28 @@ function loadOrdersByDate(date) {
           const courier = order[7];  // Column H is Assigned Delivery Person
           const paymentMethod = order[9];  // Column J is Payment Method
 
-          // Add to the total amount for Admin (we want to track all orders)
-          totalAmount += orderAmount;
+          // Only count the order in the total amount if it is not canceled
+          if (status !== 'Canceled') {
+            totalAmount += orderAmount;
+          }
 
-          // If the order is "Delivered" and the payment method is "Cash", deduct 6 AZN for the courier
-          if (status === 'Delivered' && paymentMethod === 'Cash') {
-            const returnAmount = orderAmount - 6;
-
-            // If the courier doesn't exist in the courierAmounts object, initialize it
-            if (!courierAmounts[courier]) {
-              courierAmounts[courier] = 0;
-            }
+          // Calculate Net Məbləğ for each courier (salary deduction of 6 AZN per order)
+          if (status === 'Delivered') {
+            // Initialize courier's amount if not set yet
             if (!netCashPerCourier[courier]) {
               netCashPerCourier[courier] = 0;
             }
 
-            // Add the full order amount to courier's total cash
-            courierAmounts[courier] += orderAmount;
+            // Deduct 6 AZN for each delivered order, regardless of payment method
+            netCashPerCourier[courier] += orderAmount - 6;
 
-            // Deduct 6 AZN for each delivered cash order
-            netCashPerCourier[courier] += returnAmount;
+            // Track courier total amounts only for "Cash" orders
+            if (paymentMethod === 'Cash') {
+              if (!courierAmounts[courier]) {
+                courierAmounts[courier] = 0;
+              }
+              courierAmounts[courier] += orderAmount;
+            }
           }
 
           // Add the order to the HTML
@@ -98,8 +100,8 @@ function loadOrdersByDate(date) {
         document.getElementById('orderList').innerHTML = html;
         document.getElementById('totalAmount').innerText = `Toplam Məbləğ: ${totalAmount.toFixed(2)} AZN`;
 
-        // Show the total amount that each courier has to return (after deducting 6 AZN per delivered order)
-        let perCourierHtml = 'Net Nağd Məbləğ (hər bir çatdırıcıya):<br>';
+        // Show the net cash for each courier (total amount minus 6 AZN per delivered order)
+        let perCourierHtml = 'Net Məbləğ (hər bir çatdırıcıya):<br>';
         for (const courier in netCashPerCourier) {
           perCourierHtml += `${courier}: ${netCashPerCourier[courier].toFixed(2)} AZN<br>`;
         }
