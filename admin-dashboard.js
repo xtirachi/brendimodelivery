@@ -1,6 +1,6 @@
 // Load today's orders for the Admin
 function loadOrders() {
-  fetch('https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec?action=getTodaysOrders&role=Admin')
+  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec?action=getTodaysOrders&role=Admin')
   .then(response => response.json())
   .then(data => {
     if (data.success) {
@@ -27,6 +27,8 @@ function loadOrders() {
       });
       html += '</tbody></table>';
       document.getElementById('orderList').innerHTML = html;
+    } else {
+      document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
     }
   });
 }
@@ -36,7 +38,7 @@ function updateOrder(orderId) {
   const assignedTo = document.getElementById(`assign-${orderId}`).value;
   const paymentMethod = document.getElementById(`payment-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec', {
+  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'assignOrder',
@@ -55,7 +57,7 @@ function updateOrder(orderId) {
 
 // Calculate total amount of today's orders
 function calculateTotalAmount() {
-  fetch('https://script.google.com/macros/s/AKfycbyZo9Nq7ulfaRUBDbSBIuQROEncQKrZPVGDmn4hq4RfUN7V6kxXdxgu1i5-aOO9Zg_P/exec?action=calculateTotalAmount&role=Admin')
+  fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_URL/exec?action=calculateTotalAmount&role=Admin')
   .then(response => response.json())
   .then(data => {
     if (data.success) {
@@ -63,6 +65,11 @@ function calculateTotalAmount() {
     }
   });
 }
+
+// Redirect to order creation page when "Yeni Sifariş Yarat" button is clicked
+document.getElementById('createOrderButton').addEventListener('click', function() {
+  window.location.href = 'order-creation.html'; // Redirect to the order creation page
+});
 
 // Load orders and calculate total amount when page is ready
 window.onload = function() {
