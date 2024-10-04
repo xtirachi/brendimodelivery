@@ -38,22 +38,20 @@ function loadOrdersByDate(date, username) {
           }
 
           html += `
-            <div class="order-card ${cardColor}">
+            <div class="order-card ${cardColor}" id="order-${order[0]}">
               <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
                 <h3>Sifariş ID: ${order[0]}</h3>
                 <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
-                <p><strong>Status:</strong> ${order[6]}</p>
+                <p><strong>Status:</strong> <span id="status-${order[0]}">${order[6]}</span></p>
                 <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                 <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
               </div>
               <div id="orderDetails-${order[0]}" class="order-details">
                 <label for="status-${order[0]}">Sifariş Statusu:</label>
-                <select id="status-${order[0]}" class="form-control">
+                <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]})">
                   <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
                   <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
                 </select>
-
-                <button class="btn btn-primary" onclick="updateOrderStatus(${order[0]})">Yenilə</button>
               </div>
             </div>
           `;
@@ -67,9 +65,9 @@ function loadOrdersByDate(date, username) {
     });
 }
 
-// Update order status for the delivery personnel
-function updateOrderStatus(orderId) {
-  const status = document.getElementById(`status-${orderId}`).value;
+// Update the order status and change the card color dynamically
+function changeStatus(orderId) {
+  const status = document.getElementById(`statusSelect-${orderId}`).value;
 
   fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
     method: 'POST',
@@ -82,7 +80,18 @@ function updateOrderStatus(orderId) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      loadOrdersByDate(null, username); // Reload orders after status update
+      // Update the status text in the card
+      document.getElementById(`status-${orderId}`).innerText = status;
+
+      // Change the card color based on the new status
+      const orderCard = document.getElementById(`order-${orderId}`);
+      if (status === 'Delivered') {
+        orderCard.classList.remove('soft-yellow', 'soft-red');
+        orderCard.classList.add('soft-green');
+      } else if (status === 'Out for Delivery') {
+        orderCard.classList.remove('soft-green', 'soft-red');
+        orderCard.classList.add('soft-yellow');
+      }
     }
   });
 }
