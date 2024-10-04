@@ -114,14 +114,13 @@ function loadOrdersByDate(date) {
 function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
-  // Use the original order date to ensure it's not cleared in the update
-  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
+  fetch('https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
       status: status,
-      orderDate: orderDate // Use the original order date to preserve it
+      orderDate: orderDate // Ensure the order date is not cleared
     })
   })
   .then(response => response.json())
@@ -142,6 +141,7 @@ function changeStatus(orderId, orderDate) {
     }
   });
 }
+
 
 // Change the payment method and recalculate the total cash on hand
 function changePaymentMethod(orderId) {
