@@ -16,7 +16,7 @@ function fetchDeliveryUsers() {
 function loadOrdersByDate() {
   const selectedDate = document.getElementById('orderDateFilter').value;
   if (!selectedDate) {
-    loadOrders(); // If no date is selected, load today's orders
+    alert('Zəhmət olmasa tarix seçin!'); // Show alert if no date is selected
     return;
   }
 
@@ -34,9 +34,9 @@ function loadOrdersByDate() {
                   <h3>Sifariş ID: ${order[0]}</h3>
                   <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
                   <p><strong>Status:</strong> ${order[6]}</p>
+                  <p><strong>Çatdırıcı:</strong> <span id="courierName-${order[0]}">${order[7] ? order[7] : 'Təyin edilməyib'}</span></p>
                   <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                   <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
-                  <p><strong>Çatdırıcı:</strong> <span id="courierName-${order[0]}">${order[7] ? order[7] : 'Təyin edilməyib'}</span></p>
                 </div>
                 <div id="orderDetails-${order[0]}" class="order-details">
                   <label for="assign-${order[0]}">Çatdırıcı:</label>
@@ -84,7 +84,6 @@ function updateOrder(orderId) {
   .then(data => {
     if (data.success) {
       document.getElementById(`courierName-${orderId}`).innerText = assignedTo; // Update the courier name in the UI
-      loadOrders(); // Reload orders after update
     }
   });
 }
@@ -94,8 +93,17 @@ document.getElementById('createOrderButton').addEventListener('click', function(
   window.location.href = 'order-creation.html'; // Redirect to the order creation page
 });
 
+// Toggle visibility of order details
+function toggleOrderDetails(orderId) {
+  const details = document.getElementById(`orderDetails-${orderId}`);
+  if (details.style.display === 'none' || details.style.display === '') {
+    details.style.display = 'block'; // Show details
+  } else {
+    details.style.display = 'none'; // Hide details
+  }
+}
+
 // Load orders and calculate total amount when page is ready
 window.onload = function() {
-  loadOrders();
+  loadOrders(); // Initially load today's orders
 };
-
