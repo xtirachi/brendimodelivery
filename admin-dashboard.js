@@ -98,3 +98,4 @@ document.getElementById('createOrderButton').addEventListener('click', function(
 window.onload = function() {
   loadOrders();
 };
+
