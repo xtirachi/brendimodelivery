@@ -114,7 +114,7 @@ function loadOrdersByDate(date) {
 function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbwDqZUl8DetryIqA5tmQteVPTBZj_k8cYjVh18qHQfwU4zVw9wtlv_vMSjM1CpkmRh9/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
@@ -146,7 +146,7 @@ function changeStatus(orderId, orderDate) {
 function changePaymentMethod(orderId) {
   const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbwDqZUl8DetryIqA5tmQteVPTBZj_k8cYjVh18qHQfwU4zVw9wtlv_vMSjM1CpkmRh9/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updatePaymentMethod',
