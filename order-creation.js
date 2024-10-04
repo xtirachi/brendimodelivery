@@ -8,9 +8,10 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   const specialInstructions = document.getElementById('specialInstructions').value;
   const orderDate = document.getElementById('orderDate').value;
   const productSalesPrice = parseFloat(document.getElementById('productSalesPrice').value);
+  const paymentMethod = document.getElementById('paymentMethod').value;
 
   // Send the data to Google Apps Script to create the order
-  fetch('https://script.google.com/macros/s/AKfycbzqjSSQ-BDRTLY9rkdSwyQ6ZWR9-iTTvWcERyTDF0gNFrJ6d6JJ79wVYasgNlJAsJsJ/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'createOrder',
@@ -20,7 +21,8 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
       orderDetails: orderDetails,
       specialInstructions: specialInstructions,
       orderDate: orderDate,
-      productSalesPrice: productSalesPrice
+      productSalesPrice: productSalesPrice,
+      paymentMethod: paymentMethod
     })
   })
   .then(response => response.json())
