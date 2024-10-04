@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Creation</title>
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h2>Yeni Sifariş Yarat</h2>
+    <form id="orderForm">
+      <div class="mb-3">
+        <label for="customerName" class="form-label">Müştəri Adı</label>
+        <input type="text" class="form-control" id="customerName" required>
+      </div>
+      <div class="mb-3">
+        <label for="contactInfo" class="form-label">Əlaqə Məlumatı (Telefon)</label>
+        <input type="text" class="form-control" id="contactInfo" required>
+      </div>
+      <div class="mb-3">
+        <label for="deliveryAddress" class="form-label">Çatdırılma Ünvanı</label>
+        <input type="text" class="form-control" id="deliveryAddress" required>
+      </div>
+      <div class="mb-3">
+        <label for="orderDetails" class="form-label">Sifariş Təfərrüatları (Məhsullar, Miqdar)</label>
+        <textarea class="form-control" id="orderDetails" rows="3" required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="specialInstructions" class="form-label">Xüsusi Təlimatlar</label>
+        <textarea class="form-control" id="specialInstructions" rows="2"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Sifariş Yarat</button>
+    </form>
+    <div id="orderSuccess" class="text-success mt-3" style="display: none;">Sifariş müvəffəqiyyətlə yaradıldı!</div>
+    <div id="orderError" class="text-danger mt-3" style="display: none;">Sifariş yaratmaqda problem oldu.</div>
+  </div>
+
+  <script src="order-creation.js"></script>
+</body>
+</html>
