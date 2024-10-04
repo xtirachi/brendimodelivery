@@ -124,15 +124,19 @@ h2 {
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.order-info {
-  margin-bottom: 15px;
+  cursor: pointer;
 }
 
 .order-info h3 {
   margin: 0;
   color: #007bff;
+}
+
+.order-details {
+  display: none;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  margin-top: 10px;
 }
 
 .order-actions {
@@ -150,4 +154,15 @@ h2 {
 
 .order-actions .btn {
   align-self: flex-start;
+}
+
+/* Animation for sliding up and down */
+.order-details {
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  max-height: 0;
+}
+
+.order-details.show {
+  max-height: 500px; /* Adjust max-height according to the expected content */
 }
