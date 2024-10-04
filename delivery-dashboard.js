@@ -1,5 +1,5 @@
 // Retrieve the logged-in delivery person's username from localStorage
-const username = localStorage.getItem('delivery_username');
+const username = localStorage.getItem('delivery_username').trim(); // Ensure no leading/trailing spaces
 
 // Check if the username exists, if not redirect to login page
 if (!username) {
@@ -22,7 +22,20 @@ function loadOrdersByDate(date, username) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        const orders = data.orders.filter(order => order[7] === username); // Filter orders where Column H matches the delivery person
+        // Add console log for debugging username filtering
+        console.log("Logged-in user:", username);
+        console.log("Orders data:", data.orders);
+
+        // Filter orders where Column H (index 7) matches the logged-in courier's username
+        const orders = data.orders.filter(order => {
+          console.log("Comparing order courier:", order[7], "with username:", username);
+          return order[7].trim() === username; // Trim spaces to ensure matching
+        });
+
+        if (orders.length === 0) {
+          console.log("No matching orders found for:", username);
+        }
+
         let html = '';
         let totalCashOnHand = 0; // To track cash on hand
 
