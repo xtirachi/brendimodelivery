@@ -1,6 +1,6 @@
 // Fetch users with Delivery role from the Users Sheet
 function fetchDeliveryUsers() {
-  return fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec?action=getDeliveryUsers')
+  return fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec?action=getDeliveryUsers')
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -12,10 +12,16 @@ function fetchDeliveryUsers() {
     });
 }
 
-// Load today's orders for the Admin
-function loadOrders() {
+// Load orders for a specific date selected from the date picker
+function loadOrdersByDate() {
+  const selectedDate = document.getElementById('orderDateFilter').value;
+  if (!selectedDate) {
+    loadOrders(); // If no date is selected, load today's orders
+    return;
+  }
+
   fetchDeliveryUsers().then(deliveryUsers => {
-    fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec?action=getTodaysOrders&role=Admin')
+    fetch(`https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec?action=getOrdersByDate&date=${selectedDate}`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
@@ -30,11 +36,12 @@ function loadOrders() {
                   <p><strong>Status:</strong> ${order[6]}</p>
                   <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                   <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
+                  <p><strong>Çatdırıcı:</strong> <span id="courierName-${order[0]}">${order[7] ? order[7] : 'Təyin edilməyib'}</span></p>
                 </div>
                 <div id="orderDetails-${order[0]}" class="order-details">
                   <label for="assign-${order[0]}">Çatdırıcı:</label>
                   <select id="assign-${order[0]}" class="form-control">
-                    ${deliveryUsers.map(user => `<option value="${user.username}">${user.username}</option>`).join('')}
+                    ${deliveryUsers.map(user => `<option value="${user.username}" ${order[7] === user.username ? 'selected' : ''}>${user.username}</option>`).join('')}
                   </select>
 
                   <label for="status-${order[0]}">Sifariş Statusu:</label>
@@ -53,7 +60,7 @@ function loadOrders() {
           });
           document.getElementById('orderList').innerHTML = html;
         } else {
-          document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
+          document.getElementById('orderList').innerHTML = 'Sifariş tapılmadı.';
         }
       });
   });
@@ -64,7 +71,7 @@ function updateOrder(orderId) {
   const assignedTo = document.getElementById(`assign-${orderId}`).value;
   const status = document.getElementById(`status-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'assignOrder',
@@ -76,30 +83,10 @@ function updateOrder(orderId) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
+      document.getElementById(`courierName-${orderId}`).innerText = assignedTo; // Update the courier name in the UI
       loadOrders(); // Reload orders after update
     }
   });
-}
-
-// Toggle visibility of order details
-function toggleOrderDetails(orderId) {
-  const details = document.getElementById(`orderDetails-${orderId}`);
-  if (details.style.display === 'none' || details.style.display === '') {
-    details.style.display = 'block'; // Show details
-  } else {
-    details.style.display = 'none'; // Hide details
-  }
-}
-
-// Calculate total amount of today's orders
-function calculateTotalAmount() {
-  fetch('https://script.google.com/macros/s/AKfycbwk8TfTUx8dPQE0fVQkRJJJF231G0CPyETLuIpQgb2DWQFsJU58vq0G8yNKJOd_pslV/exec?action=calculateTotalAmount&role=Admin')
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        document.getElementById('totalAmount').innerText = `Toplam Məbləğ: ${data.totalAmount} AZN, Çatdırılmış: ${data.totalDelivered} AZN`;
-      }
-    });
 }
 
 // Redirect to order creation page when "Yeni Sifariş Yarat" button is clicked
@@ -110,5 +97,4 @@ document.getElementById('createOrderButton').addEventListener('click', function(
 // Load orders and calculate total amount when page is ready
 window.onload = function() {
   loadOrders();
-  calculateTotalAmount();
 };
