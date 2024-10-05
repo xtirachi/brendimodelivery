@@ -37,12 +37,8 @@ function loadOrdersByDate(date) {
 if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
   // Initialize courier's amount if not set yet
   if (!netCashPerCourier[courier]) {
-    netCashPerCourier[courier] = 0;
+    netCashPerCourier[courier] += orderAmount - 6;
   }
-
-  // Deduct 6 AZN for each delivered order paid with cash
-  netCashPerCourier[courier] += orderAmount - 6;
-}
 
           // Add the order to the HTML
           let cardColor = '';
