@@ -48,7 +48,7 @@ function loadOrdersByDate(date) {
               if (!netCashPerCourier[courier]) {
                 netCashPerCourier[courier] = 0;
               }
-              netCashPerCourier[courier] += orderAmount;
+              netCashPerCourier[courier] += orderAmount - 6;
             }
           }
 
