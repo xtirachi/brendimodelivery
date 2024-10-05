@@ -33,15 +33,21 @@ function loadOrdersByDate(date) {
             totalAmount += orderAmount;
           }
 
-if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
+if (status === 'Delivered') {
   // Initialize courier's amount if not set yet
   if (!netCashPerCourier[courier]) {
     netCashPerCourier[courier] = 0;  // Initialize to 0 if undefined
   }
 
-  // Deduct 6 AZN per "Cash" order and update netCashPerCourier
-  netCashPerCourier[courier] += orderAmount - 6;
+  // Deduct 6 AZN for each delivered order (regardless of payment method)
+  netCashPerCourier[courier] -= 6;
+
+  // Only add the order amount to netCashPerCourier for cash payments
+  if (paymentMethod.toLowerCase() === 'cash') {
+    netCashPerCourier[courier] += orderAmount;
+  }
 }
+
 
           // Add the order to the HTML
           let cardColor = '';
