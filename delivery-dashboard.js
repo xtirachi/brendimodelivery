@@ -102,35 +102,6 @@ function loadOrdersByDate(date) {
     });
 }
 
-function changeStatus(orderId, orderDate) {
-  const status = document.getElementById(`statusSelect-${orderId}`).value;
-
-  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
-    method: 'POST',
-    body: new URLSearchParams({
-      action: 'updateOrderStatus',
-      orderId: orderId,
-      status: status,
-      orderDate: orderDate
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Server response:', data); // Add this line to debug the response
-    if (data.success) {
-      document.getElementById(`status-${orderId}`).innerText = status;
-      const card = document.getElementById(`order-${orderId}`);
-      let newCardColor = status === 'Delivered' ? 'soft-green' : (status === 'Out for Delivery' ? 'soft-yellow' : 'soft-red');
-      card.className = `order-card ${newCardColor}`; // Update card color
-    } else {
-      alert('Failed to update the order status. Please try again.');
-    }
-  })
-  .catch(error => {
-    console.error('Error updating order status:', error);
-    alert('An error occurred while updating the order status. Please check your connection and try again.');
-  });
-}
 
 
 // Toggle visibility of order details
@@ -164,16 +135,17 @@ function updateOrder(orderId) {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.success) {
-      alert('Order updated successfully!');
-      // Optionally reload the orders to reflect the update
-      loadOrdersByDate(document.getElementById('orderDateFilter').value);
+     if (data.success) {
+      document.getElementById(`status-${orderId}`).innerText = status;
+      const card = document.getElementById(`order-${orderId}`);
+      let newCardColor = status === 'Delivered' ? 'soft-green' : (status === 'Out for Delivery' ? 'soft-yellow' : 'soft-red');
+      card.className = `order-card ${newCardColor}`; // Update card color
     } else {
-      alert('Failed to update the order. Please try again.');
+      alert('Failed to update the order status. Please try again.');
     }
   })
   .catch(error => {
-    console.error('Error updating order:', error);
-    alert('An error occurred while updating the order. Please try again.');
+    console.error('Error updating order status:', error);
+    alert('An error occurred while updating the order status. Please check your connection and try again.');
   });
 }
