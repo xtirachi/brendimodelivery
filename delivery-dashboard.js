@@ -60,9 +60,6 @@ function loadOrdersByDate(date) {
             deliveredOrdersCount++;
           }
 
-          // Calculate the amount to be returned (total cash - courier salary)
-          const returnAmount = totalCashOnHand - (deliveredOrdersCount * 6);
-
           // Hide the sales price if payment is via Card
           const salesPrice = order[9] === 'Card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
 
@@ -97,9 +94,11 @@ function loadOrdersByDate(date) {
             </div>
           `;
         });
+
         // Display the amount to be returned after deduction
+        const returnAmount = totalCashOnHand - (deliveredOrdersCount * 6);
         document.getElementById('orderList').innerHTML = html;
-        document.getElementById('returnAmount').innerText = `Qaytarılacaq məbləğ: ${totalCashOnHand - (deliveredOrdersCount * 6)} AZN`; // Display the return amount
+        document.getElementById('returnAmount').innerText = `Qaytarılacaq məbləğ: ${returnAmount.toFixed(2)} AZN`; // Display the return amount
       } else {
         document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
       }
@@ -124,7 +123,7 @@ function changeStatus(orderId, orderDate) {
     if (data.success) {
       // Update the status text in the card
       document.getElementById(`status-${orderId}`).innerText = status;
-      loadOrdersByDate(document.getElementById('orderDateFilter').value);
+
       // Change the card color based on the new status
       const orderCard = document.getElementById(`order-${orderId}`);
       if (status === 'Delivered') {
@@ -134,6 +133,26 @@ function changeStatus(orderId, orderDate) {
         orderCard.classList.remove('soft-green', 'soft-red');
         orderCard.classList.add('soft-yellow');
       }
+    }
+  });
+}
+
+// Change the payment method (but disabled for delivery personnel to update)
+function changePaymentMethod(orderId) {
+  const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
+
+  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'updatePaymentMethod',
+      orderId: orderId,
+      paymentMethod: paymentMethod
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      loadOrdersByDate(null); // Reload the orders and recalculate
     }
   });
 }
