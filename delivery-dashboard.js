@@ -130,7 +130,7 @@ function updateOrder(orderId) {
   fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
     method: 'POST',
     body: new URLSearchParams({
-      action: 'updateOrderStatus',
+      action: 'updateOrderStatusAndPayment',
       orderId: orderId,
       status: status
     })
