@@ -91,7 +91,6 @@ if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
               </div>
             </div>
       `;
- });
 
           // Fetch and populate couriers in the select dropdown
           fetchDeliveryUsers(order[0]);
