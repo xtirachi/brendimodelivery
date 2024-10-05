@@ -86,7 +86,7 @@ function loadOrdersByDate(date) {
                   <option value="Canceled" ${order[6] === 'Canceled' ? 'selected' : ''}>Ləğv edildi</option>
                 </select>
 
-                <button class="btn btn-primary" onclick="changeStatus(${order[0]})">Yenilə</button>
+                <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
             </div>
           `;
@@ -148,3 +148,32 @@ document.getElementById('orderDateFilter').addEventListener('change', function()
   const selectedDate = this.value;
   loadOrdersByDate(selectedDate); // Reload orders when the date is changed, the username is fetched inside
 });
+
+function updateOrder(orderId) {
+  // Get the updated status from the dropdown
+  const status = document.getElementById(`statusSelect-${orderId}`).value;
+
+  // Send a request to update the order status
+  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'updateOrderStatus',
+      orderId: orderId,
+      status: status
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('Order updated successfully!');
+      // Optionally reload the orders to reflect the update
+      loadOrdersByDate(document.getElementById('orderDateFilter').value);
+    } else {
+      alert('Failed to update the order. Please try again.');
+    }
+  })
+  .catch(error => {
+    console.error('Error updating order:', error);
+    alert('An error occurred while updating the order. Please try again.');
+  });
+}
