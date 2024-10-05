@@ -106,14 +106,13 @@ function loadOrdersByDate(date) {
     });
 }
 
-// Update the order status and ensure no other fields (like the date) are cleared
 function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
   fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
     method: 'POST',
     body: new URLSearchParams({
-      action: 'updateOrderStatusAndPayment',
+      action: 'updateOrderStatus',
       orderId: orderId,
       status: status,
       orderDate: orderDate
@@ -125,8 +124,19 @@ function changeStatus(orderId, orderDate) {
       // Update the status text in the card
       document.getElementById(`status-${orderId}`).innerText = status;
 
-      // Reload the orders to refresh payment method and card color
-      loadOrdersByDate(document.getElementById('orderDateFilter').value);
+      // Dynamically update the card color based on the new status
+      const card = document.getElementById(`order-${orderId}`);
+      let newCardColor = '';
+
+      if (status === 'Delivered') {
+        newCardColor = 'soft-green';
+      } else if (status === 'Out for Delivery') {
+        newCardColor = 'soft-yellow';
+      } else if (status === 'Canceled') {
+        newCardColor = 'soft-red';
+      }
+
+      card.className = `order-card ${newCardColor}`; // Update the card's class to change the color
     }
   });
 }
