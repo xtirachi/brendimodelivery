@@ -76,7 +76,7 @@ function loadOrdersByDate(date) {
                 <p><strong>Qiymət:</strong> ${salesPrice}</p>
                 <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>
                 <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
-                <p><strong>Ödəniş Metodu:</strong> payment-${order[0]}</p>
+                <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
               </div>
               <div id="orderDetails-${order[0]}" class="order-details">
                 <label for="status-${order[0]}">Sifariş Statusu:</label>
