@@ -63,7 +63,7 @@ function loadOrdersByDate(date) {
           // Hide the sales price if payment is via Card
           const salesPrice = order[9] === 'Card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
 
-          // Build the order card with all necessary details
+          // Build the order card with all necessary details, including correct payment method fetching
           html += `
             <div class="order-card ${cardColor}" id="order-${order[0]}">
               <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
@@ -121,27 +121,11 @@ function changeStatus(orderId, orderDate) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      loadOrdersByDate(document.getElementById('orderDateFilter').value); // Refresh after updating status
-    }
-  });
-}
+      // Update the status text in the card
+      document.getElementById(`status-${orderId}`).innerText = status;
 
-// Change the payment method (but disabled for delivery personnel to update)
-function changePaymentMethod(orderId) {
-  const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
-
-  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
-    method: 'POST',
-    body: new URLSearchParams({
-      action: 'updatePaymentMethod',
-      orderId: orderId,
-      paymentMethod: paymentMethod
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      loadOrdersByDate(document.getElementById('orderDateFilter').value); // Refresh after updating payment method
+      // Reload the orders to refresh payment method and card color
+      loadOrdersByDate(document.getElementById('orderDateFilter').value);
     }
   });
 }
