@@ -149,4 +149,5 @@ function updateOrder(orderId) {
     } else {
       alert('Failed to update the order status. Please try again.');
     }
-  })
+  });
+}
