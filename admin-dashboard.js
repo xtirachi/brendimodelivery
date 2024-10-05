@@ -81,6 +81,14 @@ if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
                   <option value="">Çatdırıcı seçin</option>
                 </select>
 
+<!-- Payment Method Change for Everyone -->
+      <label for="payment-${order[0]}">Ödəniş Metodu:</label>
+      <select id="paymentSelect-${order[0]}" class="form-control" onchange="updatePaymentMethod(${order[0]})">
+        <option value="Cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
+        <option value="Card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
+      </select>
+
+
                 <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
             </div>
@@ -180,7 +188,7 @@ function fetchDeliveryUsers(orderId) {
 function changePaymentMethod(orderId) {
   const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyG396i6udTIRAXgCkdSPj0ovSXvPhWb_G1w2CJYbajPAglSlRhwNOHFffwueG2cB-u/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updatePaymentMethod',
