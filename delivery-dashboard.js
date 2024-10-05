@@ -55,14 +55,14 @@ function loadOrdersByDate(date) {
           }
 
           // Calculate cash on hand (exclude orders paid via Card)
-          if (order[9] === 'Cash' && order[6] === 'Delivered') {
+          if (order[9] === 'cash' && order[6] === 'Delivered') {
             const orderAmount = parseFloat(order[10]) || 0;
             totalCashOnHand += orderAmount;
             deliveredOrdersCount++;
           }
 
           // Hide the sales price if payment is via Card
-          const salesPrice = order[9] === 'Card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
+          const salesPrice = order[9] === 'card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
 
           // Build the order card with all necessary details, including correct payment method fetching
           html += `
