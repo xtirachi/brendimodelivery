@@ -13,18 +13,17 @@
     <!-- Date selector to filter orders by date -->
     <label for="orderDateFilter">Sifariş Tarixi:</label>
     <input type="date" id="orderDateFilter" class="form-control">
-     <!-- Button to show orders for the selected date -->
+    
+    <!-- Button to show orders for the selected date -->
     <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
 
     <!-- Section to display orders -->
     <div id="orderList" class="mt-3"></div>
 
-    <!-- Total Cash Delivered and Net Cash after deduction -->
-    <div id="totalDelivered" class="mt-3"></div>
-    <div id="netCashOnHand" class="mt-3"></div>
+    <!-- Amount that the delivery person has to return after deduction -->
+    <div id="returnAmount" class="mt-3"></div>
   </div>
 
-  
   <script src="delivery-dashboard.js"></script>
 </body>
 </html>
