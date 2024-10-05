@@ -122,31 +122,36 @@ document.getElementById('orderDateFilter').addEventListener('change', function()
 });
 
 function updateOrder(orderId) {
-  // Get the updated status from the dropdown
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
-  // Send a request to update the order status
+  console.log('Updating order:', orderId, 'with status:', status); // Log order and status
+
+  // Send the updated status to the server using fetch
   fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
     method: 'POST',
     body: new URLSearchParams({
-      action: 'updateOrderStatusAndPayment',
+      action: 'updateOrderStatus',
       orderId: orderId,
       status: status
     })
   })
-  .then(response => response.json())
+  .then(response => {
+    // Check if response is OK
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+  })
   .then(data => {
-     if (data.success) {
-      document.getElementById(`status-${orderId}`).innerText = status;
-      const card = document.getElementById(`order-${orderId}`);
-      let newCardColor = status === 'Delivered' ? 'soft-green' : (status === 'Out for Delivery' ? 'soft-yellow' : 'soft-red');
-      card.className = `order-card ${newCardColor}`; // Update card color
+    console.log('Server response:', data); // Log server response
+    if (data.success) {
+      alert('Order status updated successfully!');
     } else {
       alert('Failed to update the order status. Please try again.');
     }
   })
   .catch(error => {
-    console.error('Error updating order status:', error);
+    console.error('Error updating order:', error); // Log the error
     alert('An error occurred while updating the order status. Please check your connection and try again.');
   });
 }
