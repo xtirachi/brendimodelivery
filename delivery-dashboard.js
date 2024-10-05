@@ -124,7 +124,7 @@ function changeStatus(orderId, orderDate) {
     if (data.success) {
       // Update the status text in the card
       document.getElementById(`status-${orderId}`).innerText = status;
-
+      loadOrdersByDate(document.getElementById('orderDateFilter').value);
       // Change the card color based on the new status
       const orderCard = document.getElementById(`order-${orderId}`);
       if (status === 'Delivered') {
