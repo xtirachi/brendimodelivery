@@ -86,7 +86,7 @@ function loadOrdersByDate(date) {
                   <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
                 </select>
 
-                <button class="btn btn-primary" onclick="updateOrder(${order[6]})">Yenilə</button>
+                <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
             </div>
           `;
