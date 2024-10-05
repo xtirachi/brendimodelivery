@@ -18,7 +18,6 @@ function checkLoginStatus() {
   return username;
 }
 
-
 // Set today's date as default in the date picker and load today's orders automatically
 window.onload = function() {
   const today = new Date().toISOString().split('T')[0];
@@ -37,16 +36,12 @@ function loadOrdersByDate(date) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        console.log("Logged-in user:", username); // Debugging
-        console.log("Orders data:", data.orders);
-
-        // Filter orders where Column H (index 7) matches the logged-in courier's username
         const orders = data.orders.filter(order => order[7].trim() === username);
 
         let html = '';
-        let totalCashOnHand = 0; // To track total cash amount
-        let netCashOnHand = 0;   // To track net cash amount (after deducting 6 AZN per delivered order)
-        let deliveredOrdersCount = 0; // Track how many orders were delivered with cash
+        let totalCashOnHand = 0; // To track cash for "Cash" orders
+        let totalReturnAmount = 0; // To calculate the amount to return (cash orders - courier salary)
+        let deliveredOrdersCount = 0;
 
         orders.forEach(order => {
           let cardColor = '';
@@ -59,24 +54,30 @@ function loadOrdersByDate(date) {
           }
 
           // Calculate cash on hand (exclude orders paid via Card)
-          if (order[9] === 'Cash' && order[6] === 'Delivered') {  // Assuming Column J (index 9) holds payment method
-            const orderAmount = parseFloat(order[10]) || 0; // Assuming Column K (index 10) holds order amount
-            totalCashOnHand += orderAmount; // Add to total cash
-            deliveredOrdersCount++; // Increment the delivered cash order count
+          if (order[9] === 'Cash' && order[6] === 'Delivered') {
+            const orderAmount = parseFloat(order[10]) || 0;
+            totalCashOnHand += orderAmount;
+            deliveredOrdersCount++;
           }
 
-          // Build the order card with additional information
+          // Calculate the amount to be returned (total cash - courier salary)
+          const returnAmount = totalCashOnHand - (deliveredOrdersCount * 6);
+
+          // Hide the sales price if payment is via Card
+          const salesPrice = order[9] === 'Card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
+
+          // Build the order card with all necessary details
           html += `
             <div class="order-card ${cardColor}" id="order-${order[0]}">
               <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
                 <h3>Sifariş ID: ${order[0]}</h3>
                 <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
-                <p><strong>Telefon:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>  <!-- Column C for Phone Number -->
+                <p><strong>Telefon:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
                 <p><strong>Status:</strong> <span id="status-${order[0]}">${order[6]}</span></p>
                 <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
-                <p><strong>Qiymət:</strong> ${order[10]} AZN</p>
-                <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>  <!-- Column E for Order Details -->
-                <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>  <!-- Column F for Special Instructions -->
+                <p><strong>Qiymət:</strong> ${salesPrice}</p>
+                <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>
+                <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
               </div>
               <div id="orderDetails-${order[0]}" class="order-details">
                 <label for="status-${order[0]}">Sifariş Statusu:</label>
@@ -86,7 +87,7 @@ function loadOrdersByDate(date) {
                 </select>
 
                 <label for="payment-${order[0]}">Ödəniş Metodu:</label>
-                <select id="paymentSelect-${order[0]}" class="form-control" onchange="changePaymentMethod(${order[0]})">
+                <select id="paymentSelect-${order[0]}" class="form-control" disabled>
                   <option value="Cash" ${order[9] === 'Cash' ? 'selected' : ''}>Nağd</option>
                   <option value="Card" ${order[9] === 'Card' ? 'selected' : ''}>Karta</option>
                 </select>
@@ -95,15 +96,12 @@ function loadOrdersByDate(date) {
               </div>
             </div>
           `;
+
         });
 
-        // Calculate Net Nağd Məbləğ: Deduct 6 AZN per delivered order
-        netCashOnHand = totalCashOnHand - (deliveredOrdersCount * 6);
-
-        // Display the total and net cash amounts
+        // Display the amount to be returned after deduction
         document.getElementById('orderList').innerHTML = html;
-        document.getElementById('totalDelivered').innerText = `Nağd Məbləğ: ${totalCashOnHand.toFixed(2)} AZN`;
-        document.getElementById('netCashOnHand').innerText = `Net Nağd Məbləğ: ${netCashOnHand.toFixed(2)} AZN`; // Display net cash on hand
+        document.getElementById('returnAmount').innerText = `Qaytarılacaq məbləğ: ${totalCashOnHand - (deliveredOrdersCount * 6)} AZN`; // Display the return amount
       } else {
         document.getElementById('orderList').innerHTML = 'Bugünkü sifarişlər tapılmadı.';
       }
@@ -142,28 +140,6 @@ function changeStatus(orderId, orderDate) {
   });
 }
 
-// Change the payment method and recalculate the total cash on hand
-function changePaymentMethod(orderId) {
-  const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
-
-  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
-    method: 'POST',
-    body: new URLSearchParams({
-      action: 'updatePaymentMethod',
-      orderId: orderId,
-      paymentMethod: paymentMethod,
-      orderDate: orderDate
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      // Recalculate the cash on hand based on the new payment method
-      loadOrdersByDate(null); // Reload the orders and recalculate
-    }
-  });
-}
-
 // Toggle visibility of order details
 function toggleOrderDetails(orderId) {
   const details = document.getElementById(`orderDetails-${orderId}`);
@@ -179,4 +155,3 @@ document.getElementById('orderDateFilter').addEventListener('change', function()
   const selectedDate = this.value;
   loadOrdersByDate(selectedDate); // Reload orders when the date is changed, the username is fetched inside
 });
-
