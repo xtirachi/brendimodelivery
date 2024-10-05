@@ -121,18 +121,7 @@ function changeStatus(orderId, orderDate) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      // Update the status text in the card
-      document.getElementById(`status-${orderId}`).innerText = status;
-
-      // Change the card color based on the new status
-      const orderCard = document.getElementById(`order-${orderId}`);
-      if (status === 'Delivered') {
-        orderCard.classList.remove('soft-yellow', 'soft-red');
-        orderCard.classList.add('soft-green');
-      } else if (status === 'Out for Delivery') {
-        orderCard.classList.remove('soft-green', 'soft-red');
-        orderCard.classList.add('soft-yellow');
-      }
+      loadOrdersByDate(document.getElementById('orderDateFilter').value); // Refresh after updating status
     }
   });
 }
@@ -152,7 +141,7 @@ function changePaymentMethod(orderId) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      loadOrdersByDate(null); // Reload the orders and recalculate
+      loadOrdersByDate(document.getElementById('orderDateFilter').value); // Refresh after updating payment method
     }
   });
 }
