@@ -11,7 +11,7 @@ window.onload = function() {
 function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
 
-  fetch(`https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec?action=getOrdersByDate&date=${selectedDate}`)
+  fetch(`https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec?action=getOrdersByDate&date=${selectedDate}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -118,7 +118,7 @@ function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
   // Fetch the original order date and include it in the request
-  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
@@ -150,7 +150,7 @@ function changeStatus(orderId, orderDate) {
 function assignCourier(orderId) {
   const courier = document.getElementById(`courierSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'assignOrder',
@@ -169,7 +169,7 @@ function assignCourier(orderId) {
 
 // Fetch delivery users to populate courier dropdowns
 function fetchDeliveryUsers(orderId) {
-  fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec?action=getDeliveryUsers')
+  fetch('https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec?action=getDeliveryUsers')
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -188,7 +188,7 @@ function fetchDeliveryUsers(orderId) {
 function changePaymentMethod(orderId) {
   const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
 
-  fetch('https://script.google.com/macros/s/AKfycbyG396i6udTIRAXgCkdSPj0ovSXvPhWb_G1w2CJYbajPAglSlRhwNOHFffwueG2cB-u/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updatePaymentMethod',
