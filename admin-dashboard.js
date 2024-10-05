@@ -88,11 +88,10 @@ if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
         <option value="Card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
       </select>
 
-
-                <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
             </div>
-      
+      `;
+ });
 
           // Fetch and populate couriers in the select dropdown
           fetchDeliveryUsers(order[0]);
