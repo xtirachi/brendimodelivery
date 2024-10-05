@@ -42,6 +42,7 @@ function loadOrdersByDate(date) {
         let totalCashOnHand = 0; // To track cash for "Cash" orders
         let totalReturnAmount = 0; // To calculate the amount to return (cash orders - courier salary)
         let deliveredOrdersCount = 0;
+        let canceledOrdersCount = 0;
 
         orders.forEach(order => {
           let cardColor = '';
@@ -96,7 +97,7 @@ function loadOrdersByDate(date) {
         });
 
         // Display the amount to be returned after deduction
-        const returnAmount = totalCashOnHand - (deliveredOrdersCount * 6);
+        const returnAmount = totalCashOnHand - ((canceledOrdersCount + deliveredOrdersCount) * 6);
         document.getElementById('orderList').innerHTML = html;
         document.getElementById('returnAmount').innerText = `Qaytarılacaq məbləğ: ${returnAmount.toFixed(2)} AZN`; // Display the return amount
       } else {
