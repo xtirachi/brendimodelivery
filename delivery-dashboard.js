@@ -32,7 +32,7 @@ function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
   const username = getUsername(); // Always get the username from localStorage to ensure it's not lost
 
-  fetch(`https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
+  fetch(`https://script.google.com/macros/s/AKfycbzFkFkHIwX8ndh6epO1S3DtmbqFXUFntP6l0jQJ4OZ0515yp0Yj55aARMYN1T7lgb4w/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -127,7 +127,7 @@ function updateOrder(orderId) {
   console.log('Updating order:', orderId, 'with status:', status); // Log order and status
 
   // Send the updated status to the server using fetch
-  fetch('https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbzFkFkHIwX8ndh6epO1S3DtmbqFXUFntP6l0jQJ4OZ0515yp0Yj55aARMYN1T7lgb4w/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
