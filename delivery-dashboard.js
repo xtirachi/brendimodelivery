@@ -127,7 +127,7 @@ function updateOrder(orderId) {
   console.log('Updating order:', orderId, 'with status:', status); // Log order and status
 
   // Send the updated status to the server using fetch
-  fetch('https://script.google.com/macros/s/AKfycbyLrCHm1hSCfy9F2f0HTY9C564WvRhbwkGPbEkAImLXcbPjG2BKoT6UslIE3FTOVL2w/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbwPMLMrH3Kv-S5K_8GMc5qt_0Bcx9yLUETMJunTK8CFHsLLIKPegROcuvsEubkFI_of/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
