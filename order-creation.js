@@ -9,6 +9,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   const orderDate = document.getElementById('orderDate').value;
   const productSalesPrice = parseFloat(document.getElementById('productSalesPrice').value);
   const paymentMethod = document.getElementById('paymentMethod').value;
+  const salesSource = document.getElementById('salesSource').value; // New Sales Source Field
 
   // Send the data to Google Apps Script to create the order
   fetch('https://script.google.com/macros/s/AKfycbzaX_Dhlr3lyVLNFgiUOvwSJwXrWmJKbNsrbo8y8QHPLcqX_Pq67nxC3EmZK8uArGy7/exec', {
@@ -22,7 +23,8 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
       specialInstructions: specialInstructions,
       orderDate: orderDate,
       productSalesPrice: productSalesPrice,
-      paymentMethod: paymentMethod
+      paymentMethod: paymentMethod,
+      salesSource: salesSource // Include the sales source in the submission
     })
   })
   .then(response => response.json())
