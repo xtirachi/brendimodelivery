@@ -86,7 +86,7 @@ function loadOrdersByDate(date) {
                   <option value="Canceled" ${order[6] === 'Canceled' ? 'selected' : ''}>Ləğv edildi</option>
                 </select>
 
-                <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
+                <button class="btn btn-primary" onclick="changeStatus(${order[0]})">Yenilə</button>
               </div>
             </div>
           `;
