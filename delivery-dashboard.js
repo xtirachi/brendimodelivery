@@ -145,7 +145,7 @@ function updateOrder(orderId) {
   .then(data => {
     console.log('Server response:', data); // Log server response
     if (data.success) {
-      alert('Order status updated successfully!');
+      alert('Sifariş Statusu dəyişildi!');
     } else {
       alert('Failed to update the order status. Please try again.');
     }
