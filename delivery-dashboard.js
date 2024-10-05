@@ -79,12 +79,13 @@ function loadOrdersByDate(date) {
                 <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
               </div>
               <div id="orderDetails-${order[0]}" class="order-details">
-                <label for="status-${order[0]}">Sifariş Statusu:</label>
-                <select id="statusSelect-${order[0]}" class="form-control" onchange="updateOrder(${order[0]}, '${order[8]}')">
-                  <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
-                  <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
-                  <option value="Canceled" ${order[6] === 'Canceled' ? 'selected' : ''}>Ləğv edildi</option>
-                </select>
+              <label for="statusSelect-${order[0]}">Sifariş Statusu:</label>
+<select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]}, '${order[8]}')">
+  <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+  <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
+ <option value="Canceled" ${order[6] === 'Canceled' ? 'selected' : ''}>Ləğv edildi</option>
+</select>
+          
 
                 <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
