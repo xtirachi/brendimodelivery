@@ -40,7 +40,6 @@ function loadOrdersByDate(date) {
 
         let html = '';
         let totalCashOnHand = 0; // To track cash for "Cash" orders
-        let totalReturnAmount = 0; // To calculate the amount to return (cash orders - courier salary)
         let deliveredOrdersCount = 0;
         let canceledOrdersCount = 0;
 
@@ -48,22 +47,22 @@ function loadOrdersByDate(date) {
           let cardColor = '';
           if (order[6] === 'Delivered') {
             cardColor = 'soft-green';
+            deliveredOrdersCount++;
           } else if (order[6] === 'Out for Delivery') {
             cardColor = 'soft-yellow';
           } else if (order[6] === 'Canceled') {
             cardColor = 'soft-red';
+            canceledOrdersCount++;
           }
 
-          // Calculate cash on hand (exclude orders paid via Card)
-          if (order[9] === 'Cash' && (order[6] === 'Delivered' || order[6] === 'Canceled')) {
-  const orderAmount = parseFloat(order[10]) || 0;
-  totalCashOnHand += orderAmount;
-  deliveredOrdersCount++; // Increment count for either Delivered or Canceled
-}
-
+          // Calculate cash on hand (only for Cash and Delivered or Canceled orders)
+          if (order[9].toLowerCase() === 'cash' && (order[6] === 'Delivered' || order[6] === 'Canceled')) {
+            const orderAmount = parseFloat(order[10]) || 0;
+            totalCashOnHand += orderAmount;
+          }
 
           // Hide the sales price if payment is via Card
-          const salesPrice = order[9] === 'card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
+          const salesPrice = order[9].toLowerCase() === 'card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
 
           // Build the order card with all necessary details, including correct payment method fetching
           html += `
@@ -84,6 +83,7 @@ function loadOrdersByDate(date) {
                 <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]}, '${order[8]}')">
                   <option value="Out for Delivery" ${order[6] === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
                   <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
+                  <option value="Canceled" ${order[6] === 'Canceled' ? 'selected' : ''}>Ləğv edildi</option>
                 </select>
 
                 <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
@@ -145,8 +145,6 @@ function changeStatus(orderId, orderDate) {
     alert('An error occurred while updating the order status. Please check your connection and try again.');
   });
 }
-
-
 
 // Toggle visibility of order details
 function toggleOrderDetails(orderId) {
