@@ -83,7 +83,7 @@ if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
 
 <!-- Payment Method Change for Everyone -->
       <label for="payment-${order[0]}">Ödəniş Metodu:</label>
-      <select id="paymentSelect-${order[0]}" class="form-control" onchange="updatePaymentMethod(${order[0]})">
+      <select id="paymentSelect-${order[0]}" class="form-control" onchange="changePaymentMethod(${order[0]})">
         <option value="Cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
         <option value="Card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
       </select>
