@@ -26,6 +26,7 @@ function loadOrdersByDate(date) {
           const status = order[6];  // Column G is Status
           const courier = order[7];  // Column H is Assigned Delivery Person
           const paymentMethod = order[9];  // Column J is Payment Method
+          const orderDetails = order[4];  // Assuming Column E contains Order Details (Məhsullar, Miqdar)
 
           // Only count the order in the total amount if it is not canceled
           if (status !== 'Canceled') {
@@ -73,11 +74,14 @@ function loadOrdersByDate(date) {
                 <p><strong>Ödəniş Metodu:</strong> ${paymentMethod}</p>
               </div>
 
-              <!-- Status and Courier Assignment Controls -->
+              <!-- Sifariş Təfərrüatları (Order Details) -->
               <div id="orderDetails-${order[0]}" class="order-details">
+                <label><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong></label>
+                <p>${orderDetails || 'Məlumat yoxdur'}</p>
+
                 <!-- Status Update -->
                 <label for="status-${order[0]}">Sifariş Statusu:</label>
-                <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]})">
+                <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]}, '${order[8]}')">
                   <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
                   <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
                   <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
@@ -145,7 +149,6 @@ function changeStatus(orderId, orderDate) {
     }
   });
 }
-
 
 // Assign courier to the order
 function assignCourier(orderId) {
