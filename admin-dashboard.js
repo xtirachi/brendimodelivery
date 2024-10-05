@@ -33,12 +33,15 @@ function loadOrdersByDate(date) {
             totalAmount += orderAmount;
           }
 
-         // Calculate Net Məbləğ for each courier (salary deduction of 6 AZN per "Cash" order)
 if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
   // Initialize courier's amount if not set yet
   if (!netCashPerCourier[courier]) {
-    netCashPerCourier[courier] += orderAmount - 6;
+    netCashPerCourier[courier] = 0;  // Initialize to 0 if undefined
   }
+
+  // Deduct 6 AZN per "Cash" order and update netCashPerCourier
+  netCashPerCourier[courier] += orderAmount - 6;
+}
 
           // Add the order to the HTML
           let cardColor = '';
