@@ -12,7 +12,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   const salesSource = document.getElementById('salesSource').value; // New Sales Source Field
 
   // Send the data to Google Apps Script to create the order
-  fetch('https://script.google.com/macros/s/AKfycbyvRg0NcjzEhcYEqJqN4WdJibkFND48M9aswxAeiTjAb1l7kfJKk0E4taICWl0Phz7i/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbz3JK5B_A_6nB0VefPNDwLuzLkl2QFmcw0cjg6tJm4zQHXFDQssYE0-QJqD5B48lgcP/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'createOrder',
