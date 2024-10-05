@@ -44,11 +44,11 @@ function loadOrdersByDate(date) {
             netCashPerCourier[courier] += orderAmount - 6;
 
             // Track courier total amounts only for "Cash" orders
-            if (paymentMethod === 'Cash') {
-              if (!courierAmounts[courier]) {
-                courierAmounts[courier] = 0;
+            if (paymentMethod === 'cash') {
+              if (!netCashPerCourier[courier]) {
+                netCashPerCourier[courier] = 0;
               }
-              courierAmounts[courier] += orderAmount;
+              netCashPerCourier[courier] += orderAmount;
             }
           }
 
