@@ -105,7 +105,6 @@ function loadOrdersByDate(date) {
 function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
 
-  // Send a request to update the status on the server
   fetch('https://script.google.com/macros/s/AKfycbwwxAt0VS_ulzjGJyMoQwKui4hwFVmyRG8d9VY0iIQmNf4Q7ypSlesfjJMRWg1ELN4B/exec', {
     method: 'POST',
     body: new URLSearchParams({
@@ -115,36 +114,24 @@ function changeStatus(orderId, orderDate) {
       orderDate: orderDate
     })
   })
-  .then(response => response.json()) // Parse JSON response
+  .then(response => response.json())
   .then(data => {
+    console.log('Server response:', data); // Add this line to debug the response
     if (data.success) {
-      // Only update the UI if the server response confirms success
       document.getElementById(`status-${orderId}`).innerText = status;
-
-      // Dynamically update the card color based on the new status
       const card = document.getElementById(`order-${orderId}`);
-      let newCardColor = '';
-
-      if (status === 'Delivered') {
-        newCardColor = 'soft-green';
-      } else if (status === 'Out for Delivery') {
-        newCardColor = 'soft-yellow';
-      } else if (status === 'Canceled') {
-        newCardColor = 'soft-red';
-      }
-
-      card.className = `order-card ${newCardColor}`; // Update the card's class to change the color
+      let newCardColor = status === 'Delivered' ? 'soft-green' : (status === 'Out for Delivery' ? 'soft-yellow' : 'soft-red');
+      card.className = `order-card ${newCardColor}`; // Update card color
     } else {
-      // Show error message if the update fails
       alert('Failed to update the order status. Please try again.');
     }
   })
   .catch(error => {
-    // Handle any network or other errors here
     console.error('Error updating order status:', error);
     alert('An error occurred while updating the order status. Please check your connection and try again.');
   });
 }
+
 
 // Toggle visibility of order details
 function toggleOrderDetails(orderId) {
