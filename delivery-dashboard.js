@@ -96,9 +96,7 @@ function loadOrdersByDate(date) {
               </div>
             </div>
           `;
-
         });
-
         // Display the amount to be returned after deduction
         document.getElementById('orderList').innerHTML = html;
         document.getElementById('returnAmount').innerText = `Qaytarılacaq məbləğ: ${totalCashOnHand - (deliveredOrdersCount * 6)} AZN`; // Display the return amount
