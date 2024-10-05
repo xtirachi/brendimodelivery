@@ -150,8 +150,3 @@ function updateOrder(orderId) {
       alert('Failed to update the order status. Please try again.');
     }
   })
-  .catch(error => {
-    console.error('Error updating order:', error); // Log the error
-    alert('An error occurred while updating the order status. Please check your connection and try again.');
-  });
-}
