@@ -69,6 +69,7 @@ if (status === 'Delivered') {
                 <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
                 <p><strong>Qiymət:</strong> ${orderAmount} AZN</p>
                 <p><strong>Ödəniş Metodu:</strong> ${paymentMethod}</p>
+                <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
               </div>
 
               <!-- Sifariş Təfərrüatları (Order Details) -->
