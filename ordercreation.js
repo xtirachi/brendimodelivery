@@ -1,9 +1,10 @@
 // Google Apps Script URLs
-const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfopl5vMgZ87ZKMFWsxAdsWlU6CiR8BS5MQ9y3MDBBPebgDkNXECQQw_UnGFddy8Go/exec';  // URL for creating orders
+const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdw2I1koU3nVD-ciG3qWBoNNIKtbnPRmjYYAnqUbg12iUoHbFW8qd5N-TuEtK71Pk7/exec';  // URL for creating orders
 const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec';  // URL for fetching product details
 
 let selectedProducts = [];  // Array to store selected products and their quantities
 let totalSalesPrice = 0;  // Track total sales price
+let isPriceManuallyChanged = false;  // Flag to check if the user manually changed the total price
 
 // Form submission for creating the order
 document.getElementById('orderForm').addEventListener('submit', function(e) {
@@ -22,6 +23,11 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
         return;
     }
 
+    // Get the user-entered total sales price (if manually overridden) or use the calculated price
+    let finalSalesPrice = isPriceManuallyChanged 
+        ? parseFloat(document.getElementById('totalSalesPriceInput').value) 
+        : totalSalesPrice;
+
     // Send the order data to Google Apps Script
     fetch(ORDER_CREATION_SCRIPT_URL, {
         method: 'POST',
@@ -35,7 +41,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
             paymentMethod: paymentMethod,
             salesSource: salesSource,
             products: JSON.stringify(selectedProducts),  // Send selected products as a JSON string
-            totalSalesPrice: totalSalesPrice.toFixed(2)  // Send total sales price
+            totalSalesPrice: finalSalesPrice.toFixed(2)  // Send total sales price (calculated or overridden)
         })
     })
     .then(response => response.json())
@@ -154,6 +160,16 @@ function updateSelectedProductsUI() {
 
 // Function to update the total sales price display
 function updateTotalSalesPriceUI() {
-    const totalSalesPriceDisplay = document.getElementById('totalSalesPrice');
+    const totalSalesPriceDisplay = document.getElementById('totalSalesPriceDisplay');
     totalSalesPriceDisplay.textContent = `Ümumi Satış Qiyməti: ${totalSalesPrice.toFixed(2)} AZN`;
+
+    // Update the total sales price input field (only if it hasn't been manually changed)
+    if (!isPriceManuallyChanged) {
+        document.getElementById('totalSalesPriceInput').value = totalSalesPrice.toFixed(2);
+    }
 }
+
+// Manual sales price adjustment
+document.getElementById('totalSalesPriceInput').addEventListener('input', function() {
+    isPriceManuallyChanged = true;  // User manually changed the total price
+});
