@@ -169,6 +169,7 @@ function updateTotalSalesPriceUI() {
     }
 }
 
+
 // Manual sales price adjustment
 document.getElementById('totalSalesPriceInput').addEventListener('input', function () {
     isPriceManuallyChanged = true;  // User manually changed the total price
