@@ -2,6 +2,9 @@
 const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfopl5vMgZ87ZKMFWsxAdsWlU6CiR8BS5MQ9y3MDBBPebgDkNXECQQw_UnGFddy8Go/exec';  // URL for creating orders
 const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec';  // URL for fetching product details
 
+let selectedProducts = [];  // Array to store selected products and their quantities
+let totalSalesPrice = 0;  // Track total sales price
+
 // Form submission for creating the order
 document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -31,7 +34,8 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
             specialInstructions: specialInstructions,
             paymentMethod: paymentMethod,
             salesSource: salesSource,
-            products: JSON.stringify(selectedProducts)  // Send selected products as a JSON string
+            products: JSON.stringify(selectedProducts),  // Send selected products as a JSON string
+            totalSalesPrice: totalSalesPrice.toFixed(2)  // Send total sales price
         })
     })
     .then(response => response.json())
@@ -40,8 +44,10 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
             document.getElementById('orderSuccess').style.display = 'block';
             document.getElementById('orderError').style.display = 'none';
             document.getElementById('orderForm').reset();
-            selectedProducts.length = 0;  // Clear the selected products array
+            selectedProducts = [];  // Clear the selected products array
+            totalSalesPrice = 0;  // Reset total sales price
             updateSelectedProductsUI();  // Clear the UI
+            updateTotalSalesPriceUI();  // Clear the total sales price display
         } else {
             throw new Error('Server returned an error: ' + data.message);
         }
@@ -79,20 +85,39 @@ document.getElementById('productSearch').addEventListener('input', function() {
         });
 });
 
-// Array to store selected products and their quantities
-const selectedProducts = [];
-
+// Add selected product and calculate total sales price
 document.getElementById('addProductButton').addEventListener('click', function() {
     const productSelect = document.getElementById('productSelect');
     const quantityInput = document.getElementById('quantity');
-
     const selectedProduct = productSelect.value;
     const quantity = parseInt(quantityInput.value);
 
     if (selectedProduct && quantity > 0) {
-        // Add selected product and quantity to the list
-        selectedProducts.push({ productName: selectedProduct, quantity: quantity });
-        updateSelectedProductsUI();
+        // Fetch product details (like sales price) from the backend
+        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(selectedProduct)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const salesPrice = parseFloat(data.product.salesPrice) || 0;
+                    
+                    // Add selected product and quantity to the list
+                    selectedProducts.push({ 
+                        productName: selectedProduct, 
+                        quantity: quantity, 
+                        salesPrice: salesPrice 
+                    });
+
+                    // Update total sales price
+                    totalSalesPrice += salesPrice * quantity;
+                    updateSelectedProductsUI();  // Update the selected products list
+                    updateTotalSalesPriceUI();  // Update the total sales price display
+                } else {
+                    alert('Məhsul tapılmadı.');
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching product details:', err);
+            });
 
         // Reset the product select and quantity input
         productSelect.value = '';
@@ -109,17 +134,26 @@ function updateSelectedProductsUI() {
 
     selectedProducts.forEach((item, index) => {
         const listItem = document.createElement('li');
-        listItem.textContent = `${item.productName} - Miqdar: ${item.quantity}`;
+        listItem.textContent = `${item.productName} - Miqdar: ${item.quantity} - Qiymət: ${(item.salesPrice * item.quantity).toFixed(2)} AZN`;
         
         // Remove button
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Sil';
         removeButton.onclick = function() {
+            // Adjust total sales price when a product is removed
+            totalSalesPrice -= item.salesPrice * item.quantity;
             selectedProducts.splice(index, 1);  // Remove the product from the list
             updateSelectedProductsUI();  // Update the UI
+            updateTotalSalesPriceUI();  // Update the total sales price display
         };
 
         listItem.appendChild(removeButton);
         selectedProductsList.appendChild(listItem);
     });
+}
+
+// Function to update the total sales price display
+function updateTotalSalesPriceUI() {
+    const totalSalesPriceDisplay = document.getElementById('totalSalesPrice');
+    totalSalesPriceDisplay.textContent = `Ümumi Satış Qiyməti: ${totalSalesPrice.toFixed(2)} AZN`;
 }
