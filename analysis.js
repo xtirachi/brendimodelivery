@@ -1,7 +1,8 @@
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqcCnLMB14bO--KadaHxdtN-uoDffJ30hO4AmF5COxk3ZiATsJ4-buouI0TkQZAx8v8A/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzesppAS91x5TG2YyLOEDXnNJr6ttJoCwxNjvj22SFNR4L5n1TSUchimd-7JBDawlPLtg/exec';
 
-function loadSummaryMetrics() {
-  fetch(SCRIPT_URL + '?action=getSummaryMetrics')
+// Load summary metrics and filter by date range
+function loadSummaryMetrics(startDate, endDate) {
+  fetch(`${SCRIPT_URL}?action=getSummaryMetrics&startDate=${startDate}&endDate=${endDate}`)
     .then(response => response.json())
     .then(data => {
       document.getElementById('totalRevenue').querySelector('p').textContent = `${data.totalRevenue.toFixed(2)} AZN`;
@@ -11,8 +12,9 @@ function loadSummaryMetrics() {
     });
 }
 
-function loadSalesBySource() {
-  fetch(SCRIPT_URL + '?action=getSalesBySource')
+// Load sales breakdown by source and filter by date range
+function loadSalesBySource(startDate, endDate) {
+  fetch(`${SCRIPT_URL}?action=getSalesBySource&startDate=${startDate}&endDate=${endDate}`)
     .then(response => response.json())
     .then(data => {
       const ctx = document.getElementById('salesBySourceChart').getContext('2d');
@@ -22,49 +24,35 @@ function loadSalesBySource() {
           labels: Object.keys(data),
           datasets: [{
             data: Object.values(data),
-            backgroundColor: ['#007bff', '#ffc107', '#28a745', '#dc3545', '#6c757d']
+            backgroundColor: ['#007bff', '#ffc107', '#28a745', '#dc3545']
           }]
         }
       });
     });
 }
 
-function loadPaymentMethodBreakdown() {
-  fetch(SCRIPT_URL + '?action=getPaymentMethodBreakdown')
+// Load payment method breakdown and filter by date range
+function loadPaymentMethodBreakdown(startDate, endDate) {
+  fetch(`${SCRIPT_URL}?action=getPaymentMethodBreakdown&startDate=${startDate}&endDate=${endDate}`)
     .then(response => response.json())
     .then(data => {
       const ctx = document.getElementById('paymentMethodChart').getContext('2d');
       new Chart(ctx, {
-        type: 'doughnut',
+        type: 'pie',
         data: {
           labels: ['Nağd', 'Karta'],
           datasets: [{
             data: [data.cash, data.card],
-            backgroundColor: ['#28a745', '#ffc107']
+            backgroundColor: ['#28a745', '#17a2b8']
           }]
         }
       });
     });
 }
 
-function loadTopCustomers() {
-  fetch(SCRIPT_URL + '?action=getTopCustomers')
-    .then(response => response.json())
-    .then(data => {
-      const customerList = document.getElementById('topCustomers');
-      customerList.innerHTML = ''; // Clear existing content
-
-      data.forEach(([name, sales]) => {
-        const listItem = document.createElement('div');
-        listItem.classList.add('customer-item');
-        listItem.textContent = `${name}: ${sales.toFixed(2)} AZN`;
-        customerList.appendChild(listItem);
-      });
-    });
-}
-
-function loadOrderStatusBreakdown() {
-  fetch(SCRIPT_URL + '?action=getOrderStatusBreakdown')
+// Load order status breakdown and filter by date range
+function loadOrderStatusBreakdown(startDate, endDate) {
+  fetch(`${SCRIPT_URL}?action=getOrderStatusBreakdown&startDate=${startDate}&endDate=${endDate}`)
     .then(response => response.json())
     .then(data => {
       const ctx = document.getElementById('orderStatusChart').getContext('2d');
@@ -73,17 +61,17 @@ function loadOrderStatusBreakdown() {
         data: {
           labels: Object.keys(data),
           datasets: [{
-            label: 'Sifarişlər',
             data: Object.values(data),
-            backgroundColor: '#007bff'
+            backgroundColor: ['#007bff', '#ffc107', '#28a745', '#dc3545']
           }]
         }
       });
     });
 }
 
-function loadSalesTrends() {
-  fetch(SCRIPT_URL + '?action=getSalesTrends')
+// Load sales trends over time and filter by date range
+function loadSalesTrends(startDate, endDate) {
+  fetch(`${SCRIPT_URL}?action=getSalesTrends&startDate=${startDate}&endDate=${endDate}`)
     .then(response => response.json())
     .then(data => {
       const ctx = document.getElementById('salesTrendsChart').getContext('2d');
@@ -92,22 +80,14 @@ function loadSalesTrends() {
         data: {
           labels: Object.keys(data),
           datasets: [{
-            label: 'Satışlar (AZN)',
             data: Object.values(data),
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
             borderColor: '#007bff',
-            fill: false
+            fill: true
           }]
         }
       });
     });
 }
 
-// Load all the data on page load
-window.onload = function() {
-  loadSummaryMetrics();
-  loadSalesBySource();
-  loadPaymentMethodBreakdown();
-  loadTopCustomers();
-  loadOrderStatusBreakdown();
-  loadSalesTrends();
-};
+// Fetch and update all charts and metrics based on
