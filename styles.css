@@ -15,14 +15,9 @@ body {
 
 /* Container Styles */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 20px;
 
 /* Headings */
 h2 {
