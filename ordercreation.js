@@ -1,55 +1,46 @@
 // Google Apps Script URL
 const YOUR_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyn5BfUc8omighythziGDM75AoodHNG3JcwcFTxwP8KR6VP3fvaJ1ZZFAfINT4QVSrt/exec';
 
-// Form submission logic
+// Form submission
 document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
-  
+
     const customerName = document.getElementById('customerName').value;
     const contactInfo = document.getElementById('contactInfo').value;
     const deliveryAddress = document.getElementById('deliveryAddress').value;
-    const productSelected = document.getElementById('productSelect').value;
-    const quantity = document.getElementById('quantity').value;
-    const specialInstructions = document.getElementById('specialInstructions').value || '';
+    const specialInstructions = document.getElementById('specialInstructions').value;
     const orderDate = document.getElementById('orderDate').value;
-    const salesPrice = parseFloat(document.getElementById('adjustSalesPrice').value) || parseFloat(document.getElementById('productSalesPrice').value);
     const paymentMethod = document.getElementById('paymentMethod').value;
     const salesSource = document.getElementById('salesSource').value;
 
-    // Ensure a product is selected
-    if (!productSelected) {
-      alert('Zəhmət olmasa məhsul seçin.');
-      return;
+    if (selectedProducts.length === 0) {
+        alert('Zəhmət olmasa ən azı bir məhsul əlavə edin.');
+        return;
     }
 
-    // Send the data to Google Apps Script to create the order
-    fetch('https://script.google.com/macros/s/AKfycbyfSagTapcmcV0y01RaiotWJVYyAhW_573m9EFXCiGBxM0UqGjYKopKRNWEyVeSDzOX/exec', {
+    // Send the data to Google Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbzfopl5vMgZ87ZKMFWsxAdsWlU6CiR8BS5MQ9y3MDBBPebgDkNXECQQw_UnGFddy8Go/exec', {
         method: 'POST',
         body: new URLSearchParams({
             action: 'createOrder',
             customerName: customerName,
             contactInfo: contactInfo,
             deliveryAddress: deliveryAddress,
-            productSelected: productSelected,
-            quantity: quantity,
-            specialInstructions: specialInstructions,
             orderDate: orderDate,
-            salesPrice: salesPrice,
+            specialInstructions: specialInstructions,
             paymentMethod: paymentMethod,
-            salesSource: salesSource
+            salesSource: salesSource,
+            products: JSON.stringify(selectedProducts)  // Send selected products as a JSON string
         })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
         if (data.success) {
             document.getElementById('orderSuccess').style.display = 'block';
             document.getElementById('orderError').style.display = 'none';
             document.getElementById('orderForm').reset();
+            selectedProducts.length = 0;  // Clear the selected products array
+            updateSelectedProductsUI();  // Clear the UI
         } else {
             throw new Error('Server returned an error: ' + data.message);
         }
@@ -84,14 +75,47 @@ document.getElementById('productSearch').addEventListener('input', function() {
         });
 });
 
-// Update sales price when a product is selected
-document.getElementById('productSelect').addEventListener('change', function() {
-    const selectedProduct = this.value;
-    fetch(`https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec?action=getProductDetails&productName=${encodeURIComponent(selectedProduct)}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('productSalesPrice').value = data.product.salesPrice;  // Display sales price
-            }
-        });
+const selectedProducts = [];  // Array to store selected products and their quantities
+
+document.getElementById('addProductButton').addEventListener('click', function() {
+    const productSelect = document.getElementById('productSelect');
+    const quantityInput = document.getElementById('quantity');
+
+    const selectedProduct = productSelect.value;
+    const quantity = parseInt(quantityInput.value);
+
+    if (selectedProduct && quantity > 0) {
+        // Add selected product and quantity to the list
+        selectedProducts.push({ productName: selectedProduct, quantity: quantity });
+        updateSelectedProductsUI();
+
+        // Reset the product select and quantity input
+        productSelect.value = '';
+        quantityInput.value = 1;
+    } else {
+        alert('Zəhmət olmasa məhsul seçin və miqdarı daxil edin.');
+    }
+});
+
+// Function to update the selected products list UI
+function updateSelectedProductsUI() {
+    const selectedProductsList = document.getElementById('selectedProductsList');
+    selectedProductsList.innerHTML = '';  // Clear the list
+
+    selectedProducts.forEach((item, index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${item.productName} - Miqdar: ${item.quantity}`;
+        
+        // Remove button
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Sil';
+        removeButton.onclick = function() {
+            selectedProducts.splice(index, 1);  // Remove the product from the list
+            updateSelectedProductsUI();  // Update the UI
+        };
+
+        listItem.appendChild(removeButton);
+        selectedProductsList.appendChild(listItem);
+    });
+}
 });
