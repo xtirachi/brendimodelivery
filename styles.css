@@ -1,217 +1,212 @@
-/* General Styles for All Pages */
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
 body {
-  font-family: 'Roboto', sans-serif;  /* Modern, sleek font */
-  background-color: #f0f2f5;  /* Softer light grey background for better readability */
-  color: #495057; /* Dark grey text for better contrast */
-}
-
-.container {
-  max-width: 1200px;
-  margin: 50px auto;
-  padding: 0 20px;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 40px;
-  color: #212529;  /* Rich dark grey for headings */
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-/* Table Styling for Orders List */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Adds shadow to the table */
-}
-
-.table th, .table td {
-  padding: 15px 20px;
-  border: 1px solid #dee2e6;
-  text-align: left;
-}
-
-.table th {
-  background-color: #007bff;
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.table td {
-  background-color: #ffffff;
-  font-size: 1rem;
-  color: #343a40;
-}
-
-.table tbody tr:hover {
-  background-color: #f1f3f5;  /* Slight hover effect for table rows */
-}
-
-/* Button Styling */
-.btn {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-.btn-success {
-  background-color: #28a745;
-  border-color: #28a745;
-  color: white;
-}
-
-.btn-success:hover {
-  background-color: #218838;
-  transform: translateY(-2px);
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-  color: white;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-  transform: translateY(-2px);
-}
-
-.btn-warning {
-  background-color: #ffc107;
-  border-color: #ffc107;
-  color: #212529;
-}
-
-.btn-warning:hover {
-  background-color: #e0a800;
-  transform: translateY(-2px);
-}
-
-/* Form and Inputs */
-.form-control {
-  border-radius: 6px;
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ced4da;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.form-control:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 6px rgba(0, 123, 255, 0.25);
-}
-
-/* Custom Table Styling for Order Lists */
-#orderList table {
-  width: 100%;
-  margin-top: 20px;
-}
-
-#orderList table th, #orderList table td {
-  padding: 15px;
-  text-align: center;
-  border: 1px solid #ddd;
-}
-
-#orderList table th {
-  background-color: #007bff;
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-#orderList table td {
-  background-color: #f8f9fa;
-  font-size: 1rem;
-}
-
-#orderList .btn {
-  width: 100%;
-}
-
-/* General Styles for Order Cards */
-.order-card {
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 25px;
-  margin-bottom: 30px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.order-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-}
-
-.order-card h3 {
-  margin-bottom: 15px;
-  color: #212529;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.order-card p {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  color: #495057;
-}
-
-/* Order Card Status Colors */
-.order-card.soft-yellow {
-  background-color: #fff9c4;
-}
-
-.order-card.soft-green {
-  background-color: #c8e6c9;
-}
-
-.order-card.soft-red {
-  background-color: #ffcdd2;
-}
-
-/* Responsive styling for mobile view */
-@media (max-width: 600px) {
-  .order-card {
+    background-color: #f7f8fa;
+    color: #333;
     padding: 20px;
-  }
+    line-height: 1.6;
+    min-height: 100vh;
+}
 
-  h2 {
-    font-size: 2rem;
-  }
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
 
-  .table th, .table td {
-    font-size: 0.9rem;
-  }
+/* Headings */
+h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #3a3a3a;
+    text-align: center;
+}
 
-  .btn {
-    font-size: 0.9rem;
-    padding: 8px 16px;
-  }
+/* Form Styles */
+form {
+    margin: 20px 0;
+}
 
-  .order-card h3 {
-    font-size: 1.2rem;
-  }
+label {
+    font-weight: 500;
+    color: #5a5a5a;
+    display: block;
+    margin-bottom: 8px;
+}
 
-  .order-card p {
-    font-size: 0.9rem;
-  }
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #007bff;
+    background-color: white;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+/* Buttons */
+button {
+    display: inline-block;
+    width: 100%;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 500;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Form Success/Error Messages */
+.text-success {
+    color: #28a745;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.mt-3 {
+    margin-top: 20px;
+}
+
+/* List of Orders and Selected Products */
+#orderList,
+#selectedProductsList {
+    list-style: none;
+    margin: 20px 0;
+    padding: 0;
+}
+
+#orderList li,
+#selectedProductsList li {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#orderList li:hover,
+#selectedProductsList li:hover {
+    background-color: #f1f1f1;
+}
+
+#orderList button,
+#selectedProductsList button {
+    background-color: transparent;
+    color: #007bff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#orderList button:hover,
+#selectedProductsList button:hover {
+    color: #0056b3;
+}
+
+/* Total Sales Price Display */
+#totalSalesPriceDisplay {
+    font-size: 20px;
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    #orderList li,
+    #selectedProductsList li {
+        font-size: 14px;
+    }
+
+    #totalSalesPriceDisplay {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 22px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    #orderList li,
+    #selectedProductsList li {
+        font-size: 12px;
+        padding: 12px;
+    }
+
+    #totalSalesPriceDisplay {
+        font-size: 16px;
+    }
 }
