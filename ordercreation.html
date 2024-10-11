@@ -23,42 +23,37 @@
         <input type="text" class="form-control" id="deliveryAddress" required>
       </div>
 
-      <!-- Product Selection and Search -->
+      <!-- Product Search and Add Section -->
       <div class="mb-3">
         <label for="productSearch" class="form-label">Məhsul Axtar</label>
         <input type="text" class="form-control" id="productSearch" placeholder="Məhsul axtarın...">
       </div>
       <div class="mb-3">
         <label for="productSelect" class="form-label">Məhsul Seçin</label>
-        <select id="productSelect" class="form-control" required>
+        <select id="productSelect" class="form-control">
           <option value="">Məhsul seçin</option>
         </select>
-      </div>
-      <div class="mb-3">
         <label for="quantity" class="form-label">Miqdar</label>
-        <input type="number" class="form-control" id="quantity" min="1" step="1" required>
+        <input type="number" id="quantity" class="form-control" min="1" step="1" value="1">
+        <button type="button" id="addProductButton" class="btn btn-primary mt-2">Məhsul Əlavə Et</button>
       </div>
 
-      <!-- Sales Price Display and Adjustment -->
+      <!-- Display Selected Products and Quantities -->
       <div class="mb-3">
-        <label for="productSalesPrice" class="form-label">Məhsulun Qiyməti (AZN)</label>
-        <input type="number" class="form-control" id="productSalesPrice" min="0" step="0.01" required readonly>
+        <h4>Seçilmiş Məhsullar</h4>
+        <ul id="selectedProductsList"></ul>
       </div>
+
+      <!-- Special Instructions -->
       <div class="mb-3">
-        <label for="adjustSalesPrice" class="form-label">Satış Qiyməti Dəyişdir</label>
-        <input type="number" class="form-control" id="adjustSalesPrice" min="0" step="0.01">
+        <label for="specialInstructions" class="form-label">Xüsusi Təlimatlar</label>
+        <textarea class="form-control" id="specialInstructions" rows="2"></textarea>
       </div>
 
       <!-- Date Picker -->
       <div class="mb-3">
         <label for="orderDate" class="form-label">Sifariş Tarixi</label>
         <input type="date" class="form-control" id="orderDate" required>
-      </div>
-
-      <!-- Special Instructions (Xüsusi Təlimatlar) -->
-      <div class="mb-3">
-        <label for="specialInstructions" class="form-label">Xüsusi Təlimatlar</label>
-        <textarea class="form-control" id="specialInstructions" rows="2"></textarea>
       </div>
 
       <div class="mb-3">
@@ -81,6 +76,7 @@
       
       <button type="submit" class="btn btn-primary">Sifariş Yarat</button>
     </form>
+
     <div id="orderSuccess" class="text-success mt-3" style="display: none;">Sifariş müvəffəqiyyətlə yaradıldı!</div>
     <div id="orderError" class="text-danger mt-3" style="display: none;">Sifariş yaratmaqda problem oldu.</div>
   </div>
