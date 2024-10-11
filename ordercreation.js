@@ -23,7 +23,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     }
 
     // Send the data to Google Apps Script to create the order
-    fetch(YOUR_GOOGLE_APPS_SCRIPT_URL, {
+    fetch('https://script.google.com/macros/s/AKfycby0lzC-YNatKb5gqvY4M5wv7NTI07dpPaaiVsLq3Dm2VkBcJhc-sM3kB9TXjunKmb8D/exec', {
         method: 'POST',
         body: new URLSearchParams({
             action: 'createOrder',
