@@ -1,4 +1,4 @@
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTb7ioPl5ZtJ5BQt6ophZLWPai39bRqb1VZ6uKDesdogh92iRUo8zIYoqW_1e1PEnYfg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqcCnLMB14bO--KadaHxdtN-uoDffJ30hO4AmF5COxk3ZiATsJ4-buouI0TkQZAx8v8A/exec';
 
 function loadSummaryMetrics() {
   fetch(SCRIPT_URL + '?action=getSummaryMetrics')
