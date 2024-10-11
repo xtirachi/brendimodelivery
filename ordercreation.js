@@ -1,7 +1,8 @@
-// Google Apps Script URL
-const YOUR_GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyn5BfUc8omighythziGDM75AoodHNG3JcwcFTxwP8KR6VP3fvaJ1ZZFAfINT4QVSrt/exec';
+// Google Apps Script URLs
+const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfopl5vMgZ87ZKMFWsxAdsWlU6CiR8BS5MQ9y3MDBBPebgDkNXECQQw_UnGFddy8Go/exec';  // URL for creating orders
+const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec';  // URL for fetching product details
 
-// Form submission
+// Form submission for creating the order
 document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -18,8 +19,8 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
         return;
     }
 
-    // Send the data to Google Apps Script
-    fetch('https://script.google.com/macros/s/AKfycbzfopl5vMgZ87ZKMFWsxAdsWlU6CiR8BS5MQ9y3MDBBPebgDkNXECQQw_UnGFddy8Go/exec', {
+    // Send the order data to Google Apps Script
+    fetch(ORDER_CREATION_SCRIPT_URL, {
         method: 'POST',
         body: new URLSearchParams({
             action: 'createOrder',
@@ -61,7 +62,7 @@ orderDateInput.value = tomorrow.toISOString().split('T')[0];  // Set the default
 // Product search and selection logic
 document.getElementById('productSearch').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase();
-    fetch(`https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec?action=getProducts&searchTerm=${encodeURIComponent(searchTerm)}`)
+    fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProducts&searchTerm=${encodeURIComponent(searchTerm)}`)
         .then(response => response.json())
         .then(data => {
             const productSelect = document.getElementById('productSelect');
@@ -72,10 +73,14 @@ document.getElementById('productSearch').addEventListener('input', function() {
                 option.text = product.productName;
                 productSelect.appendChild(option);
             });
+        })
+        .catch(err => {
+            console.error('Error fetching products:', err);
         });
 });
 
-const selectedProducts = [];  // Array to store selected products and their quantities
+// Array to store selected products and their quantities
+const selectedProducts = [];
 
 document.getElementById('addProductButton').addEventListener('click', function() {
     const productSelect = document.getElementById('productSelect');
@@ -116,5 +121,5 @@ function updateSelectedProductsUI() {
 
         listItem.appendChild(removeButton);
         selectedProductsList.appendChild(listItem);
-     });
+    });
 }
