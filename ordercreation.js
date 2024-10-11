@@ -175,65 +175,58 @@ document.getElementById('totalSalesPriceInput').addEventListener('input', functi
     isPriceManuallyChanged = true;  // User manually changed the total price
 });
 
-// Define the ID of the Google Spreadsheet where product data is stored
-const productsSpreadsheetId = '1WAdwhfJxOr9Uu7n9g0EoiO_umC4Rn3vdLpLnPN_kIgY';  // Replace this with your actual Spreadsheet ID
+// Function to update stock after order creation
+function updateStock(orderId) {
+    selectedProducts.forEach(product => {
+        // Fetch product and component details and adjust stock
+        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const productStock = data.product.stock;  // Get current stock
+                    const newStock = productStock - product.quantity;
 
-// Helper function to decrease the quantity of a product in the Products sheet
-function decreaseProductQuantity(productName, quantitySold) {
-    const productsSheet = SpreadsheetApp.openById(productsSpreadsheetId).getSheetByName('Products');  // Replace 'Products' with your actual sheet name if different
-    const data = productsSheet.getDataRange().getValues();
+                    if (newStock < 0) {
+                        throw new Error(`Not enough stock for product: ${product.productName}`);
+                    }
 
-    let productFound = false;
+                    // Update the stock in the Products sheet
+                    updateProductStock(product.productName, newStock);
 
-    for (let i = 1; i < data.length; i++) {
-        if (data[i][0] === productName) {
-            const currentQuantity = parseInt(data[i][3], 10);  // Column D is "Anbar Miqdarı"
-            const newQuantity = currentQuantity - quantitySold;
-
-            if (newQuantity < 0) {
-                throw new Error(`Not enough stock for product: ${productName}`);
-            }
-
-            productsSheet.getRange(i + 1, 4).setValue(newQuantity);  // Update Column D with new quantity
-            productFound = true;
-
-            // Decrease component quantities if applicable
-            const components = getProductComponents(productName);
-            if (components.length > 0) {
-                components.forEach(component => {
-                    decreaseProductQuantity(component.productName, component.quantity * quantitySold);
-                });
-            }
-            break;
-        }
-    }
-
-    if (!productFound) {
-        throw new Error(`Product not found: ${productName}`);
-    }
+                    // If the product is a set, update the stock for its components
+                    if (data.product.components.length > 0) {
+                        data.product.components.forEach(component => {
+                            const componentNewStock = component.stock - (component.quantity * product.quantity);
+                            if (componentNewStock < 0) {
+                                throw new Error(`Not enough stock for component: ${component.productName}`);
+                            }
+                            updateProductStock(component.productName, componentNewStock);
+                        });
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Stock update error:', err);
+            });
+    });
 }
 
-// Helper function to get the components of a product (if any)
-function getProductComponents(productName) {
-    const productsSheet = SpreadsheetApp.openById(productsSpreadsheetId).getSheetByName('Products');  // Replace 'Products' with your actual sheet name
-    const data = productsSheet.getDataRange().getValues();
-
-    for (let i = 1; i < data.length; i++) {
-        if (data[i][0] === productName) {
-            const componentsText = data[i][2];  // Assuming Column C contains components
-            if (componentsText) {
-                return componentsText.split(', ').map(componentDetail => {
-                    const [componentName, componentQuantity] = componentDetail.split(' (Qty: ');
-                    return {
-                        productName: componentName.trim(),
-                        quantity: parseInt(componentQuantity.replace(')', ''), 10)
-                    };
-                });
-            }
-            break;
+// Helper function to update stock for a product
+function updateProductStock(productName, newStock) {
+    fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=updateStock`, {
+        method: 'POST',
+        body: new URLSearchParams({
+            productName: productName,
+            newStock: newStock
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(`Failed to update stock for product: ${productName}`);
         }
-    }
-
-    return [];
+    })
+    .catch(err => {
+        console.error('Error updating product stock:', err);
+    });
 }
-
