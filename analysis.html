@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Analysis Dashboard</title>
+  <link href="analysis.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>Satış Təhlili Dashboardu</h1>
+
+    <!-- Summary Metrics Section -->
+    <div class="kpi-section">
+      <div class="kpi-card" id="totalRevenue">
+        <h2>Cəmi Gəlir</h2>
+        <p>Loading...</p>
+      </div>
+      <div class="kpi-card" id="totalOrders">
+        <h2>Cəmi Sifarişlər</h2>
+        <p>Loading...</p>
+      </div>
+      <div class="kpi-card" id="totalCost">
+        <h2>Cəmi Xərclər</h2>
+        <p>Loading...</p>
+      </div>
+      <div class="kpi-card" id="profit">
+        <h2>Mənfəət</h2>
+        <p>Loading...</p>
+      </div>
+    </div>
+
+    <!-- Sales by Source Section -->
+    <h2>Satış Mənbələrinə Görə Gəlir</h2>
+    <canvas id="salesBySourceChart"></canvas>
+
+    <!-- Payment Method Breakdown -->
+    <h2>Ödəniş Metodlarına Görə Gəlir</h2>
+    <canvas id="paymentMethodChart"></canvas>
+
+    <!-- Top 5 Customers Section -->
+    <h2>Ən Yaxşı Müştərilər</h2>
+    <div id="topCustomers" class="customer-list"></div>
+
+    <!-- Order Status Breakdown Section -->
+    <h2>Sifarişlərin Vəziyyəti</h2>
+    <canvas id="orderStatusChart"></canvas>
+
+    <!-- Sales Trends Over Time -->
+    <h2>Zamanla Satış Trendləri</h2>
+    <canvas id="salesTrendsChart"></canvas>
+  </div>
+
+  <script src="analysis.js"></script>
+</body>
+</html>
