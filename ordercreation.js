@@ -1,5 +1,5 @@
 // Google Apps Script URLs
-const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbOLEhpfDYQItys9HenNvSFihDt6jnL9NrncmY37UHJNGimUDYtW-c0lpUiTvX_gjn/exec';  
+const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHVwhyBXGCg0AYcKiPJqtGEpukyyO7fXgzYF1TGcDTxjk63UE2ZwW1JHZtP3np4duw/exec';  
 const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec';  
 
 let selectedProducts = [];  // Array to store selected products and their quantities
@@ -174,3 +174,66 @@ function updateTotalSalesPriceUI() {
 document.getElementById('totalSalesPriceInput').addEventListener('input', function () {
     isPriceManuallyChanged = true;  // User manually changed the total price
 });
+
+// Define the ID of the Google Spreadsheet where product data is stored
+const productsSpreadsheetId = '1WAdwhfJxOr9Uu7n9g0EoiO_umC4Rn3vdLpLnPN_kIgY';  // Replace this with your actual Spreadsheet ID
+
+// Helper function to decrease the quantity of a product in the Products sheet
+function decreaseProductQuantity(productName, quantitySold) {
+    const productsSheet = SpreadsheetApp.openById(productsSpreadsheetId).getSheetByName('Products');  // Replace 'Products' with your actual sheet name if different
+    const data = productsSheet.getDataRange().getValues();
+
+    let productFound = false;
+
+    for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === productName) {
+            const currentQuantity = parseInt(data[i][3], 10);  // Column D is "Anbar Miqdarı"
+            const newQuantity = currentQuantity - quantitySold;
+
+            if (newQuantity < 0) {
+                throw new Error(`Not enough stock for product: ${productName}`);
+            }
+
+            productsSheet.getRange(i + 1, 4).setValue(newQuantity);  // Update Column D with new quantity
+            productFound = true;
+
+            // Decrease component quantities if applicable
+            const components = getProductComponents(productName);
+            if (components.length > 0) {
+                components.forEach(component => {
+                    decreaseProductQuantity(component.productName, component.quantity * quantitySold);
+                });
+            }
+            break;
+        }
+    }
+
+    if (!productFound) {
+        throw new Error(`Product not found: ${productName}`);
+    }
+}
+
+// Helper function to get the components of a product (if any)
+function getProductComponents(productName) {
+    const productsSheet = SpreadsheetApp.openById(productsSpreadsheetId).getSheetByName('Products');  // Replace 'Products' with your actual sheet name
+    const data = productsSheet.getDataRange().getValues();
+
+    for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === productName) {
+            const componentsText = data[i][2];  // Assuming Column C contains components
+            if (componentsText) {
+                return componentsText.split(', ').map(componentDetail => {
+                    const [componentName, componentQuantity] = componentDetail.split(' (Qty: ');
+                    return {
+                        productName: componentName.trim(),
+                        quantity: parseInt(componentQuantity.replace(')', ''), 10)
+                    };
+                });
+            }
+            break;
+        }
+    }
+
+    return [];
+}
+
