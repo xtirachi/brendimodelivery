@@ -117,5 +117,4 @@ function updateSelectedProductsUI() {
         listItem.appendChild(removeButton);
         selectedProductsList.appendChild(listItem);
     });
-}
 });
