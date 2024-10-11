@@ -70,7 +70,7 @@ orderDateInput.value = tomorrow.toISOString().split('T')[0];  // Set the default
 // Product search and selection logic
 document.getElementById('productSearch').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase();
-    fetch(`${YOUR_GOOGLE_APPS_SCRIPT_URL}?action=getProducts&searchTerm=${encodeURIComponent(searchTerm)}`)
+    fetch(`https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec?action=getProducts&searchTerm=${encodeURIComponent(searchTerm)}`)
         .then(response => response.json())
         .then(data => {
             const productSelect = document.getElementById('productSelect');
@@ -87,7 +87,7 @@ document.getElementById('productSearch').addEventListener('input', function() {
 // Update sales price when a product is selected
 document.getElementById('productSelect').addEventListener('change', function() {
     const selectedProduct = this.value;
-    fetch(`${YOUR_GOOGLE_APPS_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(selectedProduct)}`)
+    fetch(`https://script.google.com/macros/s/AKfycbyNyQvjS0M3_x7vuYVjEgiWisxfPJKaslCmxFD_LIB5-tZGeoH8xxwgC2gFKjbswyAB/exec?action=getProductDetails&productName=${encodeURIComponent(selectedProduct)}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
