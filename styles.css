@@ -1,4 +1,4 @@
-/* General Styles */
+/* General Reset */
 * {
     margin: 0;
     padding: 0;
@@ -10,11 +10,10 @@ body {
     background-color: #f7f8fa;
     color: #333;
     padding: 20px;
-    line-height: 1.6;
     min-height: 100vh;
 }
 
-/* Container */
+/* Container Styles */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -34,11 +33,7 @@ h2 {
     text-align: center;
 }
 
-/* Form Styles */
-form {
-    margin: 20px 0;
-}
-
+/* Form Elements */
 label {
     font-weight: 500;
     color: #5a5a5a;
@@ -49,8 +44,7 @@ label {
 input[type="text"],
 input[type="number"],
 input[type="date"],
-select,
-textarea {
+select {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
@@ -65,8 +59,7 @@ textarea {
 input[type="text"]:focus,
 input[type="number"]:focus,
 input[type="date"]:focus,
-select:focus,
-textarea:focus {
+select:focus {
     border-color: #007bff;
     background-color: white;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
@@ -87,13 +80,107 @@ button {
     cursor: pointer;
     text-align: center;
     transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-/* Form Success/Error Messages */
+/* Admin & Delivery Panel Styling */
+.dashboard-container {
+    padding: 20px;
+    margin-top: 30px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-container h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.dashboard-container p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Order List and Summary */
+.order-summary {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.order-summary h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #3a3a3a;
+    margin-bottom: 10px;
+}
+
+.order-summary ul {
+    list-style: none;
+    padding: 0;
+}
+
+.order-summary ul li {
+    font-size: 16px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+
+.order-summary ul li:last-child {
+    border-bottom: none;
+}
+
+.order-summary ul li .status {
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* Total Amount Section */
+#totalAmount,
+#returnAmount,
+#totalPerCourier {
+    background-color: #f0f8ff;
+    padding: 20px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    color: #007bff;
+    margin-top: 20px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Order List Item */
+#orderList li {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#orderList li:hover {
+    background-color: #f0f8ff;
+}
+
+/* Success/Error Messages */
 .text-success {
     color: #28a745;
 }
@@ -106,56 +193,6 @@ button:hover {
     margin-top: 20px;
 }
 
-/* List of Orders and Selected Products */
-#orderList,
-#selectedProductsList {
-    list-style: none;
-    margin: 20px 0;
-    padding: 0;
-}
-
-#orderList li,
-#selectedProductsList li {
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-    color: #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#orderList li:hover,
-#selectedProductsList li:hover {
-    background-color: #f1f1f1;
-}
-
-#orderList button,
-#selectedProductsList button {
-    background-color: transparent;
-    color: #007bff;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-#orderList button:hover,
-#selectedProductsList button:hover {
-    color: #0056b3;
-}
-
-/* Total Sales Price Display */
-#totalSalesPriceDisplay {
-    font-size: 20px;
-    font-weight: 600;
-    color: #007bff;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
 /* Responsive Styles */
 @media (max-width: 768px) {
     .container {
@@ -166,18 +203,23 @@ button:hover {
         font-size: 24px;
     }
 
+    .dashboard-container {
+        padding: 15px;
+    }
+
     button {
         padding: 12px;
         font-size: 16px;
     }
 
-    #orderList li,
-    #selectedProductsList li {
+    #orderList li {
         font-size: 14px;
     }
 
-    #totalSalesPriceDisplay {
-        font-size: 18px;
+    #totalAmount,
+    #returnAmount,
+    #totalPerCourier {
+        font-size: 16px;
     }
 }
 
@@ -189,8 +231,7 @@ button:hover {
     input[type="text"],
     input[type="number"],
     input[type="date"],
-    select,
-    textarea {
+    select {
         font-size: 14px;
         padding: 10px;
     }
@@ -200,13 +241,14 @@ button:hover {
         padding: 10px;
     }
 
-    #orderList li,
-    #selectedProductsList li {
+    #orderList li {
         font-size: 12px;
         padding: 12px;
     }
 
-    #totalSalesPriceDisplay {
-        font-size: 16px;
+    #totalAmount,
+    #returnAmount,
+    #totalPerCourier {
+        font-size: 14px;
     }
 }
