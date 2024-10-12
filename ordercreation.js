@@ -175,11 +175,21 @@ document.getElementById('totalSalesPriceInput').addEventListener('input', functi
     isPriceManuallyChanged = true;  // User manually changed the total price
 });
 
+// Reset the form and variables after a successful order
+function resetOrderForm() {
+    document.getElementById('orderForm').reset();  // Reset the form fields
+    selectedProducts = [];  // Clear the selected products array
+    totalSalesPrice = 0;  // Reset total sales price
+    isPriceManuallyChanged = false;  // Reset the price change flag
+    updateSelectedProductsUI();  // Clear the selected products list UI
+    updateTotalSalesPriceUI();  // Reset the total sales price UI
+}
+
 // Function to update stock after order creation
 function updateStock(orderId) {
     selectedProducts.forEach(product => {
         // Fetch product and component details and adjust stock
-        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
+        fetch(`https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -213,7 +223,7 @@ function updateStock(orderId) {
 
 // Helper function to update stock for a product
 function updateProductStock(productName, newStock) {
-    fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=updateStock`, {
+    fetch(`https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec?action=updateStock`, {
         method: 'POST',
         body: new URLSearchParams({
             productName: productName,
