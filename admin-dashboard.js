@@ -267,7 +267,7 @@ function deleteOrder(orderId) {
     }
 
     // Send a request to log the deletion in the Google Sheets (set status to 'Deleted')
-    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbxfx5QM1Ibupxq_4TXIdzAi2tlaJhCZe5gWzLm1JIoTIjtUMjpwfKCdKH2oRgqCrKJ8/exec', {
       method: 'POST',
       body: new URLSearchParams({
         action: 'deleteOrder',
