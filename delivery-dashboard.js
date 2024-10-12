@@ -56,7 +56,7 @@ function loadOrdersByDate(date) {
           }
 
           // Calculate cash on hand (only for Cash and Delivered or Canceled orders)
-          if (order[9].toLowerCase() === 'cash' && (order[6] === 'Delivered' || order[6] === 'Canceled')) {
+          if (order[9].toLowerCase() === 'cash' && (order[6] === 'Delivered') {
             const orderAmount = parseFloat(order[10]) || 0;
             totalCashOnHand += orderAmount;
           }
@@ -94,7 +94,7 @@ function loadOrdersByDate(date) {
         });
 
         // Display the amount to be returned after deduction
-        const returnAmount = totalCashOnHand - ((canceledOrdersCount + deliveredOrdersCount) * 6);
+        const returnAmount = totalCashOnHand - (deliveredOrdersCount * 6) - (canceledOrdersCount * 6);
         document.getElementById('orderList').innerHTML = html;
         document.getElementById('returnAmount').innerText = `Qaytarılacaq məbləğ: ${returnAmount.toFixed(2)} AZN`; // Display the return amount
       } else {
