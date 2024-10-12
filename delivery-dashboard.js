@@ -50,6 +50,8 @@ function loadOrdersByDate(date) {
             deliveredOrdersCount++;
           } else if (order[6] === 'Out for Delivery') {
             cardColor = 'soft-yellow';
+          } else if (order[6] === 'Deleted') {
+            cardColor = 'soft-red';
           } else if (order[6] === 'Canceled') {
             cardColor = 'soft-red';
             canceledOrdersCount++;
