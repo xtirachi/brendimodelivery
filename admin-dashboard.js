@@ -104,7 +104,7 @@ if (status === 'Delivered') {
         </select>
 
         <!-- Delete Button -->
-        <button class="btn btn-danger mt-3" onclick="deleteOrder(${order[0]})">Sil</button>
+<button class="btn btn-danger mt-3" onclick="deleteOrder(${order[0]})">Sil</button>
       </div>
     </div>
   </div>
@@ -255,29 +255,36 @@ function updateOrderDetails(orderId) {
 
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
 function deleteOrder(orderId) {
-  // Remove the order container from the UI
-  const orderCard = document.getElementById(`order-${orderId}`);
-  if (orderCard) {
-    orderCard.remove();
-  }
+  // Show a confirmation dialog to the user
+  const isConfirmed = confirm("Sifarişi silmək istədiyinizə əminsiniz?");
 
-  // Send a request to log the deletion in the Google Sheets (set status to 'Deleted')
-  fetch('https://script.google.com/macros/s/AKfycbxfx5QM1Ibupxq_4TXIdzAi2tlaJhCZe5gWzLm1JIoTIjtUMjpwfKCdKH2oRgqCrKJ8/exec', {
-    method: 'POST',
-    body: new URLSearchParams({
-      action: 'deleteOrder',
-      orderId: orderId
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      alert('Sifariş Silindi');
-    } else {
-      alert('Failed to delete order');
+  // If the user confirms, proceed with the deletion
+  if (isConfirmed) {
+    // Remove the order container from the UI
+    const orderCard = document.getElementById(`order-${orderId}`);
+    if (orderCard) {
+      orderCard.remove();
     }
-  })
-  .catch(error => {
-    console.error('Error deleting order:', error);
-  });
+
+    // Send a request to log the deletion in the Google Sheets (set status to 'Deleted')
+    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'deleteOrder',
+        orderId: orderId
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Sifariş uğurla silindi.');
+      } else {
+        alert('Sifarişi silmək alınmadı.');
+      }
+    })
+    .catch(error => {
+      console.error('Sifarişi silmək zamanı xəta baş verdi:', error);
+    });
+  }
 }
+
