@@ -18,6 +18,7 @@ body {
   max-width: 1200px;
   margin: 50px auto;
   padding: 0 20px;
+}
 
 /* Headings */
 h2 {
@@ -82,6 +83,16 @@ button:hover {
     background-color: #0056b3;
 }
 
+/* Delete Button Styling */
+button.btn-danger {
+    background-color: #dc3545;
+    margin-top: 10px;
+}
+
+button.btn-danger:hover {
+    background-color: #c82333;
+}
+
 /* Admin & Delivery Panel Styling */
 .dashboard-container {
     padding: 20px;
@@ -103,6 +114,42 @@ button:hover {
     font-size: 18px;
     color: #555;
     margin-bottom: 10px;
+}
+
+/* Order Card Styling */
+.order-card {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+/* Order Card Colors Based on Status */
+.order-card.soft-green {
+    border-color: #28a745;
+    background-color: #e8f5e9;
+}
+
+.order-card.soft-yellow {
+    border-color: #ffc107;
+    background-color: #fffde7;
+}
+
+.order-card.soft-red {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+/* Success/Error Messages */
+.text-success {
+    color: #28a745;
+}
+
+.text-danger {
+    color: #dc3545;
 }
 
 /* Order List and Summary */
@@ -175,15 +222,7 @@ button:hover {
     background-color: #f0f8ff;
 }
 
-/* Success/Error Messages */
-.text-success {
-    color: #28a745;
-}
-
-.text-danger {
-    color: #dc3545;
-}
-
+/* Spacing Utility */
 .mt-3 {
     margin-top: 20px;
 }
@@ -247,3 +286,4 @@ button:hover {
         font-size: 14px;
     }
 }
+
