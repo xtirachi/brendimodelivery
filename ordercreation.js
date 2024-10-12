@@ -49,11 +49,7 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
         if (data.success) {
             document.getElementById('orderSuccess').style.display = 'block';
             document.getElementById('orderError').style.display = 'none';
-            document.getElementById('orderForm').reset();
-            selectedProducts = [];  // Clear the selected products array
-            totalSalesPrice = 0;  // Reset total sales price
-            updateSelectedProductsUI();  // Clear the UI
-            updateTotalSalesPriceUI();  // Clear the total sales price display
+            resetOrderForm();  // Reset the form after successful order creation
         } else {
             throw new Error('Server returned an error: ' + data.message);
         }
@@ -169,7 +165,6 @@ function updateTotalSalesPriceUI() {
     }
 }
 
-
 // Manual sales price adjustment
 document.getElementById('totalSalesPriceInput').addEventListener('input', function () {
     isPriceManuallyChanged = true;  // User manually changed the total price
@@ -186,10 +181,10 @@ function resetOrderForm() {
 }
 
 // Function to update stock after order creation
-function updateStock(orderId) {
+function updateStock() {
     selectedProducts.forEach(product => {
         // Fetch product and component details and adjust stock
-        fetch(`https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
+        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -223,7 +218,7 @@ function updateStock(orderId) {
 
 // Helper function to update stock for a product
 function updateProductStock(productName, newStock) {
-    fetch(`https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec?action=updateStock`, {
+    fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=updateStock`, {
         method: 'POST',
         body: new URLSearchParams({
             productName: productName,
