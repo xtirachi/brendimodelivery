@@ -78,8 +78,8 @@ if (status === 'Delivered') {
     <!-- Editable Ödəniş Metodu field -->
     <label for="paymentSelect-${order[0]}"><strong>Ödəniş Metodu:</strong></label>
     <select id="paymentSelect-${order[0]}" class="form-control" onchange="updateOrderDetails(${order[0]})">
-      <option value="Cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
-      <option value="Card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
+      <option value="cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
+      <option value="card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
     </select>
 
     <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
