@@ -59,54 +59,57 @@ if (status === 'Delivered') {
             cardColor = 'soft-red';
           }
 
-          html += `
-           <div class="order-card ${cardColor}" id="order-${order[0]}">
-  <div class="order-info">
-    <h3>Sifariş ID: ${order[0]}</h3>
-    <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
-    <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
-    <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
-    
-    <!-- Editable Çatdırılma Ünvanı field -->
-    <label for="deliveryAddress-${order[0]}"><strong>Çatdırılma Ünvanı:</strong></label>
-    <input type="text" id="deliveryAddress-${order[0]}" value="${order[3]}" class="form-control" onchange="updateOrderDetails(${order[0]})">
+         html += `
+  <div class="order-card ${cardColor}" id="order-${order[0]}">
+    <div class="order-info">
+      <h3>Sifariş ID: ${order[0]}</h3>
+      <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
+      <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
+      <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
 
-    <!-- Editable Qiymət field -->
-    <label for="orderPrice-${order[0]}"><strong>Qiymət:</strong></label>
-    <input type="number" id="orderPrice-${order[0]}" value="${orderAmount}" class="form-control" onchange="updateOrderDetails(${order[0]})"> AZN
+      <!-- Editable Çatdırılma Ünvanı field -->
+      <label for="deliveryAddress-${order[0]}"><strong>Çatdırılma Ünvanı:</strong></label>
+      <input type="text" id="deliveryAddress-${order[0]}" value="${order[3]}" class="form-control" onchange="updateOrderDetails(${order[0]})">
 
-    <!-- Editable Ödəniş Metodu field -->
-    <label for="paymentSelect-${order[0]}"><strong>Ödəniş Metodu:</strong></label>
-    <select id="paymentSelect-${order[0]}" class="form-control" onchange="updateOrderDetails(${order[0]})">
-      <option value="cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
-      <option value="card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
-    </select>
+      <!-- Editable Qiymət field -->
+      <label for="orderPrice-${order[0]}"><strong>Qiymət:</strong></label>
+      <input type="number" id="orderPrice-${order[0]}" value="${orderAmount}" class="form-control" onchange="updateOrderDetails(${order[0]})"> AZN
 
-    <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
+      <!-- Editable Ödəniş Metodu field -->
+      <label for="paymentSelect-${order[0]}"><strong>Ödəniş Metodu:</strong></label>
+      <select id="paymentSelect-${order[0]}" class="form-control" onchange="updateOrderDetails(${order[0]})">
+        <option value="cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
+        <option value="card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
+      </select>
 
-              <!-- Sifariş Təfərrüatları (Order Details) -->
-              <div id="orderDetails-${order[0]}" class="order-details">
-                <label><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong></label>
-                <p>${orderDetails || 'Məlumat yoxdur'}</p>
+      <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
 
-                <!-- Status Update -->
-                <label for="status-${order[0]}">Sifariş Statusu:</label>
-                <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]}, '${order[8]}')">
-                  <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
-                  <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
-                  <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
-                </select>
+      <!-- Sifariş Təfərrüatları (Order Details) -->
+      <div id="orderDetails-${order[0]}" class="order-details">
+        <label><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong></label>
+        <p>${orderDetails || 'Məlumat yoxdur'}</p>
 
-                <!-- Courier Assignment -->
-                <label for="courier-${order[0]}">Çatdırıcı Təyinatı:</label>
-                <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
-                  <option value="">Çatdırıcı seçin</option>
-                </select>
-    <button class="btn btn-danger" onclick="deleteOrder(${order[0]})">Sil</button>
+        <!-- Status Update -->
+        <label for="status-${order[0]}">Sifariş Statusu:</label>
+        <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]}, '${order[8]}')">
+          <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+          <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
+          <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
+        </select>
 
-              </div>
-            </div>
-      `;
+        <!-- Courier Assignment -->
+        <label for="courier-${order[0]}">Çatdırıcı Təyinatı:</label>
+        <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
+          <option value="">Çatdırıcı seçin</option>
+        </select>
+
+        <!-- Delete Button -->
+        <button class="btn btn-danger mt-3" onclick="deleteOrder(${order[0]})">Sil</button>
+      </div>
+    </div>
+  </div>
+`;
+
 
           // Fetch and populate couriers in the select dropdown
           fetchDeliveryUsers(order[0]);
