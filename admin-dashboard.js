@@ -55,7 +55,7 @@ if (status === 'Delivered' || status === 'Canceled') {
             cardColor = 'soft-green';
           } else if (status === 'Out for Delivery') {
             cardColor = 'soft-yellow';
-          } else if (status === 'Canceled') {
+          } else if (status === 'Canceled' || status === 'Deleted') {
             cardColor = 'soft-red';
           }
 
