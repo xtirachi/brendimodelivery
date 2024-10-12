@@ -102,6 +102,7 @@ if (status === 'Delivered') {
                 <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
                   <option value="">Çatdırıcı seçin</option>
                 </select>
+    <button class="btn btn-danger" onclick="deleteOrder(${order[0]})">Sil</button>
 
               </div>
             </div>
@@ -226,7 +227,7 @@ function updateOrderDetails(orderId) {
   const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
 
   // Make a POST request to update the order details
-  fetch('https://script.google.com/macros/s/AKfycbxNb21BoF6wD4wY4sD--pLdnECnBb6rims3_AMVzvMSD4H-bxYGTJijXUvljCwvupFP/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbxfx5QM1Ibupxq_4TXIdzAi2tlaJhCZe5gWzLm1JIoTIjtUMjpwfKCdKH2oRgqCrKJ8/exec', {
     method: 'POST',
     body: new URLSearchParams({
       action: 'updateOrderDetails',
@@ -246,5 +247,34 @@ function updateOrderDetails(orderId) {
   })
   .catch(error => {
     console.error('Error updating order:', error);
+  });
+}
+
+// Function to delete an order from the UI and log it as 'Deleted' in the status column
+function deleteOrder(orderId) {
+  // Remove the order container from the UI
+  const orderCard = document.getElementById(`order-${orderId}`);
+  if (orderCard) {
+    orderCard.remove();
+  }
+
+  // Send a request to log the deletion in the Google Sheets (set status to 'Deleted')
+  fetch('https://script.google.com/macros/s/AKfycbxfx5QM1Ibupxq_4TXIdzAi2tlaJhCZe5gWzLm1JIoTIjtUMjpwfKCdKH2oRgqCrKJ8/exec', {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'deleteOrder',
+      orderId: orderId
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('Order deleted successfully');
+    } else {
+      alert('Failed to delete order');
+    }
+  })
+  .catch(error => {
+    console.error('Error deleting order:', error);
   });
 }
