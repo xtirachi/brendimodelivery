@@ -83,9 +83,6 @@ if (status === 'Delivered') {
     </select>
 
     <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
-  </div>
-</div>
-
 
               <!-- Sifariş Təfərrüatları (Order Details) -->
               <div id="orderDetails-${order[0]}" class="order-details">
@@ -105,13 +102,6 @@ if (status === 'Delivered') {
                 <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
                   <option value="">Çatdırıcı seçin</option>
                 </select>
-
-<!-- Payment Method Change for Everyone -->
-      <label for="payment-${order[0]}">Ödəniş Metodu:</label>
-      <select id="paymentSelect-${order[0]}" class="form-control" onchange="changePaymentMethod(${order[0]})">
-        <option value="Cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
-        <option value="Card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
-      </select>
 
               </div>
             </div>
