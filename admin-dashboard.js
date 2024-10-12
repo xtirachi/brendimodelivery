@@ -243,7 +243,7 @@ function updateOrderDetails(orderId) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      alert('Order details updated successfully');
+      alert('Məlumatlar dəyişdirildi');
     } else {
       alert('Failed to update order details');
     }
@@ -272,7 +272,7 @@ function deleteOrder(orderId) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      alert('Order deleted successfully');
+      alert('Sifariş Silindi');
     } else {
       alert('Failed to delete order');
     }
