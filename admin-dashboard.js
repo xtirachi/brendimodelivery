@@ -60,17 +60,32 @@ if (status === 'Delivered') {
           }
 
           html += `
-            <div class="order-card ${cardColor}" id="order-${order[0]}">
-              <div class="order-info">
-                <h3>Sifariş ID: ${order[0]}</h3>
-                <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
-                <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
-                <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
-                <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
-                <p><strong>Qiymət:</strong> ${orderAmount} AZN</p>
-                <p><strong>Ödəniş Metodu:</strong> ${paymentMethod}</p>
-                <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
-              </div>
+           <div class="order-card ${cardColor}" id="order-${order[0]}">
+  <div class="order-info">
+    <h3>Sifariş ID: ${order[0]}</h3>
+    <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
+    <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
+    <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
+    
+    <!-- Editable Çatdırılma Ünvanı field -->
+    <label for="deliveryAddress-${order[0]}"><strong>Çatdırılma Ünvanı:</strong></label>
+    <input type="text" id="deliveryAddress-${order[0]}" value="${order[3]}" class="form-control" onchange="updateOrderDetails(${order[0]})">
+
+    <!-- Editable Qiymət field -->
+    <label for="orderPrice-${order[0]}"><strong>Qiymət:</strong></label>
+    <input type="number" id="orderPrice-${order[0]}" value="${orderAmount}" class="form-control" onchange="updateOrderDetails(${order[0]})"> AZN
+
+    <!-- Editable Ödəniş Metodu field -->
+    <label for="paymentSelect-${order[0]}"><strong>Ödəniş Metodu:</strong></label>
+    <select id="paymentSelect-${order[0]}" class="form-control" onchange="updateOrderDetails(${order[0]})">
+      <option value="Cash" ${paymentMethod.toLowerCase() === 'cash' ? 'selected' : ''}>Nağd</option>
+      <option value="Card" ${paymentMethod.toLowerCase() === 'card' ? 'selected' : ''}>Karta</option>
+    </select>
+
+    <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
+  </div>
+</div>
+
 
               <!-- Sifariş Təfərrüatları (Order Details) -->
               <div id="orderDetails-${order[0]}" class="order-details">
@@ -211,5 +226,35 @@ function changePaymentMethod(orderId) {
       // Recalculate the cash on hand based on the new payment method
       loadOrdersByDate(null); // Reload the orders and recalculate
     }
+  });
+}
+
+// Function to update the delivery address, price, and payment method
+function updateOrderDetails(orderId) {
+  const deliveryAddress = document.getElementById(`deliveryAddress-${orderId}`).value;
+  const orderPrice = document.getElementById(`orderPrice-${orderId}`).value;
+  const paymentMethod = document.getElementById(`paymentSelect-${orderId}`).value;
+
+  // Make a POST request to update the order details
+  fetch('https://script.google.com/macros/s/AKfycbxNb21BoF6wD4wY4sD--pLdnECnBb6rims3_AMVzvMSD4H-bxYGTJijXUvljCwvupFP/exec', {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'updateOrderDetails',
+      orderId: orderId,
+      deliveryAddress: deliveryAddress,
+      orderPrice: orderPrice,
+      paymentMethod: paymentMethod
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('Order details updated successfully');
+    } else {
+      alert('Failed to update order details');
+    }
+  })
+  .catch(error => {
+    console.error('Error updating order:', error);
   });
 }
