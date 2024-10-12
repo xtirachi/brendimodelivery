@@ -1,4 +1,4 @@
-/* General Styles for All Pages */
+/* General Styles for the Admin Dashboard */
 body {
   font-family: 'Roboto', sans-serif;  /* Modern, sleek font */
   background-color: #f0f2f5;  /* Softer light grey background for better readability */
@@ -11,7 +11,7 @@ body {
   padding: 0 20px;
 }
 
-
+/* Headings */
 h2 {
   text-align: center;
   margin-bottom: 40px;
@@ -20,7 +20,7 @@ h2 {
   font-weight: 700;
 }
 
-/* Table Styling for Orders List */
+/* Order Table Styling */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -104,7 +104,7 @@ h2 {
   transform: translateY(-2px);
 }
 
-/* Form and Inputs */
+/* Form and Input Styling */
 .form-control {
   border-radius: 6px;
   padding: 10px;
@@ -178,15 +178,15 @@ h2 {
 
 /* Order Card Status Colors */
 .order-card.soft-yellow {
-  background-color: #fff9c4;
+  background-color: #fff9c4;  /* Light yellow background for orders in progress */
 }
 
 .order-card.soft-green {
-  background-color: #c8e6c9;
+  background-color: #c8e6c9;  /* Light green background for completed orders */
 }
 
 .order-card.soft-red {
-  background-color: #ffcdd2;
+  background-color: #ffcdd2;  /* Light red background for canceled or deleted orders */
 }
 
 /* Responsive styling for mobile view */
