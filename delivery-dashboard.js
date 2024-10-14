@@ -58,10 +58,11 @@ function loadOrdersByDate(date) {
           }
 
           // Calculate cash on hand (only for Cash and Delivered or Canceled orders)
-          if (order[9].toLowerCase() === 'cash' && (order[6] === 'Delivered') {
-            const orderAmount = parseFloat(order[10]) || 0;
-            totalCashOnHand += orderAmount;
-          }
+         // Calculate cash on hand (only for Cash and Delivered or Canceled orders)
+if (order[9].toLowerCase() === 'cash' && order[6] === 'Delivered') {
+  const orderAmount = parseFloat(order[10]) || 0;
+  totalCashOnHand += orderAmount;
+}
 
           // Hide the sales price if payment is via Card
           const salesPrice = order[9].toLowerCase() === 'card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
