@@ -21,7 +21,7 @@ addEditProductBtn.addEventListener('click', () => {
 });
 
 dailyPurchasesBtn.addEventListener('click', () => {
-    window.location.href = '#';  // Replace '#' with the actual URL
+    window.location.href = 'https://xtirachi.github.io/brendimo/purchase.html';  // Replace '#' with the actual URL
 });
 
 dailyFinanceBtn.addEventListener('click', () => {
