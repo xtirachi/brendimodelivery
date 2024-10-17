@@ -3,61 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sales Analysis Dashboard</title>
+  <title>Satış Təhlili Dashboardu</title>
   <link href="analysis.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
   <div class="container">
     <h1>Satış Təhlili Dashboardu</h1>
-    
-<div class="date-range">
-  <label for="startDate">Başlanğıc Tarixi:</label>
-  <input type="date" id="startDate" class="form-control">
-  
-  <label for="endDate">Bitmə Tarixi:</label>
-  <input type="date" id="endDate" class="form-control">
-</div>
 
-    
-    <!-- Summary Metrics Section -->
-    <div class="kpi-section">
-      <div class="kpi-card" id="totalRevenue">
-        <h2>Cəmi Gəlir</h2>
-        <p>Loading...</p>
-      </div>
-      <div class="kpi-card" id="totalOrders">
-        <h2>Cəmi Sifarişlər</h2>
-        <p>Loading...</p>
-      </div>
-      <div class="kpi-card" id="totalCost">
-        <h2>Cəmi Xərclər</h2>
-        <p>Loading...</p>
-      </div>
-      <div class="kpi-card" id="profit">
-        <h2>Mənfəət</h2>
-        <p>Loading...</p>
-      </div>
+    <!-- Global Date Range and Comparison Selection -->
+    <div class="date-range">
+      <label for="startDate">Başlanğıc Tarixi:</label>
+      <input type="date" id="startDate" class="form-control">
+      
+      <label for="endDate">Bitmə Tarixi:</label>
+      <input type="date" id="endDate" class="form-control">
+      
+      <!-- Compare to Date Range Selection -->
+      <label for="compareStartDate">Müqayisə Başlanğıc Tarixi:</label>
+      <input type="date" id="compareStartDate" class="form-control">
+
+      <label for="compareEndDate">Müqayisə Bitmə Tarixi:</label>
+      <input type="date" id="compareEndDate" class="form-control">
+      
+      <button id="filterBtn">Tətbiq et</button>
     </div>
 
-    <!-- Sales by Source Section -->
-    <h2>Satış Mənbələrinə Görə Gəlir</h2>
-    <canvas id="salesBySourceChart"></canvas>
+    <!-- Metrics Cards Section -->
+    <div class="kpi-section">
 
-    <!-- Payment Method Breakdown -->
-    <h2>Ödəniş Metodlarına Görə Gəlir</h2>
-    <canvas id="paymentMethodChart"></canvas>
+      <!-- Total Sales Card -->
+      <div class="kpi-card" id="totalSales">
+        <h2>Cəmi Satışlar</h2>
+        <p>Seçilmiş tarix aralığı üzrə satış: <span id="totalSalesAmount">Loading...</span></p>
+        <p>Müqayisə tarixinə görə satış: <span id="compareTotalSalesAmount">Loading...</span></p>
+        <canvas id="dailySalesChart"></canvas>
+      </div>
 
-    <!-- Top 5 Customers Section -->
-    <h2>Ən Yaxşı Müştərilər</h2>
-    <div id="topCustomers" class="customer-list"></div>
+      <!-- Sales by Source Card -->
+      <div class="kpi-card" id="salesBySource">
+        <h2>Satış Mənbələrinə Görə Satışlar</h2>
+        <canvas id="salesBySourceChart"></canvas>
+      </div>
 
-    <!-- Order Status Breakdown Section -->
-    <h2>Sifarişlərin Vəziyyəti</h2>
-    <canvas id="orderStatusChart"></canvas>
+      <!-- Total Orders Card -->
+      <div class="kpi-card" id="totalOrders">
+        <h2>Cəmi Sifarişlər</h2>
+        <p>Seçilmiş tarix aralığı üzrə: <span id="totalOrdersAmount">Loading...</span></p>
+        <p>Müqayisə tarixinə görə: <span id="compareTotalOrdersAmount">Loading...</span></p>
+      </div>
 
-    <!-- Sales Trends Over Time -->
-    <h2>Zamanla Satış Trendləri</h2>
-    <canvas id="salesTrendsChart"></canvas>
+      <!-- Average Order Value Card -->
+      <div class="kpi-card" id="avgOrderValue">
+        <h2>Orta Sifariş Dəyəri</h2>
+        <p>Seçilmiş tarix aralığı üzrə: <span id="avgOrderValueAmount">Loading...</span></p>
+        <p>Müqayisə tarixinə görə: <span id="compareAvgOrderValueAmount">Loading...</span></p>
+      </div>
+
+      <!-- Top Products Card -->
+      <div class="kpi-card" id="topProducts">
+        <h2>Ən çox satılan məhsullar</h2>
+        <div id="topProductsList"></div>
+      </div>
+
+      <!-- Returning Customer Rate Card -->
+      <div class="kpi-card" id="returningCustomerRate">
+        <h2>Qayıdan Müştəri Nisbəti</h2>
+        <p>Seçilmiş tarix aralığı üzrə: <span id="returningCustomerRateAmount">Loading...</span></p>
+        <p>Müqayisə tarixinə görə: <span id="compareReturningCustomerRateAmount">Loading...</span></p>
+      </div>
+
+      <!-- Customers Over Time Card -->
+      <div class="kpi-card" id="customersOverTime">
+        <h2>Müştərilər (ilk dəfə vs qayıdan)</h2>
+        <canvas id="customersOverTimeChart"></canvas>
+      </div>
+      
+    </div>
   </div>
 
   <script src="analysis.js"></script>
