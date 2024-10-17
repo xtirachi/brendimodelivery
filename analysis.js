@@ -233,3 +233,4 @@ function loadCustomersOverTime(startDate, endDate, compareStartDate, compareEndD
       });
     });
 }
+
