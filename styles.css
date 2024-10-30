@@ -1,8 +1,8 @@
 /* General Styles for All Pages */
 body {
-  font-family: 'Roboto', sans-serif;  /* Modern, sleek font */
-  background-color: #f0f2f5;  /* Softer light grey background for better readability */
-  color: #495057; /* Dark grey text for better contrast */
+  font-family: 'Roboto', sans-serif;
+  background-color: #f0f2f5;
+  color: #495057;
 }
 
 .container {
@@ -11,10 +11,11 @@ body {
   padding: 0 20px;
 }
 
+/* Heading Styles */
 h2 {
   text-align: center;
   margin-bottom: 40px;
-  color: #212529;  /* Rich dark grey for headings */
+  color: #212529;
   font-size: 2.5rem;
   font-weight: 700;
 }
@@ -24,7 +25,7 @@ h2 {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Adds shadow to the table */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table th, .table td {
@@ -35,7 +36,7 @@ h2 {
 
 .table th {
   background-color: #007bff;
-  color: white;
+  color: #ffffff;
   font-size: 1.1rem;
   font-weight: 600;
 }
@@ -47,7 +48,7 @@ h2 {
 }
 
 .table tbody tr:hover {
-  background-color: #f1f3f5;  /* Slight hover effect for table rows */
+  background-color: #f1f3f5;
 }
 
 /* Button Styling */
@@ -57,12 +58,12 @@ h2 {
   font-size: 1rem;
   font-weight: 500;
   transition: background-color 0.3s, transform 0.2s;
+  border: none;
 }
 
 .btn-primary {
   background-color: #007bff;
-  border-color: #007bff;
-  color: white;
+  color: #ffffff;
 }
 
 .btn-primary:hover {
@@ -72,8 +73,7 @@ h2 {
 
 .btn-success {
   background-color: #28a745;
-  border-color: #28a745;
-  color: white;
+  color: #ffffff;
 }
 
 .btn-success:hover {
@@ -83,8 +83,7 @@ h2 {
 
 .btn-danger {
   background-color: #dc3545;
-  border-color: #dc3545;
-  color: white;
+  color: #ffffff;
 }
 
 .btn-danger:hover {
@@ -94,7 +93,6 @@ h2 {
 
 .btn-warning {
   background-color: #ffc107;
-  border-color: #ffc107;
   color: #212529;
 }
 
@@ -122,6 +120,7 @@ h2 {
 #orderList table {
   width: 100%;
   margin-top: 20px;
+  border-collapse: collapse;
 }
 
 #orderList table th, #orderList table td {
@@ -132,7 +131,7 @@ h2 {
 
 #orderList table th {
   background-color: #007bff;
-  color: white;
+  color: #ffffff;
   font-size: 1.1rem;
   font-weight: 600;
 }
@@ -140,6 +139,7 @@ h2 {
 #orderList table td {
   background-color: #f8f9fa;
   font-size: 1rem;
+  color: #343a40;
 }
 
 #orderList .btn {
@@ -188,27 +188,38 @@ h2 {
   background-color: #ffcdd2;
 }
 
-/* Responsive styling for mobile view */
+/* Responsive Styling for Mobile View */
 @media (max-width: 600px) {
-  .order-card {
-    padding: 20px;
+  .container {
+    padding: 0 10px;
   }
 
   h2 {
     font-size: 2rem;
+    margin-bottom: 30px;
   }
 
-  .table th, .table td {
+  .table, #orderList table {
     font-size: 0.9rem;
+  }
+
+  .table th, .table td, #orderList table th, #orderList table td {
+    padding: 10px;
   }
 
   .btn {
     font-size: 0.9rem;
     padding: 8px 16px;
+    width: 100%;
+  }
+
+  .order-card {
+    padding: 20px;
+    box-shadow: none;
   }
 
   .order-card h3 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .order-card p {
