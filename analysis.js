@@ -1,5 +1,5 @@
 // Define the constant for the Google Apps Script URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYOSOgg8w_Sv-T56qfxfyCE3ZU3oRqqETRG1-QQ8VO8ok9eebXINlZQChjE26fXziFaA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5uzVd8AZ1NEJ3y9MUYlMc6W-QSyI6RbtX4BwNP9wHTiB0S64JNt6tms9ICmAbDbi8IA/exec';
 
 // Set default date to today for both the main and comparison date ranges
 function setDefaultDates() {
