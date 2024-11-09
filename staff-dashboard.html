@@ -92,9 +92,22 @@
     </form>
 
     <div id="orderSuccess" class="text-success mt-3" style="display: none;">Sifariş müvəffəqiyyətlə yaradıldı!</div>
-    <div id="orderError" class="text-danger mt-3" style="display: none;">Sifariş yaratmaqda problem oldu.</div>
+    <div id="orderError" class="text-danger mt-3" style="display: none;">Sifariş yaratmaqda problem oldu.
+    </div>
   </div>
 
+  <div class="container">
+    <h2>Sifarişlərim</h2>
+    
+    <!-- Date Selector for Filtering Orders -->
+    <label for="orderDateFilter" class="form-label">Tarixə görə Filtrlə:</label>
+    <input type="date" id="orderDateFilter" class="form-control" />
+
+    <div id="orderCardsContainer" class="order-cards-container">
+      <!-- Order cards will be dynamically loaded here -->
+    </div>
+  </div>
+  
   <script src="staff-dashboard.js"></script>
 </body>
 </html>
