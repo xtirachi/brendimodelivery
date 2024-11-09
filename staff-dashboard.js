@@ -1,5 +1,5 @@
 // Google Apps Script URLs
-const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKSWQJY4LRHxI71FY4pyhmQ9bkrqo9JK8GKphv5fvV7bzhrEkhF6EcEOX2LWMctDsG/exec';  
+const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7zvtg7hISstp4ume5_t78PlXGPrFDOatfL1u3WK0Yo2Gy-3yM_LNlbAfhHUwYcmfv/exec';  
 const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';  
 
 let selectedProducts = [];  // Array to store selected products and their quantities
