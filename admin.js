@@ -9,7 +9,7 @@ const analysisBtn = document.getElementById('analysis');
 
 // Add event listeners for button clicks
 addOrderBtn.addEventListener('click', () => {
-    window.location.href = 'https://xtirachi.github.io/brendimodelivery/staff-dashboard.html';  // Replace '#' with the actual URL
+    window.location.href = 'https://xtirachi.github.io/brendimodelivery/login.html';  // Replace '#' with the actual URL
 });
 
 manageOrdersBtn.addEventListener('click', () => {
