@@ -4,13 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yeni Sifariş Yarat</title>
-  <link href="staff.css" rel="stylesheet">
+  <link href="staff.css" rel="stylesheet"> <!-- Link to your CSS file -->
 </head>
 <body>
   <div class="container">
     <h2>Yeni Sifariş Yarat</h2>
     
-    <!-- Form for creating a new order -->
     <form id="orderForm">
       <div class="mb-3">
         <label for="customerName" class="form-label">Müştəri Adı</label>
@@ -25,7 +24,7 @@
         <input type="text" class="form-control" id="deliveryAddress" required>
       </div>
 
-      <!-- Product Search and Add Section -->
+      <!-- Product Section -->
       <div class="mb-3">
         <label for="productSearch" class="form-label">Məhsul Axtar</label>
         <input type="text" class="form-control" id="productSearch" placeholder="Məhsul axtarın...">
@@ -40,20 +39,15 @@
         <button type="button" id="addProductButton" class="btn btn-primary mt-2">Məhsul Əlavə Et</button>
       </div>
 
-      <!-- Display Selected Products and Quantities -->
       <div class="mb-3">
         <h4>Seçilmiş Məhsullar</h4>
         <ul id="selectedProductsList"></ul>
       </div>
 
-      <!-- Display area for total sales price -->
+      <!-- Sales Price Section -->
       <div id="totalSalesPriceDisplay" class="mt-3">Ümumi Satış Qiyməti: 0.00 AZN</div>
-
-      <!-- Input for manually adjusting the total sales price -->
       <label for="totalSalesPriceInput" class="form-label">Satış Qiymətini Dəyişdir (AZN)</label>
       <input type="number" id="totalSalesPriceInput" class="form-control" min="0" step="1">
-
-  
 
       <!-- Special Instructions -->
       <div class="mb-3">
@@ -61,12 +55,13 @@
         <textarea class="form-control" id="specialInstructions" rows="2"></textarea>
       </div>
 
-      <!-- Date Picker for Order Date -->
+      <!-- Order Date -->
       <div class="mb-3">
         <label for="orderDate" class="form-label">Sifariş Tarixi</label>
         <input type="date" class="form-control" id="orderDate" required>
       </div>
 
+      <!-- Payment Method -->
       <div class="mb-3">
         <label for="paymentMethod" class="form-label">Ödəniş Metodu</label>
         <select id="paymentMethod" class="form-control" required>
@@ -75,6 +70,7 @@
         </select>
       </div>
 
+      <!-- Sales Source -->
       <div class="mb-3">
         <label for="salesSource" class="form-label">Satış Mənbəyi</label>
         <select id="salesSource" class="form-control" required>
@@ -82,31 +78,23 @@
           <option value="Brendimo.az">Brendimo.az</option>
           <option value="Idealhediyyeler">Idealhediyyeler</option>
           <option value="Idealhediyye.az">Idealhediyye.az</option>
-           <option value="Brendimoaz">Brendimo.lei</option>
+          <option value="Brendimo.lei">Brendimo.lei</option>
         </select>
       </div>
-      
+
+      <!-- Staff Username as "Satıcı" -->
+      <div class="mb-3">
+        <label for="staffUsername" class="form-label">Satıcı</label>
+        <input type="text" class="form-control" id="staffUsername" readonly>
+      </div>
+
       <button type="submit" class="btn btn-primary">Sifariş Yarat</button>
     </form>
 
-    <!-- Success and Error messages for order creation -->
     <div id="orderSuccess" class="text-success mt-3" style="display: none;">Sifariş müvəffəqiyyətlə yaradıldı!</div>
     <div id="orderError" class="text-danger mt-3" style="display: none;">Sifariş yaratmaqda problem oldu.</div>
   </div>
 
-  <!-- Today's Orders Section (Staff-specific orders, editable if not delivered) -->
-  <div class="container mt-5">
-    <h2>Bu Günün Sifarişləri</h2>
-    <div class="mb-3">
-      <label for="orderDateFilter" class="form-label">Tarixə görə Filtrlə</label>
-      <input type="date" id="orderDateFilter" class="form-control">
-    </div>
-    <div id="todaysOrders" class="order-list">
-      <!-- Orders will be dynamically loaded here as containers -->
-    </div>
-  </div>
-  <!-- Hidden input for staff username -->
-<input type="hidden" id="staffUsernameField" name="staffUsername">
   <script src="staff-dashboard.js"></script>
 </body>
 </html>
