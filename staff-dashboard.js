@@ -18,6 +18,7 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
     const orderDate = document.getElementById('orderDate').value;
     const paymentMethod = document.getElementById('paymentMethod').value;
     const salesSource = document.getElementById('salesSource').value;
+    const staffUsername = document.getElementById('staffUsername').value; // Get the staff username from "Satıcı" field
 
     if (selectedProducts.length === 0) {
         alert('Zəhmət olmasa ən azı bir məhsul əlavə edin.');
