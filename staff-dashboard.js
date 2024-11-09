@@ -42,7 +42,9 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
             paymentMethod: paymentMethod,
             salesSource: salesSource,
             products: JSON.stringify(selectedProducts),  // Send selected products as a JSON string
-            totalSalesPrice: finalSalesPrice.toFixed(2)  // Send total sales price (calculated or overridden)
+            totalSalesPrice: finalSalesPrice.toFixed(2),  // Send total sales price (calculated or overridden)
+            staffUsername: document.getElementById('staffUsernameField').value // Add staff username from hidden field
+
         })
     })
     .then(response => response.json())
