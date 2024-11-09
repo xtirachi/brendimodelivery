@@ -301,3 +301,20 @@ function displayOrders(orders) {
         container.insertAdjacentHTML('beforeend', orderCard);
     });
 }
+
+.then(data => {
+    if (data.success) {
+        document.getElementById('orderSuccess').style.display = 'block';
+        document.getElementById('orderError').style.display = 'none';
+        resetOrderForm();  // Reset the form after successful order creation
+
+        // Re-populate the staff username field from localStorage
+        const staffUsername = localStorage.getItem('staff_username');
+        if (staffUsername) {
+            document.getElementById('staffUsername').value = staffUsername;
+        }
+    } else {
+        throw new Error('Server returned an error: ' + data.message);
+    }
+})
+
