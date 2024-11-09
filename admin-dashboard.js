@@ -63,6 +63,7 @@ if (status === 'Delivered' || status === 'Canceled') {
   <div class="order-card ${cardColor}" id="order-${order[0]}">
     <div class="order-info">
       <h3>Sifariş ID: ${order[0]}</h3>
+      <p><strong>Satıcı Adı:</strong> ${order[16]}</p>
       <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
       <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
       <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
