@@ -253,6 +253,9 @@ window.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('DOMContentLoaded', () => {
     const staffUsername = localStorage.getItem('staff_username');
     if (staffUsername) {
-        document.getElementById('staffUsernameField').value = staffUsername;
+        document.getElementById('staffUsername').value = staffUsername;
+    } else {
+        console.warn('Staff username not found in localStorage');
     }
 });
+
