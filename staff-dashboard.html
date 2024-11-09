@@ -3,16 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Staff Paneli</title>
-  <link href="styles.css" rel="stylesheet">
+  <title>Yeni Sifariş Yarat</title>
+  <link href="staff.css" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h2>Staff Paneli</h2>
-    <div id="orderList"></div>
-    <button id="createOrderButton" class="btn btn-primary">Yeni Sifariş Yarat</button>
+    <h2>Yeni Sifariş Yarat</h2>
+    
+    <!-- Form for creating a new order -->
+    <form id="orderForm">
+      <div class="mb-3">
+        <label for="customerName" class="form-label">Müştəri Adı</label>
+        <input type="text" class="form-control" id="customerName" required>
+      </div>
+      <div class="mb-3">
+        <label for="contactInfo" class="form-label">Əlaqə Məlumatı (Telefon)</label>
+        <input type="number" class="form-control" id="contactInfo" required>
+      </div>
+      <div class="mb-3">
+        <label for="deliveryAddress" class="form-label">Çatdırılma Ünvanı</label>
+        <input type="text" class="form-control" id="deliveryAddress" required>
+      </div>
+
+      <!-- Product Search and Add Section -->
+      <div class="mb-3">
+        <label for="productSearch" class="form-label">Məhsul Axtar</label>
+        <input type="text" class="form-control" id="productSearch" placeholder="Məhsul axtarın...">
+      </div>
+      <div class="mb-3">
+        <label for="productSelect" class="form-label">Məhsul Seçin</label>
+        <select id="productSelect" class="form-control">
+          <option value="">Məhsul seçin</option>
+        </select>
+        <label for="quantity" class="form-label">Miqdar</label>
+        <input type="number" id="quantity" class="form-control" min="1" step="1" value="1">
+        <button type="button" id="addProductButton" class="btn btn-primary mt-2">Məhsul Əlavə Et</button>
+      </div>
+
+      <!-- Display Selected Products and Quantities -->
+      <div class="mb-3">
+        <h4>Seçilmiş Məhsullar</h4>
+        <ul id="selectedProductsList"></ul>
+      </div>
+
+      <!-- Display area for total sales price -->
+      <div id="totalSalesPriceDisplay" class="mt-3">Ümumi Satış Qiyməti: 0.00 AZN</div>
+
+      <!-- Input for manually adjusting the total sales price -->
+      <label for="totalSalesPriceInput" class="form-label">Satış Qiymətini Dəyişdir (AZN)</label>
+      <input type="number" id="totalSalesPriceInput" class="form-control" min="0" step="1">
+
+  
+
+      <!-- Special Instructions -->
+      <div class="mb-3">
+        <label for="specialInstructions" class="form-label">Xüsusi Təlimatlar</label>
+        <textarea class="form-control" id="specialInstructions" rows="2"></textarea>
+      </div>
+
+      <!-- Date Picker for Order Date -->
+      <div class="mb-3">
+        <label for="orderDate" class="form-label">Sifariş Tarixi</label>
+        <input type="date" class="form-control" id="orderDate" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="paymentMethod" class="form-label">Ödəniş Metodu</label>
+        <select id="paymentMethod" class="form-control" required>
+          <option value="cash">Nağd</option>
+          <option value="card">Karta</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="salesSource" class="form-label">Satış Mənbəyi</label>
+        <select id="salesSource" class="form-control" required>
+          <option value="Brendimoaz">Brendimoaz</option>
+          <option value="Brendimo.az">Brendimo.az</option>
+          <option value="Idealhediyyeler">Idealhediyyeler</option>
+          <option value="Idealhediyye.az">Idealhediyye.az</option>
+           <option value="Brendimoaz">Brendimo.lei</option>
+        </select>
+      </div>
+      
+      <button type="submit" class="btn btn-primary">Sifariş Yarat</button>
+    </form>
+
+    <!-- Success and Error messages for order creation -->
+    <div id="orderSuccess" class="text-success mt-3" style="display: none;">Sifariş müvəffəqiyyətlə yaradıldı!</div>
+    <div id="orderError" class="text-danger mt-3" style="display: none;">Sifariş yaratmaqda problem oldu.</div>
   </div>
 
-  <script src="staff-dashboard.js"></script>
+  <!-- Today's Orders Section (Staff-specific orders, editable if not delivered) -->
+  <div class="container mt-5">
+    <h2>Bu Günün Sifarişləri</h2>
+    <div class="mb-3">
+      <label for="orderDateFilter" class="form-label">Tarixə görə Filtrlə</label>
+      <input type="date" id="orderDateFilter" class="form-control">
+    </div>
+    <div id="todaysOrders" class="order-list">
+      <!-- Orders will be dynamically loaded here as containers -->
+    </div>
+  </div>
+
+      <!-- Price of Products Button (redirects to another page) -->
+      <button type="button" id="viewPriceButton" class="btn btn-info mt-2">Məhsulların Qiymətinə Bax</button>
+  
+  <script src="ordercreation.js"></script>
 </body>
 </html>
