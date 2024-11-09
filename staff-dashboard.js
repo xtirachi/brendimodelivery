@@ -23,6 +23,7 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
         return;
     }
 
+    
     // Use the manually entered sales price if changed, otherwise use the calculated total sales price
     let finalSalesPrice = isPriceManuallyChanged
         ? parseFloat(document.getElementById('totalSalesPriceInput').value)
