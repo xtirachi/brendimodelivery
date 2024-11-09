@@ -44,7 +44,7 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
             salesSource: salesSource,
             products: JSON.stringify(selectedProducts),  // Send selected products as a JSON string
             totalSalesPrice: finalSalesPrice.toFixed(2),  // Send total sales price (calculated or overridden)
-            staffUsername: document.getElementById('staffUsernameField').value // Add staff username from hidden field
+            staffUsername: staffUsername, // Add staff username from the "Satıcı" field
 
         })
     })
