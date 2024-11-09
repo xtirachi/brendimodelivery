@@ -1,10 +1,11 @@
 // Google Apps Script URLs
-const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyi_R3FQS6ET3hHcx3Tss6Asy3Nlzkh3Pp6MjEI5tWj-oSzBGV6znMr1vgMXFshTO5r/exec';  
+const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKSWQJY4LRHxI71FY4pyhmQ9bkrqo9JK8GKphv5fvV7bzhrEkhF6EcEOX2LWMctDsG/exec';  
 const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';  
 
 let selectedProducts = [];  // Array to store selected products and their quantities
 let totalSalesPrice = 0;  // Track total sales price
 let isPriceManuallyChanged = false;  // Flag to check if the user manually changed the total price
+
 
 // Form submission for creating the order
 document.getElementById('orderForm').addEventListener('submit', function (e) {
@@ -23,7 +24,6 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
         return;
     }
 
-    
     // Use the manually entered sales price if changed, otherwise use the calculated total sales price
     let finalSalesPrice = isPriceManuallyChanged
         ? parseFloat(document.getElementById('totalSalesPriceInput').value)
@@ -244,4 +244,12 @@ window.addEventListener('DOMContentLoaded', () => {
     // Set the default date for order date filter in today's orders section
     const orderDateFilter = document.getElementById('orderDateFilter');
     if (orderDateFilter) orderDateFilter.value = today;
+});
+
+// Set staff username automatically on order creation page
+window.addEventListener('DOMContentLoaded', () => {
+    const staffUsername = localStorage.getItem('staff_username');
+    if (staffUsername) {
+        document.getElementById('staffUsernameField').value = staffUsername;
+    }
 });
