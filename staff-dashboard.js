@@ -1,11 +1,10 @@
 // Google Apps Script URLs
-const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7zvtg7hISstp4ume5_t78PlXGPrFDOatfL1u3WK0Yo2Gy-3yM_LNlbAfhHUwYcmfv/exec';  
+const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvaODD6itK5HGsOa3KNpLx6kXs1WXZwmuedL2xRfwYMTRoXH42PDicNm7GrpGirGRw/exec';  
 const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';  
 
 let selectedProducts = [];  // Array to store selected products and their quantities
 let totalSalesPrice = 0;  // Track total sales price
 let isPriceManuallyChanged = false;  // Flag to check if the user manually changed the total price
-
 
 // Form submission for creating the order
 document.getElementById('orderForm').addEventListener('submit', function (e) {
@@ -44,8 +43,7 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
             salesSource: salesSource,
             products: JSON.stringify(selectedProducts),  // Send selected products as a JSON string
             totalSalesPrice: finalSalesPrice.toFixed(2),  // Send total sales price (calculated or overridden)
-            staffUsername: staffUsername, // Add staff username from the "Satıcı" field
-
+            staffUsername: staffUsername // Add staff username from the "Satıcı" field
         })
     })
     .then(response => response.json())
@@ -65,11 +63,11 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
     });
 });
 
-// Set default order date to tomorrow
+// Set default order date to tomorrow for order creation
 const orderDateInput = document.getElementById('orderDate');
 const tomorrow = new Date();
-tomorrow.setDate(tomorrow.getDate() + 1);  // Add one day to today's date
-orderDateInput.value = tomorrow.toISOString().split('T')[0];  // Set the default value to tomorrow's date
+tomorrow.setDate(tomorrow.getDate() + 1);
+orderDateInput.value = tomorrow.toISOString().split('T')[0]; // Set the default value to tomorrow's date
 
 // Product search and selection logic
 document.getElementById('productSearch').addEventListener('input', function () {
@@ -146,11 +144,10 @@ function updateSelectedProductsUI() {
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Sil';
         removeButton.onclick = function () {
-            // Adjust total sales price when a product is removed
             totalSalesPrice -= item.salesPrice * item.quantity;
-            selectedProducts.splice(index, 1);  // Remove the product from the list
-            updateSelectedProductsUI();  // Update the UI
-            updateTotalSalesPriceUI();  // Update the total sales price display
+            selectedProducts.splice(index, 1);
+            updateSelectedProductsUI();
+            updateTotalSalesPriceUI();
         };
 
         listItem.appendChild(removeButton);
@@ -163,7 +160,6 @@ function updateTotalSalesPriceUI() {
     const totalSalesPriceDisplay = document.getElementById('totalSalesPriceDisplay');
     totalSalesPriceDisplay.textContent = `Ümumi Satış Qiyməti: ${totalSalesPrice.toFixed(2)} AZN`;
 
-    // Automatically fill the total sales price input field with the calculated value (unless manually changed)
     if (!isPriceManuallyChanged) {
         document.getElementById('totalSalesPriceInput').value = totalSalesPrice.toFixed(2);
     }
@@ -171,38 +167,35 @@ function updateTotalSalesPriceUI() {
 
 // Manual sales price adjustment
 document.getElementById('totalSalesPriceInput').addEventListener('input', function () {
-    isPriceManuallyChanged = true;  // User manually changed the total price
+    isPriceManuallyChanged = true;
 });
 
 // Reset the form and variables after a successful order
 function resetOrderForm() {
-    document.getElementById('orderForm').reset();  // Reset the form fields
-    selectedProducts = [];  // Clear the selected products array
-    totalSalesPrice = 0;  // Reset total sales price
-    isPriceManuallyChanged = false;  // Reset the price change flag
-    updateSelectedProductsUI();  // Clear the selected products list UI
-    updateTotalSalesPriceUI();  // Reset the total sales price UI
+    document.getElementById('orderForm').reset();
+    selectedProducts = [];
+    totalSalesPrice = 0;
+    isPriceManuallyChanged = false;
+    updateSelectedProductsUI();
+    updateTotalSalesPriceUI();
 }
 
 // Function to update stock after order creation
 function updateStock() {
     selectedProducts.forEach(product => {
-        // Fetch product and component details and adjust stock
         fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const productStock = data.product.stock;  // Get current stock
+                    const productStock = data.product.stock;
                     const newStock = productStock - product.quantity;
 
                     if (newStock < 0) {
                         throw new Error(`Not enough stock for product: ${product.productName}`);
                     }
 
-                    // Update the stock in the Products sheet
                     updateProductStock(product.productName, newStock);
 
-                    // If the product is a set, update the stock for its components
                     if (data.product.components.length > 0) {
                         data.product.components.forEach(component => {
                             const componentNewStock = component.stock - (component.quantity * product.quantity);
@@ -244,18 +237,67 @@ function updateProductStock(productName, newStock) {
 window.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     
-    // Set the default date for order date filter in today's orders section
     const orderDateFilter = document.getElementById('orderDateFilter');
     if (orderDateFilter) orderDateFilter.value = today;
-});
-
-// Set staff username automatically on order creation page
-window.addEventListener('DOMContentLoaded', () => {
+    
     const staffUsername = localStorage.getItem('staff_username');
     if (staffUsername) {
         document.getElementById('staffUsername').value = staffUsername;
     } else {
         console.warn('Staff username not found in localStorage');
     }
+    
+    fetchOrdersForStaff(staffUsername, today);
+    
+    if (orderDateFilter) {
+        orderDateFilter.addEventListener('change', () => {
+            fetchOrdersForStaff(staffUsername, orderDateFilter.value);
+        });
+    }
 });
 
+// Fetch orders by staff and date
+function fetchOrdersForStaff(staffUsername, date) {
+    fetch(`${ORDER_CREATION_SCRIPT_URL}?action=getOrdersByStaffAndDate&staffUsername=${encodeURIComponent(staffUsername)}&date=${encodeURIComponent(date)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayOrders(data.orders);
+            } else {
+                console.error("Failed to fetch orders:", data.message);
+            }
+        })
+        .catch(error => console.error("Error fetching orders:", error));
+}
+
+// Function to display fetched orders
+function displayOrders(orders) {
+    const container = document.getElementById('orderCardsContainer');
+    container.innerHTML = '';  // Clear container
+
+    orders.forEach(order => {
+        const cardColor = order[6] === 'Delivered' ? 'delivered' : 'pending';
+        const status = order[6];
+        const courier = order[7] || 'Təyin edilməyib';
+        const orderAmount = parseFloat(order[10]).toFixed(2);
+
+        const orderCard = `
+            <div class="order-card ${cardColor}" id="order-${order[0]}">
+                <div class="order-info">
+                    <h3>Sifariş ID: ${order[0]}</h3>
+                    <p><strong>Satıcı Adı:</strong> ${order[16]}</p>
+                    <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
+                    <p><strong>Status:</strong> <span>${status}</span></p>
+                    <p><strong>Çatdırıcı:</strong> <span>${courier}</span></p>
+                    <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
+                    <p><strong>Qiymət:</strong> ${orderAmount} AZN</p>
+                    <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
+                    <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
+                    <p><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong> ${order[4] || 'Məlumat yoxdur'}</p>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', orderCard);
+    });
+}
