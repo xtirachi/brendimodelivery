@@ -171,18 +171,26 @@ document.getElementById('totalSalesPriceInput').addEventListener('input', functi
 });
 
 // Reset the form and variables after a successful order
+// Reset the form and variables after a successful order
 function resetOrderForm() {
-    document.getElementById('orderForm').reset();
+    document.getElementById('orderForm').reset(); // Reset the form fields
     selectedProducts = [];
     totalSalesPrice = 0;
     isPriceManuallyChanged = false;
     updateSelectedProductsUI();
     updateTotalSalesPriceUI();
+
     // Re-populate the staff username field from localStorage after reset
     const staffUsername = localStorage.getItem('staff_username');
     if (staffUsername) {
         document.getElementById('staffUsername').value = staffUsername;
     }
+
+    // Set orderDate to tomorrow’s date again after reset
+    const orderDateInput = document.getElementById('orderDate');
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    orderDateInput.value = tomorrow.toISOString().split('T')[0];
 }
 
 // Function to update stock after order creation
