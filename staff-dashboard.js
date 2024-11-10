@@ -178,6 +178,11 @@ function resetOrderForm() {
     isPriceManuallyChanged = false;
     updateSelectedProductsUI();
     updateTotalSalesPriceUI();
+    // Re-populate the staff username field from localStorage after reset
+    const staffUsername = localStorage.getItem('staff_username');
+    if (staffUsername) {
+        document.getElementById('staffUsername').value = staffUsername;
+    }
 }
 
 // Function to update stock after order creation
@@ -302,19 +307,4 @@ function displayOrders(orders) {
     });
 }
 
-.then(data => {
-    if (data.success) {
-        document.getElementById('orderSuccess').style.display = 'block';
-        document.getElementById('orderError').style.display = 'none';
-        resetOrderForm();  // Reset the form after successful order creation
-
-        // Re-populate the staff username field from localStorage
-        const staffUsername = localStorage.getItem('staff_username');
-        if (staffUsername) {
-            document.getElementById('staffUsername').value = staffUsername;
-        }
-    } else {
-        throw new Error('Server returned an error: ' + data.message);
-    }
-})
 
