@@ -141,8 +141,7 @@ function changeStatus(orderId, orderDate) {
     body: new URLSearchParams({
       action: 'updateOrderStatusAndPayment',
       orderId: orderId,
-      status: status,
-      orderDate: orderDate // Include the order date to ensure it is not cleared
+      status: status
     })
   })
   .then(response => response.json())
