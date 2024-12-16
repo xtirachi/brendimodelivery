@@ -5,7 +5,7 @@ function setUsername(username) {
 
 // Function to get the username from localStorage
 function getUsername() {
-  const username = localStorage.getItem('delivery_username');
+  const username = localStorage.getItem('deliveryhead_username');
   if (!username) {
     window.location.href = 'login.html'; // Redirect to login page if username is missing
   }
@@ -32,7 +32,7 @@ function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
   const username = getUsername(); // Always get the username from localStorage to ensure it's not lost
 
-  fetch(`https://script.google.com/macros/s/AKfycbyvUbJFhbCPbGY13gZw7XnuzT4eAkXhT3x4adxSSScJXApsCSN_zkQQwOkR-HiuWkZZ/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
+  fetch(`https://script.google.com/macros/s/AKfycbybklDLpY09rWst4rZATAL431KCfSetbiP4J18t0h674S6-1diS7shdqB8TbpVopDcg/exec?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
