@@ -88,7 +88,11 @@ if (order[9].toLowerCase() === 'cash' && order[6] === 'Delivered') {
   <option value="Delivered" ${order[6] === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
  <option value="Canceled" ${order[6] === 'Canceled' ? 'selected' : ''}>Ləğv edildi</option>
 </select>
-          
+           <!-- Courier Assignment -->
+        <label for="courier-${order[0]}">Çatdırıcı Təyinatı:</label>
+        <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
+          <option value="">Çatdırıcı seçin</option>
+        </select>
 
                 <button class="btn btn-primary" onclick="updateOrder(${order[0]})">Yenilə</button>
               </div>
