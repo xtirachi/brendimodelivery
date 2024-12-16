@@ -1,6 +1,6 @@
 // Function to set the username in localStorage when the user logs in (you should call this on successful login)
 function setUsername(username) {
-  localStorage.setItem('delivery_username', username);
+  localStorage.setItem('deliveryhead_username', username);
 }
 
 // Function to get the username from localStorage
