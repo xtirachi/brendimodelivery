@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Çatdırılma Paneli</title>
+  <link href="dashboard.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h2>Çatdırılma Paneli</h2>
+
+    <!-- Date selector to filter orders by date -->
+    <label for="orderDateFilter">Sifariş Tarixi:</label>
+    <input type="date" id="orderDateFilter" class="form-control">
+    
+    <!-- Button to show orders for the selected date -->
+    <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
+
+    <!-- Section to display orders -->
+    <div id="orderList" class="mt-3"></div>
+
+    <!-- Amount that the delivery person has to return after deduction -->
+    
+    <div id="returnAmount" class="mt-3"></div>
+    <div id="totalCashOnHand" class="mt-3"></div>
+  </div>
+
+  <script src="deliveryhead-dashboard.js"></script>
+</body>
+</html>
