@@ -72,6 +72,7 @@ if (order[9].toLowerCase() === 'cash' && order[6] === 'Delivered') {
             <div class="order-card ${cardColor}" id="order-${order[0]}">
               <div class="order-info" onclick="toggleOrderDetails(${order[0]})">
                 <h3>Sifariş ID: ${order[0]}</h3>
+                <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
                 <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
                 <p><strong>Telefon:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
                 <p><strong>Status:</strong> <span id="status-${order[0]}">${order[6]}</span></p>
