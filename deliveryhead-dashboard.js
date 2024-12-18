@@ -28,7 +28,7 @@ function renderOrders(filterCourier = '') {
   // Filter orders based on the selected courier
   const filteredOrders = orders.filter(order => {
     if (filterCourier === 'Hamısı') {
-      return order.courier === 'Murad' || order.courier === 'Emil';
+      return order.courier === 'murad' || order.courier === 'emil';
     }
     return filterCourier ? order.courier === filterCourier : true;
   });
