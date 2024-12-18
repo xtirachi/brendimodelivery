@@ -1,4 +1,3 @@
-
 // Set today's date as default in the date picker and show today's orders automatically
 window.onload = function() {
   const today = new Date().toISOString().split('T')[0];
@@ -10,7 +9,7 @@ window.onload = function() {
 // Load orders for the selected date
 function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
-  
+
   fetch(`https://script.google.com/macros/s/AKfycbxTqcTJ1WVzDqqHsYeq2HqWU9sFJcx2SjnMEZ-g4IYvRmksEDLbPCPvSC980Vtx5xSq/exec?action=getOrdersByDate&date=${selectedDate}`)
     .then(response => response.json())
     .then(data => {
@@ -105,8 +104,7 @@ if (courier === 'emil' && status === 'Delivered') {
   </div>
 `;
 
-
-          // Fetch and populate couriers in the select dropdown
+// Fetch and populate couriers in the select dropdown
           fetchDeliveryUsers(order[0]);
         });
 
@@ -246,36 +244,6 @@ function updateOrderDetails(orderId) {
     console.error('Error updating order:', error);
   });
 }
-
-// Function to display the filtered orders
-function displayOrders(filteredOrders) {
-  const orderList = document.getElementById("orderList");
-  orderList.innerHTML = ""; // Clear previous results
-
-  filteredOrders.forEach(order => {
-    const orderItem = document.createElement("div");
-    orderItem.textContent = `Order ID: ${order.id}, Courier: ${order.courier}, Date: ${order.date}`;
-    orderList.appendChild(orderItem);
-  });
-}
-
-// Function to calculate and display the order count for each courier
-function calculateOrdersCount(filteredOrders) {
-  const couriers = {};
-  filteredOrders.forEach(order => {
-    couriers[order.courier] = (couriers[order.courier] || 0) + 1;
-  });
-
-  const totalPerCourier = document.getElementById("totalPerCourier");
-  totalPerCourier.innerHTML = "<h3>Net Məbləğ (hər bir çatdırıcıya):</h3>";
-
-  for (const [courier, count] of Object.entries(couriers)) {
-    const courierInfo = document.createElement("div");
-    courierInfo.textContent = `${courier}: ${count} orders`;
-    totalPerCourier.appendChild(courierInfo);
-  }
-}
-
 
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
 function deleteOrder(orderId) {
