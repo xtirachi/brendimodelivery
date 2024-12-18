@@ -10,9 +10,6 @@ window.onload = function() {
 // Load orders for the selected date
 function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
-
-  displayOrders(filteredOrders);
-  calculateOrdersCount(filteredOrders);
   
   fetch(`https://script.google.com/macros/s/AKfycbxTqcTJ1WVzDqqHsYeq2HqWU9sFJcx2SjnMEZ-g4IYvRmksEDLbPCPvSC980Vtx5xSq/exec?action=getOrdersByDate&date=${selectedDate}`)
     .then(response => response.json())
