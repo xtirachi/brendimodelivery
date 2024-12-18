@@ -11,8 +11,6 @@ window.onload = function() {
 function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
 
-  const filteredOrders = orders.filter(order => order.date === selectedDate);
-
   displayOrders(filteredOrders);
   calculateOrdersCount(filteredOrders);
   
@@ -281,18 +279,6 @@ function calculateOrdersCount(filteredOrders) {
   }
 }
 
-// Add event listeners for courier filters
-document.getElementById("filter-all").addEventListener("click", () => displayOrders(orders));
-document.getElementById("filter-murad").addEventListener("click", () => {
-  const filtered = orders.filter(order => order.courier === "Murad");
-  displayOrders(filtered);
-  calculateOrdersCount(filtered);
-});
-document.getElementById("filter-emil").addEventListener("click", () => {
-  const filtered = orders.filter(order => order.courier === "Emil");
-  displayOrders(filtered);
-  calculateOrdersCount(filtered);
-});
 
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
 function deleteOrder(orderId) {
