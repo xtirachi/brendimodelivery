@@ -95,7 +95,8 @@ if (courier === 'emil' && status === 'Delivered') {
         <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
           <option value="">Çatdırıcı seçin</option>
         </select>
-
+ </div>
+  </div>
   </div>
 `;
 
