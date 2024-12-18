@@ -77,7 +77,7 @@ if (courier === 'emil' && status === 'Delivered') {
       <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
       <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
       <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
-      <p><strong>Qiymət:</strong> ${salesPrice}</p>
+      <p><strong>Qiymət:</strong> ${order[10]}</p>
       <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>
       <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
       <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
