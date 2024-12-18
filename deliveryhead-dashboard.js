@@ -6,7 +6,6 @@ window.onload = function() {
   loadOrdersByDate(today); // Load today's orders on page load
 };
 
-
 // Load orders for the selected date
 function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
@@ -30,7 +29,6 @@ function loadOrdersByDate(date) {
   }
           const orderAmount = parseFloat(order[10]) || 0;  // Assuming Column K is Order Amount
           const status = order[6];  // Column G is Status
-          const courier = order[7];  // Column H is Assigned Delivery Person
           const paymentMethod = order[9];  // Column J is Payment Method
           const orderDetails = order[4];  // Assuming Column E contains Order Details (Məhsullar, Miqdar)
 
