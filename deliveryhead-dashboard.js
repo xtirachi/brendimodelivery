@@ -81,10 +81,7 @@ if (courier === 'emil' && status === 'Delivered') {
                 <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>
                 <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
                 <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
-      <!-- Sifariş Təfərrüatları (Order Details) -->
-      <div id="orderDetails-${order[0]}" class="order-details">
-        <label><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong></label>
-        <p>${orderDetails || 'Məlumat yoxdur'}</p>
+     
 
         <!-- Status Update -->
         <label for="status-${order[0]}">Sifariş Statusu:</label>
