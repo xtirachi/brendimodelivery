@@ -217,3 +217,27 @@ h2 {
     font-size: 1rem;
   }
 
+  #courier-filters {
+  margin: 10px 0;
+}
+
+.filter-btn {
+  padding: 10px 15px;
+  margin-right: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.filter-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.order-card {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
