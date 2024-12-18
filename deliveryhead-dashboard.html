@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Paneli</title>
+  <title>Courier Paneli</title>
   <link href="dashboard.css" rel="stylesheet">
 </head>
 <body>
@@ -17,6 +17,13 @@
     <!-- Button to show orders for the selected date -->
     <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
 
+    <!-- Courier filter buttons -->
+<div id="courier-filters">
+  <button id="filter-all" class="filter-btn">Hamısı</button>
+  <button id="filter-murad" class="filter-btn">Murad</button>
+  <button id="filter-emil" class="filter-btn">Emil</button>
+</div>
+    
     <!-- Section to display orders -->
     <div id="orderList" class="mt-3"></div>
 
