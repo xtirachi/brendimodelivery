@@ -72,16 +72,15 @@ if (courier === 'emil' && status === 'Delivered') {
   <div class="order-card ${cardColor}" id="order-${order[0]}">
     <div class="order-info">
       <h3>Sifariş ID: ${order[0]}</h3>
-     <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
-     <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
-     <p><strong>Telefon:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
-                <p><strong>Status:</strong> <span id="status-${order[0]}">${order[6]}</span></p>
-                <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
-                <p><strong>Qiymət:</strong> ${salesPrice}</p>
-                <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>
-                <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
-                <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
-     
+      <p><strong>Satıcı Adı:</strong> ${order[16]}</p>
+      <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
+      <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
+      <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
+
+      <!-- Sifariş Təfərrüatları (Order Details) -->
+      <div id="orderDetails-${order[0]}" class="order-details">
+        <label><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong></label>
+        <p>${orderDetails || 'Məlumat yoxdur'}</p>
 
         <!-- Status Update -->
         <label for="status-${order[0]}">Sifariş Statusu:</label>
@@ -101,7 +100,8 @@ if (courier === 'emil' && status === 'Delivered') {
   </div>
 `;
 
-// Fetch and populate couriers in the select dropdown
+
+          // Fetch and populate couriers in the select dropdown
           fetchDeliveryUsers(order[0]);
         });
 
