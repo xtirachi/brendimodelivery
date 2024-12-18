@@ -55,15 +55,20 @@ if (status === 'Delivered' || status === 'Canceled') {
 }
 
 
-          // Add the order to the HTML
-          let cardColor = '';
-          if (status === 'Delivered') {
-            cardColor = 'soft-green';
-          } else if (status === 'Out for Delivery') {
-            cardColor = 'soft-yellow';
-          } else if (status === 'Canceled' || status === 'Deleted') {
-            cardColor = 'soft-red';
-          }
+         // Add the order to the HTML
+let cardColor = '';
+
+if (courier === 'emil' && status === 'Delivered') {
+  cardColor = 'soft-blue'; // Soft blue for Emil's delivered orders
+} else if (courier === 'emil') {
+  cardColor = 'soft-purple'; // Soft purple for Emil's other orders
+} else if (status === 'Delivered') {
+  cardColor = 'soft-green'; // Soft green for delivered orders
+} else if (status === 'Out for Delivery') {
+  cardColor = 'soft-yellow'; // Soft yellow for out-for-delivery orders
+} else if (status === 'Canceled' || status === 'Deleted') {
+  cardColor = 'soft-red'; // Soft red for canceled/deleted orders
+}
 
          html += `
   <div class="order-card ${cardColor}" id="order-${order[0]}">
