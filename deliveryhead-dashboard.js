@@ -20,7 +20,21 @@ function loadOrdersByDate(date) {
         let courierAmounts = {}; // Object to store total money to be returned by each courier
         let netCashPerCourier = {}; // Object to store Net Məbləğ for each courier
 
-        orders.forEach(order => {
+        ///// Function to render orders
+function renderOrders(filterCourier = '') {
+  const ordersContainer = document.getElementById('orders-container');
+  ordersContainer.innerHTML = ''; // Clear previous orders
+
+  // Filter orders based on the selected courier
+  const filteredOrders = orders.filter(order => {
+    if (filterCourier === 'Hamısı') {
+      return order.courier === 'Murad' || order.courier === 'Emil';
+    }
+    return filterCourier ? order.courier === filterCourier : true;
+  });
+
+  // Render filtered orders
+  filteredOrders.forEach(order => {
           const courier = order[7]; // Column H is Assigned Delivery Person
 
   // Skip orders assigned to "Taxi" or "Ilham"
@@ -276,3 +290,11 @@ function deleteOrder(orderId) {
     });
   }
 }
+
+// Add event listeners to filter buttons
+document.getElementById('filter-all').addEventListener('click', () => renderOrders('Hamısı'));
+document.getElementById('filter-murad').addEventListener('click', () => renderOrders('Murad'));
+document.getElementById('filter-emil').addEventListener('click', () => renderOrders('Emil'));
+
+// Initial render (all orders)
+renderOrders();
