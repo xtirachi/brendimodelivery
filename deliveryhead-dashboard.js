@@ -1,3 +1,4 @@
+
 // Set today's date as default in the date picker and show today's orders automatically
 window.onload = function() {
   const today = new Date().toISOString().split('T')[0];
@@ -20,21 +21,7 @@ function loadOrdersByDate(date) {
         let courierAmounts = {}; // Object to store total money to be returned by each courier
         let netCashPerCourier = {}; // Object to store Net Məbləğ for each courier
 
-        ///// Function to render orders
-function renderOrders(filterCourier = '') {
-  const ordersContainer = document.getElementById('orders-container');
-  ordersContainer.innerHTML = ''; // Clear previous orders
-
-  // Filter orders based on the selected courier
-  const filteredOrders = orders.filter(order => {
-    if (filterCourier === 'Hamısı') {
-      return order.courier === 'murad' || order.courier === 'emil';
-    }
-    return filterCourier ? order.courier === filterCourier : true;
-  });
-
-  // Render filtered orders
-  filteredOrders.forEach(order => {
+        orders.forEach(order => {
           const courier = order[7]; // Column H is Assigned Delivery Person
 
   // Skip orders assigned to "Taxi" or "Ilham"
@@ -87,7 +74,7 @@ if (courier === 'emil' && status === 'Delivered') {
     <div class="order-info">
       <h3>Sifariş ID: ${order[0]}</h3>
       <p><strong>Satıcı Adı:</strong> ${order[16]}</p>
-      <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
+     <p><strong>Müştəri Adı:</strong> ${order[1]}</p>
                 <p><strong>Telefon:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
                 <p><strong>Status:</strong> <span id="status-${order[0]}">${order[6]}</span></p>
                 <p><strong>Çatdırılma Ünvanı:</strong> ${order[3]}</p>
@@ -95,7 +82,6 @@ if (courier === 'emil' && status === 'Delivered') {
                 <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>
                 <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
                 <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
-
       <!-- Sifariş Təfərrüatları (Order Details) -->
       <div id="orderDetails-${order[0]}" class="order-details">
         <label><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong></label>
@@ -295,11 +281,3 @@ function deleteOrder(orderId) {
     });
   }
 }
-
-// Add event listeners to filter buttons
-document.getElementById('filter-all').addEventListener('click', () => renderOrders('Hamısı'));
-document.getElementById('filter-murad').addEventListener('click', () => renderOrders('murad'));
-document.getElementById('filter-emil').addEventListener('click', () => renderOrders('emil'));
-
-// Initial render (all orders)
-renderOrders();
