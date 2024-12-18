@@ -55,7 +55,6 @@ if (status === 'Delivered' || status === 'Canceled') {
 
          // Add the order to the HTML
 let cardColor = '';
-let courier = ''; // Default value for courier
 
 if (courier === 'emil' && status === 'Delivered') {
   cardColor = 'soft-blue'; // Soft blue for Emil's delivered orders
