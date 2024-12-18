@@ -293,8 +293,8 @@ function deleteOrder(orderId) {
 
 // Add event listeners to filter buttons
 document.getElementById('filter-all').addEventListener('click', () => renderOrders('Hamısı'));
-document.getElementById('filter-murad').addEventListener('click', () => renderOrders('Murad'));
-document.getElementById('filter-emil').addEventListener('click', () => renderOrders('Emil'));
+document.getElementById('filter-murad').addEventListener('click', () => renderOrders('murad'));
+document.getElementById('filter-emil').addEventListener('click', () => renderOrders('emil'));
 
 // Initial render (all orders)
 renderOrders();
