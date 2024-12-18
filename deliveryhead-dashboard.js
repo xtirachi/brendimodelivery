@@ -11,6 +11,11 @@ window.onload = function() {
 function loadOrdersByDate(date) {
   const selectedDate = date || document.getElementById('orderDateFilter').value;
 
+  const filteredOrders = orders.filter(order => order.date === selectedDate);
+
+  displayOrders(filteredOrders);
+  calculateOrdersCount(filteredOrders);
+  
   fetch(`https://script.google.com/macros/s/AKfycbxTqcTJ1WVzDqqHsYeq2HqWU9sFJcx2SjnMEZ-g4IYvRmksEDLbPCPvSC980Vtx5xSq/exec?action=getOrdersByDate&date=${selectedDate}`)
     .then(response => response.json())
     .then(data => {
@@ -246,6 +251,48 @@ function updateOrderDetails(orderId) {
     console.error('Error updating order:', error);
   });
 }
+
+// Function to display the filtered orders
+function displayOrders(filteredOrders) {
+  const orderList = document.getElementById("orderList");
+  orderList.innerHTML = ""; // Clear previous results
+
+  filteredOrders.forEach(order => {
+    const orderItem = document.createElement("div");
+    orderItem.textContent = `Order ID: ${order.id}, Courier: ${order.courier}, Date: ${order.date}`;
+    orderList.appendChild(orderItem);
+  });
+}
+
+// Function to calculate and display the order count for each courier
+function calculateOrdersCount(filteredOrders) {
+  const couriers = {};
+  filteredOrders.forEach(order => {
+    couriers[order.courier] = (couriers[order.courier] || 0) + 1;
+  });
+
+  const totalPerCourier = document.getElementById("totalPerCourier");
+  totalPerCourier.innerHTML = "<h3>Net Məbləğ (hər bir çatdırıcıya):</h3>";
+
+  for (const [courier, count] of Object.entries(couriers)) {
+    const courierInfo = document.createElement("div");
+    courierInfo.textContent = `${courier}: ${count} orders`;
+    totalPerCourier.appendChild(courierInfo);
+  }
+}
+
+// Add event listeners for courier filters
+document.getElementById("filter-all").addEventListener("click", () => displayOrders(orders));
+document.getElementById("filter-murad").addEventListener("click", () => {
+  const filtered = orders.filter(order => order.courier === "Murad");
+  displayOrders(filtered);
+  calculateOrdersCount(filtered);
+});
+document.getElementById("filter-emil").addEventListener("click", () => {
+  const filtered = orders.filter(order => order.courier === "Emil");
+  displayOrders(filtered);
+  calculateOrdersCount(filtered);
+});
 
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
 function deleteOrder(orderId) {
