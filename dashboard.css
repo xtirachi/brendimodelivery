@@ -172,6 +172,15 @@ h2 {
   background-color: #ffcdd2;
 }
 
+.order-card.soft-blue {
+  background-color: #cce7ff;
+}
+
+.order-card.soft-purple {
+  background-color: #e6ccff;
+}
+
+
 /* Responsive styling for mobile view */
 @media (max-width: 600px) {
   .container {
@@ -207,15 +216,4 @@ h2 {
   .order-card p {
     font-size: 1rem;
   }
-  .order-card.soft-blue {
-  background-color: #cce7ff; /* Light blue color */
-  border: 1px solid #99d0ff; /* Border for better visibility */
-  color: #003366; /* Optional: Text color for blue contrast */
-}
 
-.order-card.soft-purple {
-  background-color: #e6ccff; /* Light purple color */
-  border: 1px solid #d3aaff; /* Border for better visibility */
-  color: #4b0082; /* Optional: Text color for purple contrast */
-}
-}
