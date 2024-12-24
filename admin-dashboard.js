@@ -272,56 +272,57 @@ function updateOrderDetails(orderId) {
 }
 
 
-  document.getElementById("generatePdfBtn").addEventListener("click", function () {
-    // Extract order data
-    const orders = [];
-    document.querySelectorAll("#orderList .order").forEach((order) => {
-      const orderId = order.querySelector("p:nth-child(1)").textContent.replace("Order ID: ", "");
-      const address = order.querySelector("p:nth-child(2)").textContent.replace("Address: ", "");
-      const courier = order.querySelector("p:nth-child(3)").textContent.replace("Courier: ", "");
-      orders.push([orderId, address, courier]); // Push as a table row
-    });
+// Handle PDF generation on button click
+document.getElementById("generatePdfBtn").addEventListener("click", function () {
+  // Extract order data
+  const orders = [];
+  document.querySelectorAll("#orderList .order").forEach((order) => {
+    const orderId = order.querySelector("p:nth-child(1)").textContent.replace("Order ID: ", "");
+    const address = order.querySelector("p:nth-child(2)").textContent.replace("Address: ", "");
+    const courier = order.querySelector("p:nth-child(3)").textContent.replace("Courier: ", "");
+    orders.push([orderId, address, courier]); // Push as a table row
+  });
 
-    // Define the PDF document structure
-    const docDefinition = {
-      content: [
-        { text: "Order List", style: "header" },
-        {
-          table: {
-            headerRows: 1,
-            widths: ["*", "*", "*"],
-            body: [
-              ["Order ID", "Address", "Courier"], // Table headers
-              ...orders, // Table rows
-            ],
-          },
-        },
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          margin: [0, 0, 0, 10],
+  // Define the PDF document structure
+  const docDefinition = {
+    content: [
+      { text: "Sifariş Siyahısı", style: "header" }, // PDF Header
+      {
+        table: {
+          headerRows: 1,
+          widths: ["*", "*", "*"],
+          body: [
+            ["Sifariş ID", "Ünvan", "Kuryer"], // Table headers
+            ...orders, // Table rows from extracted data
+          ],
         },
       },
-    };
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+        margin: [0, 0, 0, 10],
+      },
+    },
+  };
 
-    // Generate the PDF
-    const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+  // Generate the PDF
+  const pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
-    // Display PDF in an iframe
-    pdfDocGenerator.getDataUrl((dataUrl) => {
-      const resultContainer = document.getElementById("pdf-viewer");
-      resultContainer.innerHTML = ""; // Clear previous content
-      const iframe = document.createElement("iframe");
-      iframe.src = dataUrl;
-      iframe.className = "w-full h-96"; // Responsive styling
-      resultContainer.appendChild(iframe);
-    });
-
-    // Optional: Trigger download
-    pdfDocGenerator.download("order_list.pdf");
+  // Display PDF in an iframe
+  pdfDocGenerator.getDataUrl((dataUrl) => {
+    const resultContainer = document.getElementById("pdf-viewer");
+    resultContainer.innerHTML = ""; // Clear previous content
+    const iframe = document.createElement("iframe");
+    iframe.src = dataUrl;
+    iframe.className = "w-full h-96"; // Responsive styling
+    resultContainer.appendChild(iframe);
   });
+
+  // Trigger download of the PDF
+  pdfDocGenerator.download("sifaris_siyahisi.pdf");
+});
 
 
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
