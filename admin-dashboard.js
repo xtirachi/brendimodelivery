@@ -30,7 +30,7 @@ function loadOrdersByDate(date) {
 
           // Only count the order in the total amount if it is not canceled
           if (status === 'Deleted') {
-            totalAmount += (orderAmount-6);
+            totalAmount += (orderAmount - 6);
           }
 
 if (status === 'Delivered' || status === 'Canceled') {
