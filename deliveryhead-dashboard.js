@@ -34,8 +34,7 @@ function loadOrdersByDate(date) {
           const orderDetails = order[4];  // Assuming Column E contains Order Details (Məhsullar, Miqdar)
 
           // Only count the order in the total amount if it is not canceled
-          if (status !== 'Canceled' &&
-    status !== 'Deleted' &&
+          if (status !== 'Deleted' &&
     courier !== 'ilham' &&
     courier !== 'taxi') {
           totalAmount += (orderAmount - 6); // Deduct 5 AZN per order
