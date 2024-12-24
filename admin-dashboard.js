@@ -271,6 +271,46 @@ function updateOrderDetails(orderId) {
   });
 }
 
+// Function to generate a PDF
+async function generatePDF() {
+  // Import jsPDF from the library
+  const { jsPDF } = window.jspdf;
+
+  // Create a new instance of jsPDF
+  const doc = new jsPDF();
+
+  // Add title to the PDF
+  doc.text("Order List", 14, 20);
+
+  // Define table headers
+  const headers = ["Order ID", "Address", "Courier Name"];
+  const rows = [];
+
+  // Loop through each order card to extract data
+  document.querySelectorAll('.order-card').forEach(card => {
+    const orderId = card.querySelector('h3').textContent.replace('Sifariş ID: ', '');
+    const deliveryAddress = card.querySelector(`#deliveryAddress-${orderId}`).value;
+    const courier = card.querySelector(`#courier-${orderId}`).textContent;
+
+    // Add a row for this order
+    rows.push([orderId, deliveryAddress, courier]);
+  });
+
+  // Add table to PDF
+  doc.autoTable({
+    head: [headers],
+    body: rows,
+    startY: 30,
+  });
+
+  // Save the PDF
+  doc.save("orders_list.pdf");
+}
+
+// Attach the generatePDF function to the button
+document.getElementById('downloadPdfBtn').addEventListener('click', generatePDF);
+
+
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
 function deleteOrder(orderId) {
   // Show a confirmation dialog to the user
