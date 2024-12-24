@@ -43,8 +43,8 @@ if (status === 'Delivered' || status === 'Canceled') {
     netCashPerCourier[courier] = 0;  // Initialize to 0 if undefined
   }
 
-  // Deduct 6 AZN for each delivered or canceled order
-  netCashPerCourier[courier] -= 6;
+  // Deduct 5 AZN for each delivered or canceled order
+  netCashPerCourier[courier] -= 5;
 
   // Only add the order amount to netCashPerCourier for cash payments and if the order is delivered
   if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
