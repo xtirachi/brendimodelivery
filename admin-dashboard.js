@@ -20,6 +20,7 @@ function loadOrdersByDate(date) {
         let totalAmount = 0;
         let courierAmounts = {}; // Object to store total money to be returned by each courier
         let netCashPerCourier = {}; // Object to store Net Məbləğ for each courier
+        let totalCount = 0;
 
         orders.forEach(order => {
           const orderAmount = parseFloat(order[10]) || 0;  // Assuming Column K is Order Amount
