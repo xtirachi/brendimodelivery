@@ -55,6 +55,8 @@ if (status === 'Delivered' || status === 'Canceled') {
   }
 }
 
+          // Hide the sales price if payment is via Card
+          const salesPrice = order[9].toLowerCase() === 'card' ? '0 AZN (Kartla ödəniş)' : `${order[10]} AZN`;
 
          // Add the order to the HTML
 let cardColor = '';
