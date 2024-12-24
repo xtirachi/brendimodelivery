@@ -38,7 +38,7 @@ function loadOrdersByDate(date) {
     status !== 'Deleted' &&
     courier !== 'ilham' &&
     courier !== 'taxi') {
-          totalAmount += (orderAmount - 5); // Deduct 5 AZN per order
+          totalAmount += (orderAmount - (totalCount*6)); // Deduct 5 AZN per order
              totalCount++; // Increment valid order count
 
           }
