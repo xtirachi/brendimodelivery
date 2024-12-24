@@ -271,44 +271,59 @@ function updateOrderDetails(orderId) {
   });
 }
 
-// Function to generate a PDF
-async function generatePDF() {
-  // Import jsPDF from the library
-  const { jsPDF } = window.jspdf;
+<script>
+  document.getElementById("generatePdfBtn").addEventListener("click", function () {
+    // Extract order data
+    const orders = [];
+    document.querySelectorAll("#orderList .order").forEach((order) => {
+      const orderId = order.querySelector("p:nth-child(1)").textContent.replace("Order ID: ", "");
+      const address = order.querySelector("p:nth-child(2)").textContent.replace("Address: ", "");
+      const courier = order.querySelector("p:nth-child(3)").textContent.replace("Courier: ", "");
+      orders.push([orderId, address, courier]); // Push as a table row
+    });
 
-  // Create a new instance of jsPDF
-  const doc = new jsPDF();
+    // Define the PDF document structure
+    const docDefinition = {
+      content: [
+        { text: "Order List", style: "header" },
+        {
+          table: {
+            headerRows: 1,
+            widths: ["*", "*", "*"],
+            body: [
+              ["Order ID", "Address", "Courier"], // Table headers
+              ...orders, // Table rows
+            ],
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10],
+        },
+      },
+    };
 
-  // Add title to the PDF
-  doc.text("Order List", 14, 20);
+    // Generate the PDF
+    const pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
-  // Define table headers
-  const headers = ["Order ID", "Address", "Courier Name"];
-  const rows = [];
+    // Display PDF in an iframe
+    pdfDocGenerator.getDataUrl((dataUrl) => {
+      const resultContainer = document.getElementById("pdf-viewer");
+      resultContainer.innerHTML = ""; // Clear previous content
+      const iframe = document.createElement("iframe");
+      iframe.src = dataUrl;
+      iframe.className = "w-full h-96"; // Responsive styling
+      resultContainer.appendChild(iframe);
+    });
 
-  // Loop through each order card to extract data
-  document.querySelectorAll('.order-card').forEach(card => {
-    const orderId = card.querySelector('h3').textContent.replace('Sifariş ID: ', '');
-    const deliveryAddress = card.querySelector(`#deliveryAddress-${orderId}`).value;
-    const courier = card.querySelector(`#courier-${orderId}`).textContent;
-
-    // Add a row for this order
-    rows.push([orderId, deliveryAddress, courier]);
+    // Optional: Trigger download
+    pdfDocGenerator.download("order_list.pdf");
   });
+</script>
 
-  // Add table to PDF
-  doc.autoTable({
-    head: [headers],
-    body: rows,
-    startY: 30,
-  });
-
-  // Save the PDF
-  doc.save("orders_list.pdf");
-}
-
-// Attach the generatePDF function to the button
-document.getElementById('downloadPdfBtn').addEventListener('click', generatePDF);
 
 
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
