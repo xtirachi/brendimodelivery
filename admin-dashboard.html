@@ -17,6 +17,13 @@
     <!-- Button to show orders for the selected date -->
     <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
 
+    <button id="downloadPdfBtn" class="btn btn-primary">Download Orders as PDF</button>
+
+<!-- Include jsPDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    
   <p><strong>Ümumi Sifarişlərin Sayı:</strong> <span id="totalOrdersCount">0</span> sifariş</p>
 
     <!-- Total amount of all orders -->
