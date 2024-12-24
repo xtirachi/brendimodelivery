@@ -274,6 +274,7 @@ function updateOrderDetails(orderId) {
 
 // Handle PDF generation on button click
 document.getElementById("generatePdfBtn").addEventListener("click", function () {
+  console.log("PDF button clicked!");
   // Extract order data
   const orders = [];
   document.querySelectorAll("#orderList .order").forEach((order) => {
