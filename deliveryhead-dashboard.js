@@ -19,6 +19,7 @@ function loadOrdersByDate(date) {
         let totalAmount = 0;
         let courierAmounts = {}; // Object to store total money to be returned by each courier
         let netCashPerCourier = {}; // Object to store Net Məbləğ for each courier
+        let totalCount = 0;
 
         orders.forEach(order => {
           const courier = order[7]; // Column H is Assigned Delivery Person
@@ -38,6 +39,8 @@ function loadOrdersByDate(date) {
     courier !== 'ilham' &&
     courier !== 'taxi') {
           totalAmount += (orderAmount - 5); // Deduct 5 AZN per order
+             totalCount++; // Increment valid order count
+
           }
 
 if (status === 'Delivered' || status === 'Canceled') {
@@ -116,6 +119,13 @@ if (courier === 'emil' && status === 'Delivered') {
       }
     });
 }
+
+// Display the total order count in the HTML
+document.getElementById('totalPerCourier').innerHTML += `
+  <h3>Ümumi Sifarişlərin Sayı:</h3>
+  <p>${totalCount} sifariş</p>
+`;
+
 
 // Update the order status and ensure no other fields (like the date) are cleared
 function changeStatus(orderId, orderDate) {
