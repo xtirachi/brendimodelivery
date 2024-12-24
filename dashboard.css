@@ -180,6 +180,23 @@ h2 {
   background-color: #e6ccff;
 }
 
+.orange {
+  background-color: #FFA500;
+  color: #000000; /* Black text for contrast */
+  border: 1px solid #cc8400; /* Darker orange for border */
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.darker-green {
+  background-color: #004d00;
+  color: #ffffff; /* White text for readability */
+  border: 1px solid #003300; /* Even darker green for border */
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
 
 /* Responsive styling for mobile view */
 @media (max-width: 600px) {
