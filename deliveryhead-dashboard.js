@@ -66,6 +66,10 @@ if (courier === 'emil' && status === 'Delivered') {
   cardColor = 'soft-yellow'; // Soft yellow for out-for-delivery orders
 } else if (status === 'Canceled' || status === 'Deleted') {
   cardColor = 'soft-red'; // Soft red for canceled/deleted orders
+} else if (courier === 'nicat') {
+  cardColor = 'orange'; // Soft purple for Emil's other orders
+} else if (courier === 'nicat' && status === 'Delivered') {
+  cardColor = 'darker-green';
 }
 
          html += `
@@ -82,21 +86,7 @@ if (courier === 'emil' && status === 'Delivered') {
       <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
       <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
      
-   
-
-        <!-- Status Update -->
-        <label for="status-${order[0]}">Sifariş Statusu:</label>
-        <select id="statusSelect-${order[0]}" class="form-control" onchange="changeStatus(${order[0]}, '${order[8]}')">
-          <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
-          <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
-          <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
-        </select>
-
-        <!-- Courier Assignment -->
-        <label for="courier-${order[0]}">Çatdırıcı Təyinatı:</label>
-        <select id="courierSelect-${order[0]}" class="form-control" onchange="assignCourier(${order[0]})">
-          <option value="">Çatdırıcı seçin</option>
-        </select>
+  
  </div>
   </div>
   </div>
