@@ -33,7 +33,7 @@ function loadOrdersByDate(date) {
           if (status !== 'Canceled' &&
     status !== 'Deleted') {
             totalAmount += (orderAmount - 6);
-                         totalCount++; // Increment valid order count
+            totalCount++; // Increment valid order count
           }
 
 if (status === 'Delivered' || status === 'Canceled') {
@@ -130,7 +130,9 @@ if (status === 'Delivered' || status === 'Canceled') {
 
         document.getElementById('orderList').innerHTML = html;
         document.getElementById('totalAmount').innerText = `Toplam Məbləğ: ${totalAmount.toFixed(2)} AZN`;
-
+// Update the HTML elements with calculated values
+document.getElementById('totalOrdersCount').textContent = totalCount;
+        
         // Show the net cash for each courier (total amount minus 6 AZN per delivered order)
         let perCourierHtml = 'Net Məbləğ (hər bir çatdırıcıya):<br>';
         for (const courier in netCashPerCourier) {
@@ -143,8 +145,7 @@ if (status === 'Delivered' || status === 'Canceled') {
     });
 }
 
-// Update the HTML elements with calculated values
-document.getElementById('totalOrdersCount').textContent = totalCount;
+
 console.log(`Total Valid Orders: ${totalCount}`);
 
 
