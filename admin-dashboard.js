@@ -32,6 +32,7 @@ function loadOrdersByDate(date) {
           // Only count the order in the total amount if it is not canceled
           if (status === 'Deleted') {
             totalAmount += (orderAmount - 6);
+                         totalCount++; // Increment valid order count
           }
 
 if (status === 'Delivered' || status === 'Canceled') {
@@ -143,7 +144,6 @@ if (status === 'Delivered' || status === 'Canceled') {
 
 // Update the HTML elements with calculated values
 document.getElementById('totalOrdersCount').textContent = totalCount;
-document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
 console.log(`Total Valid Orders: ${totalCount}`);
 
 
