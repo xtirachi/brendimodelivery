@@ -141,6 +141,12 @@ if (status === 'Delivered' || status === 'Canceled') {
     });
 }
 
+// Update the HTML elements with calculated values
+document.getElementById('totalOrdersCount').textContent = totalCount;
+document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+console.log(`Total Valid Orders: ${totalCount}`);
+
+
 // Update the order status and ensure no other fields (like the date) are cleared
 function changeStatus(orderId, orderDate) {
   const status = document.getElementById(`statusSelect-${orderId}`).value;
