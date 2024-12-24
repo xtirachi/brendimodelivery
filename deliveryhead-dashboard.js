@@ -38,7 +38,7 @@ function loadOrdersByDate(date) {
     status !== 'Deleted' &&
     courier !== 'ilham' &&
     courier !== 'taxi') {
-          totalAmount += (orderAmount - (totalCount*6)); // Deduct 5 AZN per order
+          totalAmount += (orderAmount - 6); // Deduct 5 AZN per order
              totalCount++; // Increment valid order count
 
           }
@@ -93,7 +93,6 @@ if (courier === 'emil' && status === 'Delivered') {
  <p><strong>Sifariş Təfərrüatları:</strong> ${order[4]}</p>
       <p><strong>Xüsusi Təlimatlar:</strong> ${order[5]}</p>
       <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
-     
   
  </div>
   </div>
@@ -119,12 +118,6 @@ if (courier === 'emil' && status === 'Delivered') {
       }
     });
 }
-
-// Display the total order count in the HTML
-document.getElementById('totalPerCourier').innerHTML += `
-  <h3>Ümumi Sifarişlərin Sayı:</h3>
-  <p>${totalCount} sifariş</p>
-`;
 
 // Log or display the total count
 console.log(`Total Valid Orders: ${totalCount}`);
