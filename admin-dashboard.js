@@ -271,7 +271,7 @@ function updateOrderDetails(orderId) {
   });
 }
 
-<script>
+
   document.getElementById("generatePdfBtn").addEventListener("click", function () {
     // Extract order data
     const orders = [];
@@ -322,8 +322,6 @@ function updateOrderDetails(orderId) {
     // Optional: Trigger download
     pdfDocGenerator.download("order_list.pdf");
   });
-</script>
-
 
 
 // Function to delete an order from the UI and log it as 'Deleted' in the status column
