@@ -126,6 +126,8 @@ document.getElementById('totalPerCourier').innerHTML += `
   <p>${totalCount} sifariş</p>
 `;
 
+// Log or display the total count
+console.log(`Total Valid Orders: ${totalCount}`);
 
 // Update the order status and ensure no other fields (like the date) are cleared
 function changeStatus(orderId, orderDate) {
