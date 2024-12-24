@@ -17,8 +17,12 @@
     <!-- Button to show orders for the selected date -->
     <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
 
-    <button id="downloadPdfBtn" class="btn btn-primary">Download Orders as PDF</button>
+<!-- Button to Generate and View PDF -->
+<button id="generatePdfBtn" class="btn btn-primary">Generate PDF</button>
 
+<!-- PDF Viewer -->
+<div id="pdf-viewer" class="mt-4"></div>
+    
 <!-- Include jsPDF Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
