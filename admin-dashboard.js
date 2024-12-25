@@ -34,6 +34,9 @@ function loadOrdersByDate(date) {
     status !== 'Deleted') {
             totalAmount += (orderAmount - 6);
             totalCount++; // Increment valid order count
+            } else if (status === 'Canceled') {
+    // Deduct 6 AZN for canceled orders
+    totalAmount -= 6; 
           }
 
 if (status === 'Delivered' || status === 'Canceled') {
