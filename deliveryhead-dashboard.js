@@ -39,7 +39,9 @@ function loadOrdersByDate(date) {
     courier !== 'taxi') {
           totalAmount += (orderAmount - 6); // Deduct 5 AZN per order
              totalCount++; // Increment valid order count
-
+} else if (status === 'Canceled') {
+    // Deduct 6 AZN for canceled orders
+    totalAmount -= 6; 
           }
 
 if (status === 'Delivered' || status === 'Canceled') {
