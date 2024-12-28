@@ -36,7 +36,8 @@ function loadOrdersByDate(date) {
           // Only count the order in the total amount if it is not canceled
           if (status !== 'Canceled' && status !== 'Deleted' &&
     courier !== 'ilham' &&
-    courier !== 'taxi') {
+    courier !== 'taxi' &&
+    paymentMethod === 'cash') {
           totalAmount += (orderAmount - 6); // Deduct 5 AZN per order
              totalCount++; // Increment valid order count
 } else if (status === 'Canceled') {
