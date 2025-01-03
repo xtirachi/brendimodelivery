@@ -82,7 +82,7 @@ if (status === 'Delivered' || status === 'Canceled') {
       <p><strong>Status:</strong> <span id="status-${order[0]}">${status}</span></p>
       <p><strong>Çatdırıcı:</strong> <span id="courier-${order[0]}">${courier || 'Təyin edilməyib'}</span></p>
       <p><strong>Telefon:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
-      <p><strong>Xüsusi təlimatlar:</strong> ${order[6]}</p>
+      <p><strong>Xüsusi təlimatlar:</strong> ${order[5]}</p>
 
       <!-- Editable Çatdırılma Ünvanı field -->
       <label for="deliveryAddress-${order[0]}"><strong>Çatdırılma Ünvanı:</strong></label>
