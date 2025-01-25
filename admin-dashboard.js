@@ -120,8 +120,6 @@ if (status === 'Delivered' || status === 'Canceled') {
           <option value="">Çatdırıcı seçin</option>
         </select>
 
-        <!-- Delete Button -->
-<button class="btn btn-danger mt-3" onclick="deleteOrder(${order[0]})">Sil</button>
       </div>
     </div>
   </div>
