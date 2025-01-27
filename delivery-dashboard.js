@@ -97,7 +97,7 @@ if (order[9].toLowerCase() === 'cash' && order[6] === 'Delivered') {
         });
 
         // Display the amount to be returned after deduction
-        const returnAmount = totalCashOnHand - (deliveredOrdersCount * 5) - (canceledOrdersCount * 5);
+        const returnAmount = totalCashOnHand - (deliveredOrdersCount * 5);
         document.getElementById('orderList').innerHTML = html;
         document.getElementById('returnAmount').innerText = `Qaytarılacaq məbləğ: ${returnAmount.toFixed(2)} AZN`; // Display the return amount
       } else {
