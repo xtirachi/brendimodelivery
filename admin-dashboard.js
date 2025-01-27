@@ -32,11 +32,8 @@ function loadOrdersByDate(date) {
           // Only count the order in the total amount if it is not canceled
           if (status !== 'Canceled' &&
     status !== 'Deleted') {
-            totalAmount += (orderAmount - 6);
+            totalAmount += (orderAmount - 5);
             totalCount++; // Increment valid order count
-            } else if (status === 'Canceled') {
-    // Deduct 6 AZN for canceled orders
-    totalAmount -= 6; 
           }
 
 if (status === 'Delivered' || status === 'Canceled') {
@@ -46,7 +43,7 @@ if (status === 'Delivered' || status === 'Canceled') {
   }
 
   // Deduct 6 AZN for each delivered or canceled order
-  netCashPerCourier[courier] -= 6;
+  netCashPerCourier[courier] -= 5;
 
   // Only add the order amount to netCashPerCourier for cash payments and if the order is delivered
   if (status === 'Delivered' && paymentMethod.toLowerCase() === 'cash') {
