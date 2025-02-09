@@ -307,6 +307,9 @@ function displayOrders(orders) {
                     <p><strong>Ödəniş Metodu:</strong> ${order[9]}</p>
                     <p><strong>Səhifə Adı:</strong> ${order[11]}</p>
                     <p><strong>Sifariş Təfərrüatları (Məhsullar, Miqdar):</strong> ${order[4] || 'Məlumat yoxdur'}</p>
+                    <label for="specialInstructions"><strong>Xüsusi təlimatlar:</strong></label>
+<textarea id="specialInstructions" class="form-control"></textarea>
+
                 </div>
             </div>
         `;
