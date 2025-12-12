@@ -25,7 +25,7 @@ dailyPurchasesBtn.addEventListener('click', () => {
 });
 
 dailyFinanceBtn.addEventListener('click', () => {
-    window.location.href = 'https://xtirachi.github.io/brendimo/finance.html';  // Replace '#' with the actual URL
+    window.location.href = 'https://brendimo-co.github.io/legfin/';  // Replace '#' with the actual URL
 });
 
 warehouseBtn.addEventListener('click', () => {
