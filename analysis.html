@@ -4,85 +4,645 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Satış Təhlili Dashboardu</title>
-  <link href="analysis.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
+  <style>
+    :root {
+      --primary: #4f46e5; /* Indigo */
+      --secondary: #64748b; /* Slate */
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Header & Filter Section */
+    header {
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 20px;
+    }
+
+    .filter-bar {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .filter-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input[type="date"] {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background: #f8fafc;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input[type="date"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .separator {
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+
+    button#filterBtn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 11px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto; /* Push to right */
+    }
+
+    button#filterBtn:hover {
+      background-color: #4338ca;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Specific Grid Areas */
+    .col-span-2 { grid-column: span 2; }
+    .col-span-4 { grid-column: span 4; }
+    .row-span-2 { grid-row: span 2; }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .card h2 {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h2 i { color: var(--primary); }
+
+    /* Metric Styling (Big Numbers) */
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 5px;
+    }
+
+    .metric-compare {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    .metric-compare span {
+      font-weight: 600;
+    }
+
+    /* Lists */
+    ul.simple-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+    ul.simple-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    ul.simple-list li:last-child { border-bottom: none; }
+
+    /* Chart Containers */
+    .chart-container {
+      position: relative;
+      height: 300px; /* Fixed height for charts */
+      width: 100%;
+    }
+    
+    .chart-container-sm {
+      height: 250px;
+    }
+
+    /* Loading State */
+    .loading-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      color: var(--primary);
+      font-weight: 600;
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .card.loading .loading-overlay { opacity: 1; pointer-events: all; }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+      .col-span-2 { grid-column: span 2; }
+      .col-span-4 { grid-column: span 2; }
+    }
+
+    @media (max-width: 768px) {
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-inputs { flex-direction: column; width: 100%; }
+      input[type="date"] { width: 100%; }
+      button#filterBtn { margin-left: 0; width: 100%; justify-content: center; }
+      
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .col-span-2, .col-span-4 { grid-column: span 1; }
+    }
+  </style>
 </head>
 <body>
+
   <div class="container">
-    <h1>Satış Təhlili Dashboardu</h1>
+    <h1><i class="fa-solid fa-chart-line"></i> Satış Təhlili Dashboardu</h1>
 
-    <!-- Global Date Range and Comparison Selection -->
-    <div class="date-range">
-      <label for="startDate">Başlanğıc Tarixi:</label>
-      <input type="date" id="startDate" class="form-control">
-      
-      <label for="endDate">Bitmə Tarixi:</label>
-      <input type="date" id="endDate" class="form-control">
-      
-      <!-- Compare to Date Range Selection -->
-      <label for="compareStartDate">Müqayisə Başlanğıc Tarixi:</label>
-      <input type="date" id="compareStartDate" class="form-control">
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Seçilən Tarix Aralığı</label>
+        <div class="filter-inputs">
+          <input type="date" id="startDate">
+          <span class="separator">-</span>
+          <input type="date" id="endDate">
+        </div>
+      </div>
 
-      <label for="compareEndDate">Müqayisə Bitmə Tarixi:</label>
-      <input type="date" id="compareEndDate" class="form-control">
-      
-      <button id="filterBtn">Tətbiq et</button>
+      <div class="filter-group">
+        <label>Müqayisə Tarix Aralığı</label>
+        <div class="filter-inputs">
+          <input type="date" id="compareStartDate">
+          <span class="separator">-</span>
+          <input type="date" id="compareEndDate">
+        </div>
+      </div>
+
+      <button id="filterBtn">
+        <i class="fa-solid fa-filter"></i> Tətbiq et
+      </button>
     </div>
 
-    <!-- Metrics Cards Section -->
-    <div class="kpi-section">
-
-      <!-- Total Sales Card -->
-      <div class="kpi-card" id="totalSales">
-        <h2>Cəmi Satışlar</h2>
-        <p>Seçilmiş tarix aralığı üzrə satış: <span id="totalSalesAmount">Loading...</span></p>
-        <p>Müqayisə tarixinə görə satış: <span id="compareTotalSalesAmount">Loading...</span></p>
-        <canvas id="dailySalesChart"></canvas>
+    <div class="dashboard-grid">
+      
+      <div class="card" id="card-totalSales">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-coins"></i> Cəmi Satışlar</h2>
+        <div class="metric-value" id="totalSalesAmount">0.00 AZN</div>
+        <div class="metric-compare">
+          Vs: <span id="compareTotalSalesAmount">0.00 AZN</span>
+        </div>
       </div>
 
-      <!-- Sales by Source Card -->
-      <div class="kpi-card" id="salesBySource">
-        <h2>Satış Mənbələrinə Görə Satışlar</h2>
-        <canvas id="salesBySourceChart"></canvas>
+      <div class="card" id="card-totalOrders">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-box"></i> Cəmi Sifarişlər</h2>
+        <div class="metric-value" id="totalOrdersAmount">0</div>
+        <div class="metric-compare">
+          Vs: <span id="compareTotalOrdersAmount">0</span>
+        </div>
       </div>
 
-      <!-- Total Orders Card -->
-      <div class="kpi-card" id="totalOrders">
-        <h2>Cəmi Sifarişlər</h2>
-        <p>Seçilmiş tarix aralığı üzrə: <span id="totalOrdersAmount">Loading...</span></p>
-        <p>Müqayisə tarixinə görə: <span id="compareTotalOrdersAmount">Loading...</span></p>
+      <div class="card" id="card-avgOrder">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-receipt"></i> Orta Sifariş Dəyəri</h2>
+        <div class="metric-value" id="avgOrderValueAmount">0.00 AZN</div>
+        <div class="metric-compare">
+          Vs: <span id="compareAvgOrderValueAmount">0.00 AZN</span>
+        </div>
       </div>
 
-      <!-- Average Order Value Card -->
-      <div class="kpi-card" id="avgOrderValue">
-        <h2>Orta Sifariş Dəyəri</h2>
-        <p>Seçilmiş tarix aralığı üzrə: <span id="avgOrderValueAmount">Loading...</span></p>
-        <p>Müqayisə tarixinə görə: <span id="compareAvgOrderValueAmount">Loading...</span></p>
+      <div class="card" id="card-returning">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-rotate"></i> Qayıdan Müştəri %</h2>
+        <div class="metric-value" id="returningCustomerRateAmount">0%</div>
+        <div class="metric-compare">
+          Vs: <span id="compareReturningCustomerRateAmount">0%</span>
+        </div>
       </div>
 
-      <!-- Top Products Card -->
-      <div class="kpi-card" id="topProducts">
-        <h2>Ən çox satılan məhsullar</h2>
+      <div class="card col-span-4" id="card-chart-daily">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-calendar-days"></i> Günlük Satış Trendi</h2>
+        <div class="chart-container">
+          <canvas id="dailySalesChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card col-span-2" id="card-chart-source">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-shop"></i> Mənbə üzrə Satışlar</h2>
+        <div class="chart-container-sm" style="height: 250px; display: flex; justify-content: center;">
+          <canvas id="salesBySourceChart"></canvas>
+        </div>
+        <div id="salesBySourceLegend" style="margin-top: 15px;"></div>
+      </div>
+
+      <div class="card col-span-2" id="card-chart-customers">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-users"></i> Yeni və Qayıdan Müştərilər</h2>
+        <div class="chart-container-sm">
+          <canvas id="customersOverTimeChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card col-span-2" id="card-topProducts">
+        <div class="loading-overlay"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp;Yüklənir...</div>
+        <h2><i class="fa-solid fa-trophy"></i> Ən Çox Satılan Məhsullar</h2>
         <div id="topProductsList"></div>
       </div>
 
-      <!-- Returning Customer Rate Card -->
-      <div class="kpi-card" id="returningCustomerRate">
-        <h2>Qayıdan Müştəri Nisbəti</h2>
-        <p>Seçilmiş tarix aralığı üzrə: <span id="returningCustomerRateAmount">Loading...</span></p>
-        <p>Müqayisə tarixinə görə: <span id="compareReturningCustomerRateAmount">Loading...</span></p>
-      </div>
-
-      <!-- Customers Over Time Card -->
-      <div class="kpi-card" id="customersOverTime">
-        <h2>Müştərilər (ilk dəfə vs qayıdan)</h2>
-        <canvas id="customersOverTimeChart"></canvas>
-      </div>
-      
     </div>
   </div>
 
-  <script src="analysis.js"></script>
+  <script>
+    // --- Configuration ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5uzVd8AZ1NEJ3y9MUYlMc6W-QSyI6RbtX4BwNP9wHTiB0S64JNt6tms9ICmAbDbi8IA/exec';
+
+    // Global Chart Instances Store (to destroy them before re-rendering)
+    const chartInstances = {
+      dailySales: null,
+      salesBySource: null,
+      customers: null
+    };
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+      setDefaultDates();
+      triggerLoad(); // Load data immediately on page open
+    });
+
+    document.getElementById('filterBtn').addEventListener('click', triggerLoad);
+
+    function triggerLoad() {
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const compareStartDate = document.getElementById('compareStartDate').value;
+      const compareEndDate = document.getElementById('compareEndDate').value;
+      
+      loadAllMetrics(startDate, endDate, compareStartDate, compareEndDate);
+    }
+
+    // --- Helpers ---
+    function setDefaultDates() {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      // Simple fix for "Last 30 days" view as default might be better, but sticking to your logic:
+      document.getElementById('startDate').value = formatDate(today);
+      document.getElementById('endDate').value = formatDate(today);
+      document.getElementById('compareStartDate').value = formatDate(yesterday);
+      document.getElementById('compareEndDate').value = formatDate(yesterday);
+    }
+
+    function formatDate(date) {
+      // Use local time to avoid timezone bugs
+      const offset = date.getTimezoneOffset();
+      const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+      return localDate.toISOString().split('T')[0];
+    }
+
+    function setLoading(id, isLoading) {
+      const el = document.getElementById(id);
+      if(el) {
+        if(isLoading) el.classList.add('loading');
+        else el.classList.remove('loading');
+      }
+    }
+
+    function fetchData(action, startDate, endDate, compareStartDate, compareEndDate) {
+      return fetch(`${SCRIPT_URL}?action=${action}&startDate=${startDate}&endDate=${endDate}&compareStartDate=${compareStartDate}&compareEndDate=${compareEndDate}`)
+        .then(response => response.json())
+        .catch(error => {
+          console.error(`Error fetching ${action}:`, error);
+          return null;
+        });
+    }
+
+    // --- Data Loading Functions ---
+
+    function loadAllMetrics(sd, ed, csd, ced) {
+      // Total Sales
+      setLoading('card-totalSales', true);
+      setLoading('card-chart-daily', true);
+      fetchData('getTotalSales', sd, ed, csd, ced).then(data => {
+        if(data) {
+          document.getElementById('totalSalesAmount').textContent = `${data.totalSales.toFixed(2)} AZN`;
+          document.getElementById('compareTotalSalesAmount').textContent = `${data.compareTotalSales.toFixed(2)} AZN`;
+          renderDailySalesChart(data.dailySales);
+        }
+        setLoading('card-totalSales', false);
+        setLoading('card-chart-daily', false);
+      });
+
+      // Sales By Source
+      setLoading('card-chart-source', true);
+      fetchData('getSalesBySource', sd, ed, csd, ced).then(data => {
+        if(data) renderSalesBySource(data);
+        setLoading('card-chart-source', false);
+      });
+
+      // Total Orders
+      setLoading('card-totalOrders', true);
+      fetchData('getTotalOrders', sd, ed, csd, ced).then(data => {
+        if(data) {
+          document.getElementById('totalOrdersAmount').textContent = data.totalOrders;
+          document.getElementById('compareTotalOrdersAmount').textContent = data.compareTotalOrders;
+        }
+        setLoading('card-totalOrders', false);
+      });
+
+      // Avg Order Value
+      setLoading('card-avgOrder', true);
+      fetchData('getAvgOrderValue', sd, ed, csd, ced).then(data => {
+        if(data) {
+          document.getElementById('avgOrderValueAmount').textContent = `${data.avgOrderValue.toFixed(2)} AZN`;
+          document.getElementById('compareAvgOrderValueAmount').textContent = `${data.compareAvgOrderValue.toFixed(2)} AZN`;
+        }
+        setLoading('card-avgOrder', false);
+      });
+
+      // Top Products
+      setLoading('card-topProducts', true);
+      fetchData('getTopProducts', sd, ed, csd, ced).then(data => {
+        renderTopProducts(data);
+        setLoading('card-topProducts', false);
+      });
+
+      // Returning Rate
+      setLoading('card-returning', true);
+      fetchData('getReturningCustomerRate', sd, ed, csd, ced).then(data => {
+        if(data) {
+          document.getElementById('returningCustomerRateAmount').textContent = `${(data.returningRate * 100).toFixed(2)}%`;
+          document.getElementById('compareReturningCustomerRateAmount').textContent = `${(data.compareReturningRate * 100).toFixed(2)}%`;
+        }
+        setLoading('card-returning', false);
+      });
+
+      // Customers Over Time
+      setLoading('card-chart-customers', true);
+      fetchData('getCustomersOverTime', sd, ed, csd, ced).then(data => {
+        if(data) renderCustomersChart(data);
+        setLoading('card-chart-customers', false);
+      });
+    }
+
+    // --- Rendering Functions ---
+
+    function renderDailySalesChart(dailySales) {
+      const ctx = document.getElementById('dailySalesChart').getContext('2d');
+      
+      if (chartInstances.dailySales) chartInstances.dailySales.destroy();
+
+      if (!dailySales || dailySales.length === 0) return;
+
+      const labels = dailySales.map(sale => sale.date);
+      const data = dailySales.map(sale => sale.amount);
+
+      chartInstances.dailySales = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Satışlar (AZN)',
+            data: data,
+            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+            borderColor: '#4f46e5',
+            borderWidth: 2,
+            tension: 0.3, // Curve the line
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#fff',
+            pointBorderColor: '#4f46e5'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: { label: (c) => `${c.parsed.y} AZN` }
+            }
+          },
+          scales: {
+            x: { 
+              type: 'time', 
+              time: { unit: 'day', displayFormats: { day: 'MMM d' } },
+              grid: { display: false }
+            },
+            y: { 
+              beginAtZero: true,
+              grid: { borderDash: [5, 5] },
+              ticks: { callback: (val) => val + '₼' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderSalesBySource(data) {
+      const ctx = document.getElementById('salesBySourceChart').getContext('2d');
+      const legendContainer = document.getElementById('salesBySourceLegend');
+      
+      if (chartInstances.salesBySource) chartInstances.salesBySource.destroy();
+
+      const labels = Object.keys(data.salesBySource);
+      const salesAmounts = labels.map(s => data.salesBySource[s].totalSales);
+      const orderCounts = labels.map(s => data.salesBySource[s].orderCount);
+      
+      const colors = ['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'];
+
+      chartInstances.salesBySource = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: salesAmounts,
+            backgroundColor: colors,
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false } // We use custom legend
+          }
+        }
+      });
+
+      // Custom Legend HTML
+      legendContainer.innerHTML = '';
+      const ul = document.createElement('ul');
+      ul.className = 'simple-list';
+      
+      labels.forEach((source, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span style="display:flex; align-items:center; gap:8px;">
+            <span style="width:10px; height:10px; background:${colors[idx % colors.length]}; border-radius:50%;"></span>
+            ${source}
+          </span>
+          <span style="font-weight:600;">${orderCounts[idx]} sifariş</span>
+        `;
+        ul.appendChild(li);
+      });
+      legendContainer.appendChild(ul);
+    }
+
+    function renderTopProducts(data) {
+      const list = document.getElementById('topProductsList');
+      list.innerHTML = '';
+
+      if (!data || !data.topProducts || data.topProducts.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted); text-align:center;">Məlumat tapılmadı.</p>';
+        return;
+      }
+
+      const ul = document.createElement('ul');
+      ul.className = 'simple-list';
+
+      data.topProducts.slice(0, 5).forEach((product, i) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span style="color:var(--text-main);">${i+1}. ${product.name}</span>
+          <span style="font-weight:600; color:var(--primary);">${product.unitsSold} ədəd</span>
+        `;
+        ul.appendChild(li);
+      });
+      list.appendChild(ul);
+    }
+
+    function renderCustomersChart(data) {
+      const ctx = document.getElementById('customersOverTimeChart').getContext('2d');
+      if (chartInstances.customers) chartInstances.customers.destroy();
+
+      chartInstances.customers = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Müştəri Bölgüsü'],
+          datasets: [
+            {
+              label: 'İlk dəfə',
+              data: [data.firstTimeCustomers],
+              backgroundColor: '#3b82f6',
+              borderRadius: 5
+            },
+            {
+              label: 'Qayıdan',
+              data: [data.returningCustomers],
+              backgroundColor: '#10b981',
+              borderRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: { beginAtZero: true },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+  </script>
 </body>
 </html>
