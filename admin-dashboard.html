@@ -1,43 +1,417 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Paneli</title>
-  <link href="dashboard.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --soft-green: #dcfce7;
+            --dark-green: #166534;
+            --soft-blue: #dbeafe;
+            --dark-blue: #1e40af;
+            --soft-red: #fee2e2;
+            --dark-red: #991b1b;
+            --soft-yellow: #fef9c3;
+            --dark-yellow: #854d0e;
+            --soft-purple: #f3e8ff;
+            --orange: #ffedd5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 30px;
+        }
+
+        h2 { margin: 0; color: var(--primary); font-weight: 600; }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+
+        .form-control {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-control:focus { border-color: var(--primary); }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-pdf { background: #10b981; color: white; }
+        .btn-delete { background: var(--dark-red); color: white; margin-top: 10px; width: 100%; justify-content: center; }
+        .btn:hover { opacity: 0.9; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .order-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .order-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .order-card:hover { transform: translateY(-5px); }
+
+        /* Status Colors */
+        .soft-green { background-color: var(--soft-green); border-top: 5px solid var(--dark-green); }
+        .soft-blue { background-color: var(--soft-blue); border-top: 5px solid var(--dark-blue); }
+        .soft-red { background-color: var(--soft-red); border-top: 5px solid var(--dark-red); }
+        .soft-yellow { background-color: var(--soft-yellow); border-top: 5px solid var(--dark-yellow); }
+        .soft-purple { background-color: var(--soft-purple); border-top: 5px solid #6b21a8; }
+        .orange { background-color: var(--orange); border-top: 5px solid #9a3412; }
+
+        .order-info h3 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; }
+        .order-info p { margin: 8px 0; font-size: 0.9rem; }
+        label { font-size: 0.8rem; font-weight: 600; margin-top: 10px; display: block; }
+
+        #pdf-viewer { margin-top: 20px; }
+        iframe { width: 100%; height: 500px; border: none; border-radius: 12px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Admin Paneli</h2>
-    
-    <!-- Date selector to filter orders by date -->
-    <label for="orderDateFilter">Sifariş Tarixi:</label>
-    <input type="date" id="orderDateFilter" class="form-control">
 
-    <!-- Button to show orders for the selected date -->
-    <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
+<div class="container">
+    <header>
+        <h2><i class="fas fa-chart-line"></i> Admin Paneli</h2>
+        <button id="generatePdfBtn" class="btn btn-pdf">
+            <i class="fas fa-file-pdf"></i> PDF Yüklə
+        </button>
+    </header>
 
- 
-    
-    <p><strong>Ümumi Sifarişlərin Sayı:</strong> <span id="totalOrdersCount">0</span> sifariş</p>
-
-    <!-- Total amount of all orders -->
-    <div id="totalAmount" class="mt-3"></div>
-
-    <!-- Net Cash (Net Məbləğ) for each courier after 6 AZN deduction per order -->
-    <div id="totalPerCourier" class="mt-3">
-      <h3>Net Məbləğ (hər bir çatdırıcıya):</h3>
+    <div class="filter-section">
+        <div class="form-group">
+            <label for="orderDateFilter">Sifariş Tarixi:</label>
+            <input type="date" id="orderDateFilter" class="form-control">
+        </div>
+        <button id="showOrdersButton" class="btn btn-primary" onclick="loadOrdersByDate()">
+            <i class="fas fa-search"></i> Sifarişləri Göstər
+        </button>
     </div>
-    
-    <!-- Section to display orders -->
-    <div id="orderList" class="mt-3">
-     
-    </div>
-  </div>
 
-  <!-- Include jsPDF and its AutoTable plugin -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-  <script src="admin-dashboard.js"></script>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <small>Ümumi Sifariş</small>
+            <div id="totalOrdersCount" style="font-size: 1.5rem; font-weight: bold;">0</div>
+        </div>
+        <div class="stat-card">
+            <small>Toplam Məbləğ</small>
+            <div id="totalAmount" style="font-size: 1.5rem; font-weight: bold; color: var(--dark-green);">0.00 AZN</div>
+        </div>
+        <div class="stat-card" id="totalPerCourier">
+            <small>Kuryer Hesabatı</small>
+            <div style="font-size: 0.85rem; margin-top: 5px;">Məlumat gözlənilir...</div>
+        </div>
+    </div>
+
+    <div id="orderList" class="order-grid">
+        </div>
+
+    <div id="pdf-viewer"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+// --- CONFIGURATION ---
+const API_URL = 'https://script.google.com/macros/s/AKfycbxTqcTJ1WVzDqqHsYeq2HqWU9sFJcx2SjnMEZ-g4IYvRmksEDLbPCPvSC980Vtx5xSq/exec';
+const UPDATE_URL = 'https://script.google.com/macros/s/AKfycbxfx5QM1Ibupxq_4TXIdzAi2tlaJhCZe5gWzLm1JIoTIjtUMjpwfKCdKH2oRgqCrKJ8/exec';
+
+window.onload = function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('orderDateFilter').value = today;
+    loadOrdersByDate(today);
+};
+
+// --- CORE FUNCTIONS ---
+
+function loadOrdersByDate(date) {
+    const selectedDate = date || document.getElementById('orderDateFilter').value;
+    const listContainer = document.getElementById('orderList');
+    listContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Yüklənir...</p>';
+
+    fetch(`${API_URL}?action=getOrdersByDate&date=${selectedDate}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.orders.length > 0) {
+                const orders = data.orders;
+                let html = '';
+                let totalAmount = 0;
+                let netCashPerCourier = {};
+                let totalCount = 0;
+
+                orders.forEach(order => {
+                    const orderId = order[0];
+                    const orderAmount = parseFloat(order[10]) || 0;
+                    const status = order[6];
+                    const courier = order[7] || 'Təyin edilməyib';
+                    const paymentMethod = (order[9] || 'cash').toLowerCase();
+                    const orderDetails = order[4] || 'Məlumat yoxdur';
+
+                    // Totals Calculation logic
+                    if (status !== 'Canceled' && status !== 'Deleted') {
+                        totalAmount += (orderAmount - 5);
+                        totalCount++;
+                    }
+
+                    if (status === 'Delivered' || status === 'Canceled') {
+                        if (!netCashPerCourier[courier]) netCashPerCourier[courier] = 0;
+                        netCashPerCourier[courier] -= 5;
+                        if (status === 'Delivered' && paymentMethod === 'cash') {
+                            netCashPerCourier[courier] += orderAmount;
+                        }
+                    }
+
+                    // Dynamic CSS Class
+                    let cardColor = '';
+                    if (courier.toLowerCase() === 'emil' && status === 'Delivered') cardColor = 'soft-blue';
+                    else if (courier.toLowerCase() === 'emil') cardColor = 'soft-purple';
+                    else if (status === 'Delivered') cardColor = 'soft-green';
+                    else if (status === 'Out for Delivery') cardColor = 'soft-yellow';
+                    else if (status === 'Canceled' || status === 'Deleted') cardColor = 'soft-red';
+                    else if (courier.toLowerCase() === 'nicat') cardColor = 'orange';
+
+                    html += `
+                    <div class="order-card ${cardColor}" id="order-${orderId}">
+                        <div class="order-info">
+                            <h3><i class="fas fa-hashtag"></i> ID: ${orderId}</h3>
+                            <p><strong><i class="fas fa-store"></i> Satıcı:</strong> ${order[16] || 'N/A'}</p>
+                            <p><strong><i class="fas fa-user"></i> Müştəri:</strong> ${order[1]}</p>
+                            <p><strong><i class="fas fa-info-circle"></i> Status:</strong> <span id="status-${orderId}">${status}</span></p>
+                            <p><strong><i class="fas fa-truck"></i> Kuryer:</strong> <span id="courier-${orderId}">${courier}</span></p>
+                            <p><strong><i class="fas fa-phone"></i> Tel:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
+                            
+                            <label>Ünvan:</label>
+                            <input type="text" id="deliveryAddress-${orderId}" value="${order[3]}" class="form-control" onchange="updateOrderDetails(${orderId})">
+
+                            <label>Qiymət (AZN):</label>
+                            <input type="number" id="orderPrice-${orderId}" value="${orderAmount}" class="form-control" onchange="updateOrderDetails(${orderId})">
+
+                            <label>Ödəniş Metodu:</label>
+                            <select id="paymentSelect-${orderId}" class="form-control" onchange="updateOrderDetails(${orderId})">
+                                <option value="cash" ${paymentMethod === 'cash' ? 'selected' : ''}>Nağd</option>
+                                <option value="card" ${paymentMethod === 'card' ? 'selected' : ''}>Karta</option>
+                            </select>
+
+                            <div class="mt-3" style="background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; margin-top:15px;">
+                                <strong>Sifariş:</strong> ${orderDetails}
+                            </div>
+
+                            <label>Statusu Dəyiş:</label>
+                            <select id="statusSelect-${orderId}" class="form-control" onchange="changeStatus(${orderId})">
+                                <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+                                <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
+                                <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
+                            </select>
+
+                            <label>Kuryer Təyinatı:</label>
+                            <select id="courierSelect-${orderId}" class="form-control" onchange="assignCourier(${orderId})">
+                                <option value="">Seçin...</option>
+                            </select>
+
+                            <button class="btn btn-delete" onclick="deleteOrder(${orderId})">
+                                <i class="fas fa-trash"></i> Sil
+                            </button>
+                        </div>
+                    </div>`;
+                    
+                    fetchDeliveryUsers(orderId);
+                });
+
+                listContainer.innerHTML = html;
+                document.getElementById('totalAmount').innerText = `${totalAmount.toFixed(2)} AZN`;
+                document.getElementById('totalOrdersCount').textContent = totalCount;
+
+                let perCourierHtml = '';
+                for (const c in netCashPerCourier) {
+                    perCourierHtml += `<div><strong>${c}:</strong> ${netCashPerCourier[c].toFixed(2)} AZN</div>`;
+                }
+                document.getElementById('totalPerCourier').innerHTML = `<small>Kuryer Net:</small>${perCourierHtml}`;
+
+            } else {
+                listContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">Sifariş tapılmadı.</div>';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            listContainer.innerHTML = 'Xəta baş verdi.';
+        });
+}
+
+function updateOrderDetails(orderId) {
+    const address = document.getElementById(`deliveryAddress-${orderId}`).value;
+    const price = document.getElementById(`orderPrice-${orderId}`).value;
+    const payment = document.getElementById(`paymentSelect-${orderId}`).value;
+
+    fetch(UPDATE_URL, {
+        method: 'POST',
+        body: new URLSearchParams({
+            action: 'updateOrderDetails',
+            orderId: orderId,
+            deliveryAddress: address,
+            orderPrice: price,
+            paymentMethod: payment
+        })
+    })
+    .then(res => res.json())
+    .then(data => { if(data.success) console.log('Updated ID:', orderId); });
+}
+
+function changeStatus(orderId) {
+    const status = document.getElementById(`statusSelect-${orderId}`).value;
+    fetch(API_URL, {
+        method: 'POST',
+        body: new URLSearchParams({ action: 'updateOrderStatusAndPayment', orderId: orderId, status: status })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            document.getElementById(`status-${orderId}`).innerText = status;
+            loadOrdersByDate(); // Refresh to update colors and totals
+        }
+    });
+}
+
+function assignCourier(orderId) {
+    const courier = document.getElementById(`courierSelect-${orderId}`).value;
+    fetch(API_URL, {
+        method: 'POST',
+        body: new URLSearchParams({ action: 'assignOrder', orderId: orderId, assignedTo: courier })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) document.getElementById(`courier-${orderId}`).innerText = courier;
+    });
+}
+
+function fetchDeliveryUsers(orderId) {
+    fetch(`${API_URL}?action=getDeliveryUsers`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById(`courierSelect-${orderId}`);
+                if(select.options.length > 1) return; // Prevent duplicate filling
+                data.users.forEach(user => {
+                    const opt = document.createElement('option');
+                    opt.value = user.username;
+                    opt.text = user.username;
+                    select.appendChild(opt);
+                });
+            }
+        });
+}
+
+function deleteOrder(orderId) {
+    if (confirm("Sifarişi silmək istədiyinizə əminsiniz?")) {
+        document.getElementById(`order-${orderId}`).style.opacity = '0.3';
+        fetch(UPDATE_URL, {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'deleteOrder', orderId: orderId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) document.getElementById(`order-${orderId}`).remove();
+        });
+    }
+}
+
+// --- PDF GENERATION ---
+document.getElementById("generatePdfBtn").addEventListener("click", function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    const rows = [];
+    document.querySelectorAll(".order-card").forEach(card => {
+        const id = card.querySelector("h3").innerText.replace("ID: ", "");
+        const address = card.querySelector(`input[id^="deliveryAddress"]`).value;
+        const courier = card.querySelector(`span[id^="courier"]`).innerText;
+        const status = card.querySelector(`span[id^="status"]`).innerText;
+        rows.push([id, address, courier, status]);
+    });
+
+    doc.text("Sifariş Hesabatı", 14, 15);
+    doc.autoTable({
+        head: [['Sifariş ID', 'Ünvan', 'Kuryer', 'Status']],
+        body: rows,
+        startY: 20,
+    });
+
+    const dataUrl = doc.output('dataurlstring');
+    const viewer = document.getElementById("pdf-viewer");
+    viewer.innerHTML = `<iframe src="${dataUrl}"></iframe>`;
+    doc.save(`sifarisler_${new Date().toLocaleDateString()}.pdf`);
+});
+</script>
+
 </body>
 </html>
