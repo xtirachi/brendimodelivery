@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brendimo Pro Analytics</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
     <style>
         :root {
             --bg: #0f172a;
@@ -65,6 +67,26 @@
             font-weight: 600;
         }
 
+        /* Excel Button Style */
+        .btn-excel {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            margin-left: auto; /* Push to right */
+        }
+        .btn-excel:hover {
+            background: var(--success);
+            color: #0f172a;
+        }
+
         .date-input { 
             background: #0f172a; 
             border: 1px solid var(--border); 
@@ -82,7 +104,6 @@
             gap: 10px; 
             cursor: pointer; 
             user-select: none; 
-            margin-left: auto;
             padding-left: 15px;
             border-left: 1px solid var(--border);
         }
@@ -127,6 +148,8 @@
         
         .kpi-label { color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
         .kpi-value { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+        .text-green { color: var(--success); }
+        .text-blue { color: var(--primary); }
         
         .trend { font-size: 13px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-weight: 600; }
         .trend.up { background: rgba(74, 222, 128, 0.1); color: var(--success); }
@@ -225,6 +248,10 @@
             <div class="toggle-switch"></div>
         </label>
         
+        <button class="btn-excel" onclick="downloadExcel()">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+
         <button onclick="init()" style="margin-left:10px; background:none; border:none; color:var(--text-dim); cursor:pointer;">
             <i class="fas fa-sync-alt"></i>
         </button>
@@ -374,6 +401,8 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwGkdJj3tqAae8qsiXec7RW5xt7Tnyae6kZePqdPIrC7XuFwoBVx2tVr3H_FDTBKDEc/exec";
 
         let GLOBAL_DATA = [];
+        let CURRENT_STATS = null; // Store stats for export
+        let CURRENT_RAW_DATA = []; // Store raw filtered data for export
 
         // --- 1. TAB LOGIC ---
         function switchTab(id) {
@@ -382,7 +411,6 @@
             
             document.getElementById(id).classList.add('active');
             
-            // Check if event exists (fixes 'target' error on load)
             if (window.event && window.event.target) {
                 window.event.target.classList.add('active');
             }
@@ -392,14 +420,12 @@
         async function init() {
             document.getElementById('loader').style.display = 'flex';
             try {
-                // Fetch the raw data array
                 const res = await fetch(`${API_URL}?action=getGlobalStats`);
                 const json = await res.json();
                 
                 if (json.success && Array.isArray(json.data)) {
                     GLOBAL_DATA = json.data;
                     console.log(`Loaded ${GLOBAL_DATA.length} orders.`);
-                    // Default to 30 Days
                     setDateRange(30);
                 } else {
                     alert("Error: Data format incorrect. Make sure you updated Code.gs");
@@ -412,26 +438,22 @@
             }
         }
 
-        // --- 3. DATE HANDLING (FIXED) ---
+        // --- 3. DATE HANDLING ---
         function setDateRange(days) {
             const end = new Date();
             const start = new Date();
             
             if(days === 9999) {
-                start.setFullYear(2023, 0, 1); // "All Time"
+                start.setFullYear(2023, 0, 1);
             } else {
                 start.setDate(end.getDate() - days);
-                if(days === 0) start.setHours(0,0,0,0); // Today starts at 00:00
+                if(days === 0) start.setHours(0,0,0,0);
             }
 
-            // Set inputs
             document.getElementById('startDate').value = start.toISOString().split('T')[0];
             document.getElementById('endDate').value = end.toISOString().split('T')[0];
             
-            // UI Highlight Logic (Replaces event.target to prevent crash)
             document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-            
-            // Find which button was clicked based on 'days' value
             const buttons = document.querySelectorAll('.preset-btn');
             if (days === 0) buttons[0].classList.add('active');
             else if (days === 7) buttons[1].classList.add('active');
@@ -446,7 +468,7 @@
             updateDashboard();
         }
 
-        // --- 4. MAIN DASHBOARD LOGIC (ROBUST) ---
+        // --- 4. DASHBOARD LOGIC ---
         function updateDashboard() {
             const startStr = document.getElementById('startDate').value;
             const endStr = document.getElementById('endDate').value;
@@ -455,18 +477,25 @@
 
             const start = new Date(startStr);
             const end = new Date(endStr);
-            end.setHours(23, 59, 59); // Include full end day
+            end.setHours(23, 59, 59);
 
             const isCompare = document.getElementById('compareToggle').checked;
 
+            // Save filtered raw data for export
+            CURRENT_RAW_DATA = GLOBAL_DATA.filter(row => {
+                const d = new Date(row.date);
+                return d >= start && d <= end;
+            });
+
             // 1. Calculate stats for Current Period
             const curr = calculateStats(start, end);
+            CURRENT_STATS = curr; // Save globally for export
 
             // 2. Calculate stats for Previous Period
             let prev = null;
             if (isCompare) {
                 const duration = end - start;
-                const prevEnd = new Date(start.getTime() - 86400000); // 1 day before start
+                const prevEnd = new Date(start.getTime() - 86400000);
                 const prevStart = new Date(prevEnd.getTime() - duration);
                 prev = calculateStats(prevStart, prevEnd);
             }
@@ -476,7 +505,6 @@
             renderAllTables(curr);
         }
 
-        // The Brain: Fixed 'undefined' errors
         function calculateStats(startDate, endDate) {
             const stats = {
                 revenue: 0,
@@ -497,45 +525,36 @@
                 if (d >= startDate && d <= endDate) {
                     stats.totalOrders++;
                     
-                    // --- SAFE INITIALIZATION START ---
-                    // We define keys once to ensure consistency
                     const staffKey = row.staff || 'Unknown';
                     const sourceKey = row.source || 'Direct';
                     const courierKey = row.courier || 'Unassigned';
                     const paymentKey = row.payment || 'Unknown';
 
-                    // Initialize objects if they don't exist yet
                     if (!stats.staff[staffKey]) stats.staff[staffKey] = { total: 0, delivered: 0, revenue: 0 };
                     if (!stats.sources[sourceKey]) stats.sources[sourceKey] = { total: 0, delivered: 0, revenue: 0 };
                     if (!stats.couriers[courierKey]) stats.couriers[courierKey] = { total: 0, delivered: 0, revenue: 0 };
                     if (!stats.paymentMethods[paymentKey]) stats.paymentMethods[paymentKey] = { total: 0, delivered: 0, revenue: 0 };
                     
-                    // Increment Total Counts
                     stats.staff[staffKey].total++;
                     stats.sources[sourceKey].total++;
                     stats.couriers[courierKey].total++;
                     stats.paymentMethods[paymentKey].total++;
-                    // --- SAFE INITIALIZATION END ---
 
-                    // IF DELIVERED: Add to Revenue/Profit
                     if (row.status === 'Delivered') {
                         stats.revenue += row.revenue;
                         stats.profit += (row.revenue - row.cost);
                         stats.delivered++;
 
-                        // Add to entities
                         addDelivered(stats.staff, staffKey, row.revenue);
                         addDelivered(stats.sources, sourceKey, row.revenue);
                         addDelivered(stats.couriers, courierKey, row.revenue);
                         addDelivered(stats.paymentMethods, paymentKey, row.revenue);
 
-                        // Customer Logic
                         const phone = row.phone;
                         if(!stats.customers[phone]) stats.customers[phone] = { name: row.name, count: 0, rev: 0 };
                         stats.customers[phone].count++;
                         stats.customers[phone].rev += row.revenue;
 
-                        // Product Logic
                         parseProducts(row.products, stats.products);
                     }
                 }
@@ -600,7 +619,6 @@
         }
 
         function renderAllTables(stats) {
-            // Staff
             renderTable('table-staff', stats.staff, (k,v) => `
                 <td><b>${k}</b></td>
                 <td>${v.total}</td>
@@ -609,7 +627,6 @@
                 <td>${formatMoney(v.revenue)}</td>
             `);
 
-            // Source
             renderTable('table-source', stats.sources, (k,v) => `
                 <td><b>${k}</b></td>
                 <td>${v.total}</td>
@@ -618,7 +635,6 @@
                 <td>${formatMoney(v.revenue)}</td>
             `);
 
-            // Courier
             renderTable('table-courier', stats.couriers, (k,v) => `
                 <td><b>${k}</b></td>
                 <td>${v.total}</td>
@@ -627,14 +643,12 @@
                 <td>${formatMoney(v.revenue)}</td>
             `);
 
-            // Payment
             renderTable('table-finance', stats.paymentMethods, (k,v) => `
                 <td><b>${k}</b></td>
                 <td>${v.delivered}</td>
                 <td>${formatMoney(v.revenue)}</td>
             `);
 
-            // Products
             const sortedProd = Object.entries(stats.products).sort((a,b) => b[1] - a[1]);
             const prodHTML = sortedProd.map(([k,v]) => `
                 <tr>
@@ -645,7 +659,6 @@
             `).join('');
             document.getElementById('table-products').querySelector('tbody').innerHTML = prodHTML;
 
-            // Customers
             const sortedCust = Object.entries(stats.customers)
                 .filter(([_,v]) => v.count > 1)
                 .sort((a,b) => b[1].rev - a[1].rev);
@@ -661,7 +674,6 @@
             document.getElementById('table-customers').querySelector('tbody').innerHTML = custHTML || '<tr><td colspan="4" style="text-align:center">No returning customers</td></tr>';
         }
 
-        // --- 7. UTILS ---
         function renderTable(id, dataObj, rowBuilder) {
             const tbody = document.getElementById(id).querySelector('tbody');
             const sorted = Object.entries(dataObj).sort((a,b) => b[1].revenue - a[1].revenue);
@@ -675,6 +687,87 @@
             if(r >= 0.85) return 'badge-success';
             if(r >= 0.5) return 'badge-warning';
             return 'badge-neutral';
+        }
+
+        // --- 7. EXCEL EXPORT FUNCTION (STRUCTURED) ---
+        function downloadExcel() {
+            if(!CURRENT_STATS || !CURRENT_RAW_DATA.length) {
+                alert("No data available to export. Please try refreshing.");
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            // SHEET 1: OVERVIEW (KPIs)
+            const summaryData = [
+                ["Metric", "Value"],
+                ["Total Revenue", CURRENT_STATS.revenue],
+                ["Total Delivered", CURRENT_STATS.delivered],
+                ["Total Orders (incl. cancelled)", CURRENT_STATS.totalOrders]
+            ];
+            const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, wsSummary, "Overview");
+
+            // SHEET 2: PRODUCTS
+            const productData = Object.entries(CURRENT_STATS.products)
+                .map(([name, qty]) => ({ "Product Name": name, "Qty Sold": qty }))
+                .sort((a,b) => b["Qty Sold"] - a["Qty Sold"]);
+            const wsProducts = XLSX.utils.json_to_sheet(productData);
+            XLSX.utils.book_append_sheet(wb, wsProducts, "Top Products");
+
+            // SHEET 3: STAFF
+            const staffData = Object.entries(CURRENT_STATS.staff)
+                .map(([name, data]) => ({
+                    "Staff Member": name,
+                    "Total Assigned": data.total,
+                    "Delivered": data.delivered,
+                    "Revenue": data.revenue,
+                    "Success Rate": (data.delivered / data.total * 100).toFixed(1) + '%'
+                }));
+            const wsStaff = XLSX.utils.json_to_sheet(staffData);
+            XLSX.utils.book_append_sheet(wb, wsStaff, "Staff Performance");
+
+            // SHEET 4: RAW DATA (All filtered rows)
+            // We clean it up slightly for Excel (remove raw json strings if any)
+            const cleanRawData = CURRENT_RAW_DATA.map(row => ({
+                "Date": new Date(row.date).toLocaleDateString(),
+                "Order ID": row.id || '',
+                "Customer Name": row.name,
+                "Phone": row.phone,
+                "Status": row.status,
+                "Revenue": row.revenue,
+                "Cost": row.cost,
+                "Staff": row.staff,
+                "Courier": row.courier,
+                "Source": row.source,
+                "Payment": row.payment,
+                "Products": row.products
+            }));
+            const wsRaw = XLSX.utils.json_to_sheet(cleanRawData);
+            XLSX.utils.book_append_sheet(wb, wsRaw, "Raw Data");
+// --- INSERT THIS BLOCK ---
+    
+    // SHEET 5: LOYAL CUSTOMERS
+    const customerData = Object.entries(CURRENT_STATS.customers)
+        // Filter: Only include customers with more than 1 order
+        .filter(([phone, data]) => data.count > 1) 
+        .map(([phone, data]) => ({
+            "Customer Name": data.name,
+            "Phone Number": phone,
+            "Total Orders": data.count,
+            "Total Spent": data.rev,
+            "Avg Ticket": (data.rev / data.count).toFixed(2)
+        }))
+        // Sort: Highest spender at the top
+        .sort((a,b) => b["Total Spent"] - a["Total Spent"]);
+
+    const wsCustomers = XLSX.utils.json_to_sheet(customerData);
+    XLSX.utils.book_append_sheet(wb, wsCustomers, "Loyal Customers");
+
+    // -------------------------
+            // GENERATE FILE
+            const fileName = `Brendimo_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
         }
 
         // Start App
