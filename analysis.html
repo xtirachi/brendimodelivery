@@ -215,6 +215,18 @@
         .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 15px;}
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+
+/* Add this inside your <style> tag */
+th { 
+    cursor: pointer; 
+    user-select: none; /* Prevents text selection while clicking */
+}
+th:hover { 
+    color: var(--primary); 
+    background: rgba(255,255,255,0.05);
+}
+        
     </style>
 </head>
 <body>
@@ -293,17 +305,18 @@
         <div class="table-wrapper">
             <div class="section-title">Sales Staff Breakdown</div>
             <table id="table-staff">
-                <thead>
-                    <tr>
-                        <th>Staff Name</th>
-                        <th>Assigned</th>
-                        <th>Delivered</th>
-                        <th>Success Rate</th>
-                        <th>Revenue</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+    <thead>
+        <tr>
+            <th onclick="sortTable('table-staff', 0)">Staff Name <i class="fas fa-sort"></i></th>
+            <th onclick="sortTable('table-staff', 1)">Assigned <i class="fas fa-sort"></i></th>
+            <th onclick="sortTable('table-staff', 2)">Delivered <i class="fas fa-sort"></i></th>
+            <th onclick="sortTable('table-staff', 3)">Success Rate <i class="fas fa-sort"></i></th>
+            <th onclick="sortTable('table-staff', 4)">Revenue <i class="fas fa-sort"></i></th>
+            <th onclick="sortTable('table-staff', 5)">AOV <i class="fas fa-sort"></i></th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
         </div>
     </div>
 
@@ -313,11 +326,11 @@
             <table id="table-source">
                 <thead>
                     <tr>
-                        <th>Source</th>
-                        <th>Orders</th>
-                        <th>Delivered</th>
-                        <th>Success Rate</th>
-                        <th>Revenue</th>
+                        <th onclick="sortTable('table-source', 0)">Source <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-source', 1)">Orders <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-source', 2)">Delivered <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-source', 3)">Success Rate <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-source', 4)">Revenue <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -328,14 +341,14 @@
     <div id="courier" class="data-section">
         <div class="table-wrapper">
             <div class="section-title">Courier Delivery Performance</div>
-            <table id="table-courier">
+           <table id="table-courier">
                 <thead>
                     <tr>
-                        <th>Courier</th>
-                        <th>Assigned</th>
-                        <th>Delivered</th>
-                        <th>Success Rate</th>
-                        <th>Cash Collected</th>
+                        <th onclick="sortTable('table-courier', 0)">Courier <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-courier', 1)">Assigned <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-courier', 2)">Delivered <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-courier', 3)">Success Rate <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-courier', 4)">Cash Collected <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -349,12 +362,12 @@
                 <span>Top Selling Products</span>
                 <span style="font-size:12px; color:var(--text-dim); font-weight:400;">(Based on quantity in description)</span>
             </div>
-            <table id="table-products">
+          <table id="table-products">
                 <thead>
                     <tr>
-                        <th>Product Name</th>
-                        <th>Quantity Sold</th>
-                        <th>Est. Status</th>
+                        <th onclick="sortTable('table-products', 0)">Product Name <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-products', 1)">Quantity Sold <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-products', 2)">Est. Status <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -365,13 +378,13 @@
     <div id="customers" class="data-section">
         <div class="table-wrapper">
             <div class="section-title">Top Returning Customers (In Selected Period)</div>
-            <table id="table-customers">
+        <table id="table-customers">
                 <thead>
                     <tr>
-                        <th>Name (Phone)</th>
-                        <th>Order Count</th>
-                        <th>Total Spent</th>
-                        <th>Avg Ticket</th>
+                        <th onclick="sortTable('table-customers', 0)">Name (Phone) <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-customers', 1)">Order Count <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-customers', 2)">Total Spent <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-customers', 3)">Avg Ticket <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -382,12 +395,12 @@
     <div id="finance" class="data-section">
         <div class="table-wrapper">
             <div class="section-title">Payment Methods</div>
-            <table id="table-finance">
+         <table id="table-finance">
                 <thead>
                     <tr>
-                        <th>Method</th>
-                        <th>Transactions</th>
-                        <th>Revenue</th>
+                        <th onclick="sortTable('table-finance', 0)">Method <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-finance', 1)">Transactions <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable('table-finance', 2)">Revenue <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -589,7 +602,7 @@
         function renderKPIs(curr, prev) {
             renderOneKPI('revenue', curr.revenue, prev?.revenue, true);
             renderOneKPI('orders', curr.delivered, prev?.delivered, false);
-            renderOneKPI('profit', curr.profit, prev?.profit, true);
+            //renderOneKPI('profit', curr.profit, prev?.profit, true);
             
             const currAOV = curr.delivered ? curr.revenue / curr.delivered : 0;
             const prevAOV = (prev && prev.delivered) ? prev.revenue / prev.delivered : 0;
@@ -619,14 +632,19 @@
         }
 
         function renderAllTables(stats) {
-            renderTable('table-staff', stats.staff, (k,v) => `
-                <td><b>${k}</b></td>
-                <td>${v.total}</td>
-                <td>${v.delivered}</td>
-                <td><span class="badge ${getRateColor(v.delivered, v.total)}">${getRate(v.delivered, v.total)}%</span></td>
-                <td>${formatMoney(v.revenue)}</td>
-            `);
-
+          renderTable('table-staff', stats.staff, (k,v) => {
+        // Calculate AOV (Revenue / Delivered)
+        const aov = v.delivered ? (v.revenue / v.delivered) : 0;
+        
+        return `
+            <td><b>${k}</b></td>
+            <td>${v.total}</td>
+            <td>${v.delivered}</td>
+            <td><span class="badge ${getRateColor(v.delivered, v.total)}">${getRate(v.delivered, v.total)}%</span></td>
+            <td>${formatMoney(v.revenue)}</td>
+            <td>${formatMoney(aov)}</td>
+        `;
+}); //
             renderTable('table-source', stats.sources, (k,v) => `
                 <td><b>${k}</b></td>
                 <td>${v.total}</td>
@@ -703,6 +721,7 @@
                 ["Metric", "Value"],
                 ["Total Revenue", CURRENT_STATS.revenue],
                 ["Total Delivered", CURRENT_STATS.delivered],
+                //["Net Profit", CURRENT_STATS.profit],
                 ["Total Orders (incl. cancelled)", CURRENT_STATS.totalOrders]
             ];
             const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
@@ -722,7 +741,8 @@
                     "Total Assigned": data.total,
                     "Delivered": data.delivered,
                     "Revenue": data.revenue,
-                    "Success Rate": (data.delivered / data.total * 100).toFixed(1) + '%'
+                    "Success Rate": (data.delivered / data.total * 100).toFixed(1) + '%',
+                    "AOV": (data.delivered ? (data.revenue / data.delivered).toFixed(2) : "0.00") // NEW LINE
                 }));
             const wsStaff = XLSX.utils.json_to_sheet(staffData);
             XLSX.utils.book_append_sheet(wb, wsStaff, "Staff Performance");
@@ -743,8 +763,7 @@
                 "Payment": row.payment,
                 "Products": row.products
             }));
-            const wsRaw = XLSX.utils.json_to_sheet(cleanRawData);
-            XLSX.utils.book_append_sheet(wb, wsRaw, "Raw Data");
+
 // --- INSERT THIS BLOCK ---
     
     // SHEET 5: LOYAL CUSTOMERS
@@ -765,11 +784,49 @@
     XLSX.utils.book_append_sheet(wb, wsCustomers, "Loyal Customers");
 
     // -------------------------
+            
+            const wsRaw = XLSX.utils.json_to_sheet(cleanRawData);
+            XLSX.utils.book_append_sheet(wb, wsRaw, "Raw Data");
+
             // GENERATE FILE
             const fileName = `Brendimo_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
             XLSX.writeFile(wb, fileName);
         }
+// --- 8. SORT FUNCTION ---
+let sortDirection = {}; // Keeps track if we are sorting ASC or DESC
 
+function sortTable(tableId, colIndex) {
+    const table = document.getElementById(tableId);
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+    // Toggle direction
+    const key = `${tableId}-${colIndex}`;
+    const dir = sortDirection[key] === 'asc' ? 'desc' : 'asc';
+    sortDirection[key] = dir;
+
+    rows.sort((a, b) => {
+        // Get text from the specific column
+        let valA = a.children[colIndex].innerText.trim();
+        let valB = b.children[colIndex].innerText.trim();
+
+        // Try to convert to numbers (remove AZN, %, commas)
+        const numA = parseFloat(valA.replace(/[^0-9.-]+/g,""));
+        const numB = parseFloat(valB.replace(/[^0-9.-]+/g,""));
+
+        // Check if both are valid numbers
+        const isNum = !isNaN(numA) && !isNaN(numB) && valA !== "" && valB !== "";
+
+        if (isNum) {
+            return dir === 'asc' ? numA - numB : numB - numA;
+        } else {
+            return dir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+    });
+
+    // Re-attach sorted rows
+    tbody.append(...rows);
+}
         // Start App
         init();
 
