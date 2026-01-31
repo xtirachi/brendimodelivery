@@ -255,7 +255,7 @@ function loadOrdersByDate(date) {
                             <input type="text" id="deliveryAddress-${orderId}" value="${order[3]}" class="form-control" onchange="updateOrderDetails(${orderId})">
 
                             <label> Xüsusi Qeydlər :</label>
-                            <input type="text" id="deliveryAddress-${orderId}" value="${order[5]}" class="form-control" onchange="updateOrderDetails(${orderId})">
+                            <textarea id="specialNotes-${orderId}" class="form-control" rows="3" style="resize: vertical; min-height: 80px;" onchange="updateOrderDetails(${orderId})">${order[5] || ''}</textarea>
 
 
                             <label>Qiymət (AZN):</label>
