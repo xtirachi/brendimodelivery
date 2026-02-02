@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            
+            /* Status Colors */
+            --soft-green: #dcfce7; --dark-green: #15803d;
+            --soft-blue: #dbeafe; --dark-blue: #1e40af;
+            --soft-red: #fee2e2; --dark-red: #b91c1c;
+            --soft-yellow: #fef9c3; --dark-yellow: #a16207;
+            --soft-purple: #f3e8ff; --dark-purple: #7e22ce;
+            --soft-orange: #ffedd5; --dark-orange: #c2410c;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* --- Header & Filters --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h2 { margin: 0; color: var(--primary); font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+
+        .filter-section {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; }
+
+        .form-control {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            outline: none;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-pdf { background: #10b981; color: white; }
+        .btn-delete { 
+            background: var(--soft-red); 
+            color: var(--dark-red); 
+            margin-top: 15px; 
+            width: 100%; 
+        }
+        .btn-delete:hover { background: var(--dark-red); color: white; }
+
+        /* --- Stats Grid --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+        }
+        .stat-card small { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px; }
+
+        /* --- Orders Grid --- */
+        .order-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .order-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .order-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        /* Card Status Indicators */
+        .order-card.status-delivered { border-top: 5px solid var(--dark-green); background: linear-gradient(to bottom, var(--soft-green) 0%, #fff 50px); }
+        .order-card.status-out { border-top: 5px solid var(--dark-yellow); background: linear-gradient(to bottom, var(--soft-yellow) 0%, #fff 50px); }
+        .order-card.status-canceled { border-top: 5px solid var(--dark-red); background: linear-gradient(to bottom, var(--soft-red) 0%, #fff 50px); }
+        .order-card.status-emil { border-top: 5px solid var(--dark-purple); background: linear-gradient(to bottom, var(--soft-purple) 0%, #fff 50px); }
+        .order-card.status-nicat { border-top: 5px solid var(--dark-orange); background: linear-gradient(to bottom, var(--soft-orange) 0%, #fff 50px); }
+        .order-card.status-default { border-top: 5px solid #94a3b8; }
+
+        .order-info h3 { margin: 0 0 15px 0; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; color: var(--text); }
+        .order-info p { margin: 6px 0; font-size: 0.9rem; color: #334155; }
+        .order-info p strong { color: #0f172a; min-width: 70px; display: inline-block; }
+        .order-info p a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+        label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-top: 12px; display: block; margin-bottom: 4px; }
+        
+        .order-detail-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* --- Loading & Toast --- */
+        .loading-overlay {
+            position: absolute; top:0; left:0; right:0; bottom:0;
+            background: rgba(255,255,255,0.7);
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 12px; z-index: 10;
+            backdrop-filter: blur(2px);
+        }
+        
+        #toast-container {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; display: flex; flex-direction: column; gap: 10px;
+            pointer-events: none;
+            width: 90%; max-width: 400px;
+        }
+        
+        .toast {
+            background: #1f2937; color: white;
+            padding: 12px 20px; border-radius: 50px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            font-size: 0.9rem; text-align: center;
+            opacity: 0; transform: translateY(20px);
+            animation: slideUpFade 0.3s forwards;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        
+        .toast.success { background: #059669; }
+        .toast.error { background: #dc2626; }
+
+        @keyframes slideUpFade {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Mobile Tweaks --- */
+        @media (max-width: 600px) {
+            .filter-section { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; margin-top: 5px; }
+            header { flex-direction: column; gap: 15px; text-align: center; }
+            .order-grid { grid-template-columns: 1fr; }
+        }
+        
+        iframe { width: 100%; height: 500px; border: none; border-radius: 12px; margin-top: 30px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2><i class="fas fa-chart-line"></i> Admin Paneli</h2>
+        <button id="generatePdfBtn" class="btn btn-pdf">
+            <i class="fas fa-file-pdf"></i> PDF Yüklə
+        </button>
+    </header>
+
+    <div class="filter-section">
+        <div class="form-group">
+            <label for="orderDateFilter">Sifariş Tarixi</label>
+            <input type="date" id="orderDateFilter" class="form-control">
+        </div>
+        <button id="showOrdersButton" class="btn btn-primary" onclick="loadOrdersByDate()">
+            <i class="fas fa-search"></i> Sifarişləri Göstər
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <small>Ümumi Sifariş</small>
+            <div id="totalOrdersCount" style="font-size: 1.5rem; font-weight: 700;">0</div>
+        </div>
+        <div class="stat-card">
+            <small>Toplam Qazanc</small>
+            <div id="totalAmount" style="font-size: 1.5rem; font-weight: 700; color: var(--dark-green);">0.00 AZN</div>
+        </div>
+        <div class="stat-card" id="totalPerCourier">
+            <small>Kuryer Hesabatı</small>
+            <div style="font-size: 0.85rem; margin-top: 8px; line-height: 1.4;">Seçim edin...</div>
+        </div>
+    </div>
+
+    <div id="orderList" class="order-grid">
+        </div>
+
+    <div id="pdf-viewer"></div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+// --- CONFIGURATION ---
+const API_URL = 'https://script.google.com/macros/s/AKfycbxTqcTJ1WVzDqqHsYeq2HqWU9sFJcx2SjnMEZ-g4IYvRmksEDLbPCPvSC980Vtx5xSq/exec';
+const UPDATE_URL = 'https://script.google.com/macros/s/AKfycbxfx5QM1Ibupxq_4TXIdzAi2tlaJhCZe5gWzLm1JIoTIjtUMjpwfKCdKH2oRgqCrKJ8/exec';
+
+// --- INITIALIZATION ---
+window.onload = function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('orderDateFilter').value = today;
+    loadOrdersByDate(today);
+};
+
+// --- CORE FUNCTIONS ---
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+    toast.innerHTML = `${icon} <span>${message}</span>`;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function setLoading(cardId, isLoading) {
+    const card = document.getElementById(`order-${cardId}`);
+    if (!card) return;
+    
+    if (isLoading) {
+        if (!card.querySelector('.loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = '<i class="fas fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i>';
+            card.appendChild(overlay);
+        }
+    } else {
+        const overlay = card.querySelector('.loading-overlay');
+        if (overlay) overlay.remove();
+    }
+}
+
+function loadOrdersByDate(date) {
+    const selectedDate = date || document.getElementById('orderDateFilter').value;
+    const listContainer = document.getElementById('orderList');
+    
+    // Skeleton / Loading State
+    listContainer.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Sifarişlər yüklənir...</div>';
+
+    fetch(`${API_URL}?action=getOrdersByDate&date=${selectedDate}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.orders.length > 0) {
+                renderOrders(data.orders);
+            } else {
+                listContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background:white; border-radius:12px;">Bu tarixdə sifariş tapılmadı.</div>';
+                updateStatsUI(0, 0, {}); // Clear stats
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            listContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color:var(--dark-red);">Xəta baş verdi. İnternet əlaqəsini yoxlayın.</div>';
+        });
+}
+
+function renderOrders(orders) {
+    const listContainer = document.getElementById('orderList');
+    let html = '';
+    
+    orders.forEach(order => {
+        const orderId = order[0];
+        const orderAmount = parseFloat(order[10]) || 0;
+        const status = order[6];
+        const courier = order[7] || '';
+        const paymentMethod = (order[9] || 'cash').toLowerCase();
+        const orderDetails = order[4] || '---';
+
+        html += `
+        <div class="order-card ${getStatusClass(status, courier)}" id="order-${orderId}" data-amount="${orderAmount}" data-status="${status}" data-courier="${courier}" data-payment="${paymentMethod}">
+            <div class="order-info">
+                <h3><span>#${orderId}</span> <span id="status-badge-${orderId}" style="font-size:0.8rem; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${status}</span></h3>
+                <p><strong><i class="fas fa-store"></i> Mağaza:</strong> ${order[16] || '---'}</p>
+                <p><strong><i class="fas fa-user"></i> Müştəri:</strong> ${order[1]}</p>
+                <p><strong><i class="fas fa-truck"></i> Kuryer:</strong> <span id="courier-display-${orderId}">${courier || 'Təyin edilməyib'}</span></p>
+                <p><strong><i class="fas fa-phone"></i> Tel:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
+                
+                <label>Ünvan:</label>
+                <input type="text" id="deliveryAddress-${orderId}" value="${order[3]}" class="form-control" onchange="updateOrderDetails(${orderId})">
+
+                <label>Xüsusi Qeydlər:</label>
+                <textarea id="specialNotes-${orderId}" class="form-control" rows="2" style="min-height: 60px;" onchange="updateOrderDetails(${orderId})">${order[5] || ''}</textarea>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>
+                        <label>Qiymət (AZN):</label>
+                        <input type="number" id="orderPrice-${orderId}" value="${orderAmount}" class="form-control" onchange="updateOrderDetails(${orderId})">
+                    </div>
+                    <div>
+                        <label>Ödəniş:</label>
+                        <select id="paymentSelect-${orderId}" class="form-control" onchange="updateOrderDetails(${orderId})">
+                            <option value="cash" ${paymentMethod === 'cash' ? 'selected' : ''}>Nağd</option>
+                            <option value="card" ${paymentMethod === 'card' ? 'selected' : ''}>Kart</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="order-detail-box">
+                    <strong>Sifariş tərkibi:</strong><br>${orderDetails}
+                </div>
+
+                <div style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:10px;">
+                    <label>Status Yenilə:</label>
+                    <select id="statusSelect-${orderId}" class="form-control" onchange="changeStatus(${orderId})" style="margin-bottom:10px;">
+                        <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+                        <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırılıb</option>
+                        <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edilib</option>
+                    </select>
+
+                    <label>Kuryer Təyinatı:</label>
+                    <select id="courierSelect-${orderId}" class="form-control" onchange="assignCourier(${orderId})">
+                        <option value="">Kuryer Seçin...</option>
+                    </select>
+
+                    <button class="btn btn-delete" onclick="deleteOrder(${orderId})">
+                        <i class="fas fa-trash"></i> Sifarişi Sil
+                    </button>
+                </div>
+            </div>
+        </div>`;
+        
+        // Fetch couriers asynchronously for each card (or optimize to fetch once globally, but per request keeping logic simple)
+        // Optimization: Fetch couriers ONCE, then populate. But for now, using existing pattern lazily.
+        setTimeout(() => fetchDeliveryUsers(orderId), 100); 
+    });
+
+    listContainer.innerHTML = html;
+    recalculateLocalStats(); // Calculate totals based on rendered HTML
+}
+
+// --- LOCAL LOGIC FOR UI UPDATES ---
+
+function getStatusClass(status, courier) {
+    status = status || '';
+    courier = (courier || '').toLowerCase();
+    
+    if (courier === 'emil' && status === 'Delivered') return 'status-blue'; // Custom logic from old code
+    if (courier === 'emil') return 'status-emil';
+    if (courier === 'nicat') return 'status-nicat';
+    if (status === 'Delivered') return 'status-delivered';
+    if (status === 'Out for Delivery') return 'status-out';
+    if (status === 'Canceled' || status === 'Deleted') return 'status-canceled';
+    return 'status-default';
+}
+
+function recalculateLocalStats() {
+    let totalAmount = 0;
+    let totalCount = 0;
+    let courierStats = {};
+
+    document.querySelectorAll('.order-card').forEach(card => {
+        const amount = parseFloat(card.querySelector(`input[id^="orderPrice"]`).value) || 0;
+        const status = card.querySelector(`select[id^="statusSelect"]`).value;
+        const courierSelect = card.querySelector(`select[id^="courierSelect"]`);
+        // Get courier text from select or fallback to display span if select isn't loaded yet
+        let courier = courierSelect.options[courierSelect.selectedIndex]?.text || card.querySelector(`span[id^="courier-display"]`).innerText;
+        if(courier === 'Kuryer Seçin...' || courier === 'Təyin edilməyib') courier = '';
+
+        const payment = card.querySelector(`select[id^="paymentSelect"]`).value;
+
+        if (status !== 'Canceled' && status !== 'Deleted') {
+            totalAmount += (amount - 5); // Assuming -5 base fee logic from original code
+            totalCount++;
+        }
+
+        if (status === 'Delivered' || status === 'Canceled') {
+            if(courier) {
+                if (!courierStats[courier]) courierStats[courier] = 0;
+                courierStats[courier] -= 5;
+                if (status === 'Delivered' && payment === 'cash') {
+                    courierStats[courier] += amount;
+                }
+            }
+        }
+    });
+
+    updateStatsUI(totalCount, totalAmount, courierStats);
+}
+
+function updateStatsUI(count, amount, courierData) {
+    document.getElementById('totalOrdersCount').textContent = count;
+    document.getElementById('totalAmount').textContent = `${amount.toFixed(2)} AZN`;
+
+    let html = '';
+    for (const [name, val] of Object.entries(courierData)) {
+        html += `<div style="display:flex; justify-content:space-between; margin-top:5px; border-bottom:1px dashed #eee;">
+            <span>${name}:</span> <strong>${val.toFixed(2)} ₼</strong>
+        </div>`;
+    }
+    document.getElementById('totalPerCourier').innerHTML = `<small>Kuryer Net:</small>${html || '<div style="margin-top:5px">Məlumat yoxdur</div>'}`;
+}
+
+// --- ACTION FUNCTIONS ---
+
+function updateOrderDetails(orderId) {
+    const address = document.getElementById(`deliveryAddress-${orderId}`).value;
+    const notes = document.getElementById(`specialNotes-${orderId}`).value;
+    const price = document.getElementById(`orderPrice-${orderId}`).value;
+    const payment = document.getElementById(`paymentSelect-${orderId}`).value;
+
+    // Visual feedback "Saving..." (Input border turns yellow/blue)
+    const card = document.getElementById(`order-${orderId}`);
+    card.style.opacity = '0.9';
+
+    fetch(UPDATE_URL, {
+        method: 'POST',
+        body: new URLSearchParams({
+            action: 'updateOrderDetails',
+            orderId: orderId,
+            deliveryAddress: address,
+            specialNotes: notes, // Added support for notes
+            orderPrice: price,
+            paymentMethod: payment
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            showToast('Dəyişikliklər yadda saxlanıldı');
+            recalculateLocalStats(); // Update totals if price changed
+        } else {
+            showToast('Xəta baş verdi', 'error');
+        }
+        card.style.opacity = '1';
+    })
+    .catch(() => {
+        showToast('İnternet xətası', 'error');
+        card.style.opacity = '1';
+    });
+}
+
+function changeStatus(orderId) {
+    const statusSelect = document.getElementById(`statusSelect-${orderId}`);
+    const newStatus = statusSelect.value;
+    const card = document.getElementById(`order-${orderId}`);
+    
+    setLoading(orderId, true);
+
+    fetch(API_URL, {
+        method: 'POST',
+        body: new URLSearchParams({ action: 'updateOrderStatusAndPayment', orderId: orderId, status: newStatus })
+    })
+    .then(res => res.json())
+    .then(data => {
+        setLoading(orderId, false);
+        if(data.success) {
+            // Update UI locally without reload
+            document.getElementById(`status-badge-${orderId}`).innerText = newStatus;
+            
+            // Update Card Color
+            const courier = document.getElementById(`courier-display-${orderId}`).innerText;
+            card.className = `order-card ${getStatusClass(newStatus, courier)}`;
+            
+            recalculateLocalStats();
+            showToast(`Status: ${newStatus}`);
+        } else {
+            showToast('Status dəyişdirilə bilmədi', 'error');
+        }
+    });
+}
+
+function assignCourier(orderId) {
+    const courierSelect = document.getElementById(`courierSelect-${orderId}`);
+    const courierName = courierSelect.value;
+    
+    if(!courierName) return;
+
+    fetch(API_URL, {
+        method: 'POST',
+        body: new URLSearchParams({ action: 'assignOrder', orderId: orderId, assignedTo: courierName })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            document.getElementById(`courier-display-${orderId}`).innerText = courierName;
+            
+            // Update card color (e.g. if Emil is selected)
+            const status = document.getElementById(`statusSelect-${orderId}`).value;
+            const card = document.getElementById(`order-${orderId}`);
+            card.className = `order-card ${getStatusClass(status, courierName)}`;
+            
+            recalculateLocalStats();
+            showToast(`Kuryer təyin edildi: ${courierName}`);
+        }
+    });
+}
+
+// Optimization: Cache delivery users to avoid 20+ API calls
+let cachedUsers = null;
+function fetchDeliveryUsers(orderId) {
+    const select = document.getElementById(`courierSelect-${orderId}`);
+    if(select.options.length > 1) return; // Already loaded
+
+    if (cachedUsers) {
+        populateCourierSelect(select, cachedUsers);
+        return;
+    }
+
+    fetch(`${API_URL}?action=getDeliveryUsers`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                cachedUsers = data.users; // Cache for other cards
+                populateCourierSelect(select, cachedUsers);
+                // Try to populate other empty selects on the page
+                document.querySelectorAll('select[id^="courierSelect"]').forEach(s => {
+                    if(s.options.length <= 1) populateCourierSelect(s, cachedUsers);
+                });
+            }
+        });
+}
+
+function populateCourierSelect(selectElement, users) {
+    users.forEach(user => {
+        // Avoid duplicates
+        let exists = false;
+        for(let i=0; i<selectElement.options.length; i++){
+            if(selectElement.options[i].value === user.username) exists = true;
+        }
+        if(!exists) {
+            const opt = document.createElement('option');
+            opt.value = user.username;
+            opt.text = user.username;
+            selectElement.appendChild(opt);
+        }
+    });
+    // Set current courier selected
+    const cardId = selectElement.id.split('-')[1];
+    const currentCourier = document.getElementById(`courier-display-${cardId}`).innerText;
+    if(currentCourier && currentCourier !== 'Təyin edilməyib') {
+        selectElement.value = currentCourier;
+    }
+}
+
+function deleteOrder(orderId) {
+    if (confirm("Bu sifarişi silmək istədiyinizə əminsiniz?")) {
+        const card = document.getElementById(`order-${orderId}`);
+        card.style.transition = 'all 0.5s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.8)';
+
+        fetch(UPDATE_URL, {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'deleteOrder', orderId: orderId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                setTimeout(() => {
+                    card.remove();
+                    recalculateLocalStats();
+                    showToast('Sifariş silindi');
+                }, 500);
+            } else {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+                showToast('Silinmə xətası', 'error');
+            }
+        });
+    }
+}
+
+// --- PDF GENERATION ---
+document.getElementById("generatePdfBtn").addEventListener("click", function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const date = document.getElementById('orderDateFilter').value;
+    
+    const rows = [];
+    document.querySelectorAll(".order-card").forEach(card => {
+        const id = card.querySelector("h3 span").innerText.replace("#", "");
+        const address = card.querySelector(`input[id^="deliveryAddress"]`).value;
+        const courier = card.querySelector(`span[id^="courier-display"]`).innerText;
+        const status = card.querySelector(`select[id^="statusSelect"]`).value;
+        const price = card.querySelector(`input[id^="orderPrice"]`).value;
+        rows.push([id, address, courier, status, price + ' AZN']);
+    });
+
+    doc.setFontSize(18);
+    doc.text(`Sifariş Hesabatı - ${date}`, 14, 15);
+    
+    doc.autoTable({
+        head: [['ID', 'Ünvan', 'Kuryer', 'Status', 'Məbləğ']],
+        body: rows,
+        startY: 25,
+        theme: 'grid',
+        styles: { fontSize: 8, font: "helvetica" } // Basic font to support standard chars, complex UTF8 needs custom font
+    });
+
+    const dataUrl = doc.output('dataurlstring');
+    const viewer = document.getElementById("pdf-viewer");
+    viewer.style.display = 'block';
+    viewer.innerHTML = `<iframe src="${dataUrl}"></iframe>`;
+    
+    // Auto download on mobile where iframe might be tricky
+    if(window.innerWidth < 800) {
+        doc.save(`sifarisler_${date}.pdf`);
+    }
+});
+</script>
+
+</body>
+</html>
