@@ -163,7 +163,7 @@
 
         .order-info h3 { margin: 0 0 15px 0; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; color: var(--text); }
         .order-info p { margin: 6px 0; font-size: 0.9rem; color: #334155; }
-        .order-info p strong { color: #0f172a; min-width: 70px; display: inline-block; }
+        .order-info p strong { color: #0f172a; min-width: 100px; display: inline-block; }
         .order-info p a { color: var(--primary); text-decoration: none; font-weight: 600; }
 
         label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-top: 12px; display: block; margin-bottom: 4px; }
@@ -237,7 +237,7 @@
             <label for="orderDateFilter">Sifariş Tarixi</label>
             <input type="date" id="orderDateFilter" class="form-control">
         </div>
-        <button id="showOrdersButton" class="btn btn-primary" onclick="loadOrdersByDate()">
+        <button id="showOrdersButton" class="btn btn-primary" onclick="loadData()">
             <i class="fas fa-search"></i> Sifarişləri Göstər
         </button>
     </div>
@@ -273,11 +273,17 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbxTqcTJ1WVzDqqHsYeq2HqWU9sFJcx2SjnMEZ-g4IYvRmksEDLbPCPvSC980Vtx5xSq/exec';
 const UPDATE_URL = 'https://script.google.com/macros/s/AKfycbxfx5QM1Ibupxq_4TXIdzAi2tlaJhCZe5gWzLm1JIoTIjtUMjpwfKCdKH2oRgqCrKJ8/exec';
 
+// --- STATE MANAGEMENT ---
+let appState = {
+    couriers: [], // Cache couriers here
+    orders: []
+};
+
 // --- INITIALIZATION ---
 window.onload = function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('orderDateFilter').value = today;
-    loadOrdersByDate(today);
+    loadData(today);
 };
 
 // --- CORE FUNCTIONS ---
@@ -314,21 +320,38 @@ function setLoading(cardId, isLoading) {
     }
 }
 
-function loadOrdersByDate(date) {
-    const selectedDate = date || document.getElementById('orderDateFilter').value;
+// --- OPTIMIZED DATA LOADING ---
+// Fetches couriers AND orders in parallel to maximize speed
+function loadData() {
+    const selectedDate = document.getElementById('orderDateFilter').value;
     const listContainer = document.getElementById('orderList');
     
-    // Skeleton / Loading State
-    listContainer.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Sifarişlər yüklənir...</div>';
+    // Skeleton State
+    listContainer.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Məlumatlar sürətlə yüklənir...</div>';
 
-    fetch(`${API_URL}?action=getOrdersByDate&date=${selectedDate}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.orders.length > 0) {
-                renderOrders(data.orders);
+    // 1. Prepare Fetch Promises
+    const fetchOrders = fetch(`${API_URL}?action=getOrdersByDate&date=${selectedDate}`).then(res => res.json());
+    
+    // Only fetch couriers if we don't have them yet (Caching)
+    const fetchCouriers = appState.couriers.length > 0 
+        ? Promise.resolve({ success: true, users: appState.couriers }) 
+        : fetch(`${API_URL}?action=getDeliveryUsers`).then(res => res.json());
+
+    // 2. Execute Both
+    Promise.all([fetchOrders, fetchCouriers])
+        .then(([ordersData, couriersData]) => {
+            
+            // Update State
+            if (couriersData.success) {
+                appState.couriers = couriersData.users; // Cache it
+            }
+            
+            if (ordersData.success && ordersData.orders.length > 0) {
+                appState.orders = ordersData.orders;
+                renderOrders(appState.orders, appState.couriers);
             } else {
                 listContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background:white; border-radius:12px;">Bu tarixdə sifariş tapılmadı.</div>';
-                updateStatsUI(0, 0, {}); // Clear stats
+                updateStatsUI(0, 0, {}); 
             }
         })
         .catch(err => {
@@ -337,25 +360,45 @@ function loadOrdersByDate(date) {
         });
 }
 
-function renderOrders(orders) {
+function renderOrders(orders, couriers) {
     const listContainer = document.getElementById('orderList');
     let html = '';
     
+    // Pre-build courier options HTML to use in loop
+    let courierOptionsHtml = '<option value="">Kuryer Seçin...</option>';
+    if (couriers && couriers.length > 0) {
+        couriers.forEach(u => {
+            courierOptionsHtml += `<option value="${u.username}">${u.username}</option>`;
+        });
+    }
+
     orders.forEach(order => {
         const orderId = order[0];
         const orderAmount = parseFloat(order[10]) || 0;
         const status = order[6];
-        const courier = order[7] || '';
+        const assignedCourier = order[7] || '';
         const paymentMethod = (order[9] || 'cash').toLowerCase();
         const orderDetails = order[4] || '---';
+        
+        // FIELD CHANGES HERE
+        const salesRep = order[16] || '---'; // Old "Magaza", now "Satis Temsilcisi"
+        const storeName = order[11] || '---'; // New "Magaza", Column L (Index 11)
+
+        // Inject selected state into the pre-built options
+        const currentCourierOptions = courierOptionsHtml.replace(
+            `value="${assignedCourier}"`, 
+            `value="${assignedCourier}" selected`
+        );
 
         html += `
-        <div class="order-card ${getStatusClass(status, courier)}" id="order-${orderId}" data-amount="${orderAmount}" data-status="${status}" data-courier="${courier}" data-payment="${paymentMethod}">
+        <div class="order-card ${getStatusClass(status, assignedCourier)}" id="order-${orderId}" data-amount="${orderAmount}" data-status="${status}" data-courier="${assignedCourier}" data-payment="${paymentMethod}">
             <div class="order-info">
                 <h3><span>#${orderId}</span> <span id="status-badge-${orderId}" style="font-size:0.8rem; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${status}</span></h3>
-                <p><strong><i class="fas fa-store"></i> Mağaza:</strong> ${order[16] || '---'}</p>
+                
+                <p><strong><i class="fas fa-store"></i> Mağaza:</strong> ${storeName}</p>
+                <p><strong><i class="fas fa-user-tie"></i> Satış Təmsilçisi:</strong> ${salesRep}</p>
                 <p><strong><i class="fas fa-user"></i> Müştəri:</strong> ${order[1]}</p>
-                <p><strong><i class="fas fa-truck"></i> Kuryer:</strong> <span id="courier-display-${orderId}">${courier || 'Təyin edilməyib'}</span></p>
+                <p><strong><i class="fas fa-truck"></i> Kuryer:</strong> <span id="courier-display-${orderId}">${assignedCourier || 'Təyin edilməyib'}</span></p>
                 <p><strong><i class="fas fa-phone"></i> Tel:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
                 
                 <label>Ünvan:</label>
@@ -392,7 +435,7 @@ function renderOrders(orders) {
 
                     <label>Kuryer Təyinatı:</label>
                     <select id="courierSelect-${orderId}" class="form-control" onchange="assignCourier(${orderId})">
-                        <option value="">Kuryer Seçin...</option>
+                        ${currentCourierOptions}
                     </select>
 
                     <button class="btn btn-delete" onclick="deleteOrder(${orderId})">
@@ -401,14 +444,10 @@ function renderOrders(orders) {
                 </div>
             </div>
         </div>`;
-        
-        // Fetch couriers asynchronously for each card (or optimize to fetch once globally, but per request keeping logic simple)
-        // Optimization: Fetch couriers ONCE, then populate. But for now, using existing pattern lazily.
-        setTimeout(() => fetchDeliveryUsers(orderId), 100); 
     });
 
     listContainer.innerHTML = html;
-    recalculateLocalStats(); // Calculate totals based on rendered HTML
+    recalculateLocalStats(); 
 }
 
 // --- LOCAL LOGIC FOR UI UPDATES ---
@@ -417,7 +456,7 @@ function getStatusClass(status, courier) {
     status = status || '';
     courier = (courier || '').toLowerCase();
     
-    if (courier === 'emil' && status === 'Delivered') return 'status-blue'; // Custom logic from old code
+    if (courier === 'emil' && status === 'Delivered') return 'status-emil'; // Fixed color logic
     if (courier === 'emil') return 'status-emil';
     if (courier === 'nicat') return 'status-nicat';
     if (status === 'Delivered') return 'status-delivered';
@@ -435,14 +474,14 @@ function recalculateLocalStats() {
         const amount = parseFloat(card.querySelector(`input[id^="orderPrice"]`).value) || 0;
         const status = card.querySelector(`select[id^="statusSelect"]`).value;
         const courierSelect = card.querySelector(`select[id^="courierSelect"]`);
-        // Get courier text from select or fallback to display span if select isn't loaded yet
+        
         let courier = courierSelect.options[courierSelect.selectedIndex]?.text || card.querySelector(`span[id^="courier-display"]`).innerText;
         if(courier === 'Kuryer Seçin...' || courier === 'Təyin edilməyib') courier = '';
 
         const payment = card.querySelector(`select[id^="paymentSelect"]`).value;
 
         if (status !== 'Canceled' && status !== 'Deleted') {
-            totalAmount += (amount - 5); // Assuming -5 base fee logic from original code
+            totalAmount += (amount - 5); 
             totalCount++;
         }
 
@@ -481,7 +520,6 @@ function updateOrderDetails(orderId) {
     const price = document.getElementById(`orderPrice-${orderId}`).value;
     const payment = document.getElementById(`paymentSelect-${orderId}`).value;
 
-    // Visual feedback "Saving..." (Input border turns yellow/blue)
     const card = document.getElementById(`order-${orderId}`);
     card.style.opacity = '0.9';
 
@@ -491,7 +529,7 @@ function updateOrderDetails(orderId) {
             action: 'updateOrderDetails',
             orderId: orderId,
             deliveryAddress: address,
-            specialNotes: notes, // Added support for notes
+            specialNotes: notes,
             orderPrice: price,
             paymentMethod: payment
         })
@@ -500,7 +538,7 @@ function updateOrderDetails(orderId) {
     .then(data => {
         if(data.success) {
             showToast('Dəyişikliklər yadda saxlanıldı');
-            recalculateLocalStats(); // Update totals if price changed
+            recalculateLocalStats();
         } else {
             showToast('Xəta baş verdi', 'error');
         }
@@ -527,10 +565,8 @@ function changeStatus(orderId) {
     .then(data => {
         setLoading(orderId, false);
         if(data.success) {
-            // Update UI locally without reload
             document.getElementById(`status-badge-${orderId}`).innerText = newStatus;
             
-            // Update Card Color
             const courier = document.getElementById(`courier-display-${orderId}`).innerText;
             card.className = `order-card ${getStatusClass(newStatus, courier)}`;
             
@@ -557,7 +593,6 @@ function assignCourier(orderId) {
         if(data.success) {
             document.getElementById(`courier-display-${orderId}`).innerText = courierName;
             
-            // Update card color (e.g. if Emil is selected)
             const status = document.getElementById(`statusSelect-${orderId}`).value;
             const card = document.getElementById(`order-${orderId}`);
             card.className = `order-card ${getStatusClass(status, courierName)}`;
@@ -566,53 +601,6 @@ function assignCourier(orderId) {
             showToast(`Kuryer təyin edildi: ${courierName}`);
         }
     });
-}
-
-// Optimization: Cache delivery users to avoid 20+ API calls
-let cachedUsers = null;
-function fetchDeliveryUsers(orderId) {
-    const select = document.getElementById(`courierSelect-${orderId}`);
-    if(select.options.length > 1) return; // Already loaded
-
-    if (cachedUsers) {
-        populateCourierSelect(select, cachedUsers);
-        return;
-    }
-
-    fetch(`${API_URL}?action=getDeliveryUsers`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                cachedUsers = data.users; // Cache for other cards
-                populateCourierSelect(select, cachedUsers);
-                // Try to populate other empty selects on the page
-                document.querySelectorAll('select[id^="courierSelect"]').forEach(s => {
-                    if(s.options.length <= 1) populateCourierSelect(s, cachedUsers);
-                });
-            }
-        });
-}
-
-function populateCourierSelect(selectElement, users) {
-    users.forEach(user => {
-        // Avoid duplicates
-        let exists = false;
-        for(let i=0; i<selectElement.options.length; i++){
-            if(selectElement.options[i].value === user.username) exists = true;
-        }
-        if(!exists) {
-            const opt = document.createElement('option');
-            opt.value = user.username;
-            opt.text = user.username;
-            selectElement.appendChild(opt);
-        }
-    });
-    // Set current courier selected
-    const cardId = selectElement.id.split('-')[1];
-    const currentCourier = document.getElementById(`courier-display-${cardId}`).innerText;
-    if(currentCourier && currentCourier !== 'Təyin edilməyib') {
-        selectElement.value = currentCourier;
-    }
 }
 
 function deleteOrder(orderId) {
@@ -656,18 +644,21 @@ document.getElementById("generatePdfBtn").addEventListener("click", function () 
         const courier = card.querySelector(`span[id^="courier-display"]`).innerText;
         const status = card.querySelector(`select[id^="statusSelect"]`).value;
         const price = card.querySelector(`input[id^="orderPrice"]`).value;
-        rows.push([id, address, courier, status, price + ' AZN']);
+        // Also capture the store info in PDF
+        const storeText = card.querySelector(".fa-store").parentElement.innerText.replace("Mağaza: ", "");
+        
+        rows.push([id, storeText, address, courier, status, price + ' AZN']);
     });
 
     doc.setFontSize(18);
     doc.text(`Sifariş Hesabatı - ${date}`, 14, 15);
     
     doc.autoTable({
-        head: [['ID', 'Ünvan', 'Kuryer', 'Status', 'Məbləğ']],
+        head: [['ID', 'Mağaza', 'Ünvan', 'Kuryer', 'Status', 'Məbləğ']],
         body: rows,
         startY: 25,
         theme: 'grid',
-        styles: { fontSize: 8, font: "helvetica" } // Basic font to support standard chars, complex UTF8 needs custom font
+        styles: { fontSize: 8, font: "helvetica" }
     });
 
     const dataUrl = doc.output('dataurlstring');
@@ -675,7 +666,6 @@ document.getElementById("generatePdfBtn").addEventListener("click", function () 
     viewer.style.display = 'block';
     viewer.innerHTML = `<iframe src="${dataUrl}"></iframe>`;
     
-    // Auto download on mobile where iframe might be tricky
     if(window.innerWidth < 800) {
         doc.save(`sifarisler_${date}.pdf`);
     }
