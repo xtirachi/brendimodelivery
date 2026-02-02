@@ -421,9 +421,9 @@ function renderOrders(orders, couriers) {
                     </div>
                 </div>
 
-                <div class="order-detail-box">
-                    <strong>Sifariş tərkibi:</strong><br>${orderDetails}
-                </div>
+               // NEW CODE (Copy and paste this to replace the part above)
+<label>Sifariş tərkibi (Məhsullar):</label>
+<textarea id="orderDetails-${orderId}" class="form-control" rows="4" style="background:#f8fafc; font-size:0.9rem;" onchange="updateOrderDetails(${orderId})">${orderDetails}</textarea>
 
                 <div style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:10px;">
                     <label>Status Yenilə:</label>
@@ -515,13 +515,19 @@ function updateStatsUI(count, amount, courierData) {
 // --- ACTION FUNCTIONS ---
 
 function updateOrderDetails(orderId) {
+    // 1. GET ALL VALUES (Included the new orderDetails)
     const address = document.getElementById(`deliveryAddress-${orderId}`).value;
     const notes = document.getElementById(`specialNotes-${orderId}`).value;
     const price = document.getElementById(`orderPrice-${orderId}`).value;
     const payment = document.getElementById(`paymentSelect-${orderId}`).value;
+    // NEW: Get the product details text
+    const products = document.getElementById(`orderDetails-${orderId}`).value; 
 
     const card = document.getElementById(`order-${orderId}`);
-    card.style.opacity = '0.9';
+    
+    // Visual Feedback: Dim the card while saving
+    card.style.opacity = '0.6';
+    card.style.pointerEvents = 'none'; // Prevent double clicks
 
     fetch(UPDATE_URL, {
         method: 'POST',
@@ -531,22 +537,26 @@ function updateOrderDetails(orderId) {
             deliveryAddress: address,
             specialNotes: notes,
             orderPrice: price,
-            paymentMethod: payment
+            paymentMethod: payment,
+            orderDetails: products // <--- NEW PARAMETER SENT TO SHEET
         })
     })
     .then(res => res.json())
     .then(data => {
         if(data.success) {
-            showToast('Dəyişikliklər yadda saxlanıldı');
+            showToast('✅ Məlumatlar yeniləndi');
             recalculateLocalStats();
         } else {
-            showToast('Xəta baş verdi', 'error');
+            showToast('❌ Yadda saxlama xətası', 'error');
         }
-        card.style.opacity = '1';
     })
     .catch(() => {
-        showToast('İnternet xətası', 'error');
+        showToast('⚠️ İnternet xətası', 'error');
+    })
+    .finally(() => {
+        // Restore card state
         card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
     });
 }
 
