@@ -26,7 +26,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         window.location.href = 'admin-dashboard.html';
       } else if (data.role === 'Staff') {
         // Store the staff username in localStorage
-        localStorage.setItem('staff_username', username);
+        localStorage.setItem('satici_adi', username);
         
         // Redirect to the staff dashboard
 window.location.href = 'https://brendimo-co.github.io/brendimo/staff-dashboard.html';
