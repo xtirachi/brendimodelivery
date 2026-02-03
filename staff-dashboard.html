@@ -2,78 +2,302 @@
 <html lang="az">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yeni Sifariş Yarat</title>
-  <link href="staff.css" rel="stylesheet"> <!-- Link to your CSS file -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Brendimo Staff Dashboard</title>
+  <style>
+    /* --- iOS Design Variables --- */
+    :root {
+      --ios-bg: #F2F2F7;
+      --ios-card-bg: #FFFFFF;
+      --ios-blue: #007AFF;
+      --ios-green: #34C759;
+      --ios-red: #FF3B30;
+      --ios-text: #1C1C1E;
+      --ios-text-secondary: #8E8E93;
+      --ios-input-bg: #E5E5EA;
+      --ios-border-radius: 16px;
+      --ios-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      --ios-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    
+  
+    /* --- Reset & Base --- */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: var(--ios-font);
+      background-color: var(--ios-bg);
+      color: var(--ios-text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 28px;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+
+    h4 {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    /* --- Containers & Cards --- */
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: var(--ios-card-bg);
+      border-radius: var(--ios-border-radius);
+      padding: 24px;
+      box-shadow: var(--ios-shadow);
+      margin-bottom: 30px;
+      transition: transform 0.2s ease;
+    }
+
+    /* --- Forms & Inputs --- */
+    .form-group { margin-bottom: 20px; }
+    
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ios-text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      background-color: var(--ios-input-bg);
+      border-radius: 12px;
+      font-size: 16px; /* Prevents zoom on iPhone */
+      font-family: var(--ios-font);
+      color: var(--ios-text);
+      transition: background-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      background-color: #D1D1D6;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* --- Buttons --- */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn:active { transform: scale(0.98); opacity: 0.8; }
+
+    .btn-primary { background-color: var(--ios-blue); color: white; }
+    .btn-success { background-color: var(--ios-green); color: white; }
+    .btn-danger { background-color: var(--ios-red); color: white; font-size: 14px; padding: 8px 12px; width: auto; }
+    .btn-sm { padding: 8px 16px; font-size: 14px; width: auto; display: inline-block; margin-top: 5px; }
+
+    /* --- Product List --- */
+    #selectedProductsList {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    #selectedProductsList li {
+      background-color: #F9F9F9;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      border: 1px solid #E5E5EA;
+    }
+
+    .product-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* --- Total Price --- */
+    #totalSalesPriceDisplay {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ios-blue);
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* --- Status Messages --- */
+    .status-msg {
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    .text-success { background-color: #E0F8E5; color: var(--ios-green); }
+    .text-danger { background-color: #FFE5E5; color: var(--ios-red); }
+
+    /* --- Order Cards (My Orders) --- */
+    .order-cards-container { display: flex; flex-direction: column; gap: 20px; }
+
+    .order-card {
+      background: white;
+      border-radius: var(--ios-border-radius);
+      padding: 20px;
+      box-shadow: var(--ios-shadow);
+      position: relative;
+      overflow: hidden;
+      border-left: 6px solid transparent;
+    }
+
+    .order-card.delivered { border-left-color: var(--ios-green); }
+    .order-card.pending { border-left-color: #FF9500; } /* Orange */
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #F2F2F7;
+    }
+
+    .order-id { font-weight: 800; font-size: 18px; color: var(--ios-text); }
+    .order-status { 
+      font-size: 12px; 
+      font-weight: 700; 
+      padding: 4px 10px; 
+      border-radius: 20px; 
+      text-transform: uppercase; 
+    }
+    .status-delivered { background: #E0F8E5; color: var(--ios-green); }
+    .status-pending { background: #FFF4E5; color: #FF9500; }
+
+    .order-detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .detail-label { color: var(--ios-text-secondary); }
+    .detail-value { font-weight: 500; text-align: right; max-width: 60%; }
+
+    /* Editable Note Area */
+    .note-section {
+      margin-top: 15px;
+      background: #FAFAFA;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .note-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      .container { padding: 20px; }
+      h2 { font-size: 24px; }
+    }
+  </style>
 </head>
 <body>
+
   <div class="container">
     <h2>Yeni Sifariş Yarat</h2>
     
     <form id="orderForm">
-      <div class="mb-3">
-        <label for="customerName" class="form-label">Müştəri Adı</label>
-        <input type="text" class="form-control" id="customerName" required>
+      <div class="form-group">
+        <label for="customerName">Müştəri Adı</label>
+        <input type="text" id="customerName" placeholder="Ad və Soyad" required>
       </div>
-      <div class="mb-3">
-        <label for="contactInfo" class="form-label">Əlaqə Məlumatı (Telefon)</label>
-        <input type="number" class="form-control" id="contactInfo" required>
+      <div class="form-group">
+        <label for="contactInfo">Əlaqə Nömrəsi</label>
+        <input type="number" id="contactInfo" placeholder="994501234567" required>
       </div>
-      <div class="mb-3">
-        <label for="deliveryAddress" class="form-label">Çatdırılma Ünvanı</label>
-        <input type="text" class="form-control" id="deliveryAddress" required>
-      </div>
-
-      <!-- Product Section -->
-      <div class="mb-3">
-        <label for="productSearch" class="form-label">Məhsul Axtar</label>
-        <input type="text" class="form-control" id="productSearch" placeholder="Məhsul axtarın...">
-      </div>
-      <div class="mb-3">
-        <label for="productSelect" class="form-label">Məhsul Seçin</label>
-        <select id="productSelect" class="form-control">
-          <option value="">Məhsul seçin</option>
-        </select>
-        <label for="quantity" class="form-label">Miqdar</label>
-        <input type="number" id="quantity" class="form-control" min="1" step="1" value="1">
-        <button type="button" id="addProductButton" class="btn btn-primary mt-2">Məhsul Əlavə Et</button>
+      <div class="form-group">
+        <label for="deliveryAddress">Çatdırılma Ünvanı</label>
+        <input type="text" id="deliveryAddress" placeholder="Küçə, Bina, Mənzil" required>
       </div>
 
-      <div class="mb-3">
-        <h4>Seçilmiş Məhsullar</h4>
+      <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+        <h4>Məhsul Seçimi</h4>
+        <div class="form-group">
+          <label for="productSearch">Məhsul Axtar</label>
+          <input type="text" id="productSearch" placeholder="Axtarış...">
+        </div>
+        <div class="form-group">
+          <label for="productSelect">Məhsul Seçin</label>
+          <select id="productSelect">
+            <option value="">Siyahıdan seçin</option>
+          </select>
+        </div>
+        <div class="form-group" style="display: flex; gap: 10px;">
+          <div style="flex: 1;">
+            <label for="quantity">Miqdar</label>
+            <input type="number" id="quantity" min="1" step="1" value="1">
+          </div>
+          <div style="flex: 1; display: flex; align-items: flex-end;">
+            <button type="button" id="addProductButton" class="btn btn-primary" style="height: 50px;">Əlavə Et</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Səbət</label>
         <ul id="selectedProductsList"></ul>
+        <div id="totalSalesPriceDisplay">0.00 AZN</div>
       </div>
 
-      <!-- Sales Price Section -->
-      <div id="totalSalesPriceDisplay" class="mt-3">Ümumi Satış Qiyməti: 0.00 AZN</div>
-      <label for="totalSalesPriceInput" class="form-label">Satış Qiymətini Dəyişdir (AZN)</label>
-      <input type="number" id="totalSalesPriceInput" class="form-control" min="0" step="1">
-
-      <!-- Special Instructions -->
-      <div class="mb-3">
-        <label for="specialInstructions" class="form-label">Xüsusi Təlimatlar</label>
-        <textarea class="form-control" id="specialInstructions" rows="2"></textarea>
+      <div class="form-group">
+        <label for="totalSalesPriceInput">Qiyməti Dəyiş (Könüllü)</label>
+        <input type="number" id="totalSalesPriceInput" min="0" step="0.01" placeholder="Avtomatik hesablanır">
       </div>
 
-      <!-- Order Date -->
-      <div class="mb-3">
-        <label for="orderDate" class="form-label">Sifariş Tarixi</label>
-        <input type="date" class="form-control" id="orderDate" required>
+      <div class="form-group">
+        <label for="specialInstructions">Xüsusi Təlimatlar (Qeyd)</label>
+        <textarea id="specialInstructions" rows="3" placeholder="Sifariş barədə xüsusi qeydlər..."></textarea>
       </div>
 
-      <!-- Payment Method -->
-      <div class="mb-3">
-        <label for="paymentMethod" class="form-label">Ödəniş Metodu</label>
-        <select id="paymentMethod" class="form-control" required>
+      <div class="form-group">
+        <label for="orderDate">Sifariş Tarixi</label>
+        <input type="date" id="orderDate" required>
+      </div>
+      <div class="form-group">
+        <label for="paymentMethod">Ödəniş Metodu</label>
+        <select id="paymentMethod" required>
           <option value="cash">Nağd</option>
           <option value="card">Karta</option>
         </select>
       </div>
-
-      <!-- Sales Source -->
-      <div class="mb-3">
-        <label for="salesSource" class="form-label">Satış Mənbəyi</label>
-        <select id="salesSource" class="form-control" required>
+      <div class="form-group">
+        <label for="salesSource">Satış Mənbəyi</label>
+        <select id="salesSource" required>
           <option value="Brendimoaz">Brendimoaz</option>
           <option value="Brendimo.az">Brendimo.az</option>
           <option value="Idealhediyyeler">Idealhediyyeler</option>
@@ -84,32 +308,401 @@
         </select>
       </div>
 
-      <!-- Staff Username as "Satıcı" -->
-      <div class="mb-3">
-        <label for="staffUsername" class="form-label">Satıcı</label>
-        <input type="text" class="form-control" id="staffUsername" readonly>
+      <div class="form-group">
+        <label for="staffUsername">Satıcı</label>
+        <input type="text" id="staffUsername" readonly style="color: #8E8E93; cursor: not-allowed;">
       </div>
 
-      <button type="submit" class="btn btn-primary">Sifariş Yarat</button>
+      <button type="submit" class="btn btn-success">Sifarişi Təsdiqlə</button>
     </form>
 
-    <div id="orderSuccess" class="text-success mt-3" style="display: none;">Sifariş müvəffəqiyyətlə yaradıldı!</div>
-    <div id="orderError" class="text-danger mt-3" style="display: none;">Sifariş yaratmaqda problem oldu.
-    </div>
+    <div id="orderSuccess" class="status-msg text-success">Sifariş uğurla yaradıldı!</div>
+    <div id="orderError" class="status-msg text-danger">Xəta baş verdi.</div>
   </div>
 
   <div class="container">
-    <h2>Sifarişlərim</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>Sifarişlərim</h2>
+    </div>
     
-    <!-- Date Selector for Filtering Orders -->
-    <label for="orderDateFilter" class="form-label">Tarixə görə Filtrlə:</label>
-    <input type="date" id="orderDateFilter" class="form-control" />
+    <div class="form-group">
+      <label for="orderDateFilter">Tarixə görə Filtrlə</label>
+      <input type="date" id="orderDateFilter">
+    </div>
 
     <div id="orderCardsContainer" class="order-cards-container">
-      <!-- Order cards will be dynamically loaded here -->
+      <div style="text-align: center; color: #8E8E93; padding: 20px;">Yüklənir...</div>
     </div>
   </div>
-  
-  <script src="staff-dashboard.js"></script>
+
+  <script>
+    // --- Configuration ---
+    const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvaODD6itK5HGsOa3KNpLx6kXs1WXZwmuedL2xRfwYMTRoXH42PDicNm7GrpGirGRw/exec';   
+    const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';   
+
+    // --- State ---
+    let selectedProducts = [];
+    let totalSalesPrice = 0;
+    let isPriceManuallyChanged = false;
+
+    // --- Initialization ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // Date format YYYY-MM-DD
+        const todayStr = today.toISOString().split('T')[0];
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+        // Set inputs
+        document.getElementById('orderDate').value = tomorrowStr;
+        
+        const filterInput = document.getElementById('orderDateFilter');
+        if(filterInput) {
+            filterInput.value = todayStr;
+            // Listen for filter changes
+            filterInput.addEventListener('change', () => {
+                fetchOrdersForStaff(document.getElementById('staffUsername').value, filterInput.value);
+            });
+        }
+
+        // Auth/Staff Check
+        const staffUsername = localStorage.getItem('staff_username');
+        if (staffUsername) {
+            document.getElementById('staffUsername').value = staffUsername;
+            // Initial fetch
+            fetchOrdersForStaff(staffUsername, todayStr);
+        } else {
+            alert('Satıcı adı tapılmadı. Zəhmət olmasa yenidən daxil olun.');
+        }
+    });
+
+    // --- Product Logic ---
+    
+    // Search
+    document.getElementById('productSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        if(searchTerm.length < 2) return; // Optimization
+
+        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProducts&searchTerm=${encodeURIComponent(searchTerm)}`)
+            .then(res => res.json())
+            .then(data => {
+                const select = document.getElementById('productSelect');
+                select.innerHTML = '<option value="">Məhsul seçin</option>';
+                data.products.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.productName;
+                    opt.text = p.productName;
+                    select.appendChild(opt);
+                });
+            })
+            .catch(err => console.error('Search error:', err));
+    });
+
+    // Add Product
+    document.getElementById('addProductButton').addEventListener('click', function() {
+        const select = document.getElementById('productSelect');
+        const qtyInput = document.getElementById('quantity');
+        const prodName = select.value;
+        const qty = parseInt(qtyInput.value);
+
+        if(!prodName || qty < 1) {
+            alert('Məhsul seçin və düzgün miqdar daxil olun.');
+            return;
+        }
+
+        // Get Details
+        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(prodName)}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    const price = parseFloat(data.product.salesPrice) || 0;
+                    
+                    selectedProducts.push({
+                        productName: prodName,
+                        quantity: qty,
+                        salesPrice: price
+                    });
+
+                    totalSalesPrice += (price * qty);
+                    
+                    updateUI();
+                    
+                    // Reset inputs
+                    select.value = '';
+                    qtyInput.value = 1;
+                } else {
+                    alert('Məhsul detalları tapılmadı.');
+                }
+            })
+            .catch(err => console.error('Add product error:', err));
+    });
+
+    function updateUI() {
+        // List
+        const list = document.getElementById('selectedProductsList');
+        list.innerHTML = '';
+        selectedProducts.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span><strong>${item.productName}</strong> <br> <small>x${item.quantity}</small></span>
+                <div class="product-controls">
+                    <span>${(item.salesPrice * item.quantity).toFixed(2)} AZN</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${index})">Sil</button>
+                </div>
+            `;
+            list.appendChild(li);
+        });
+
+        // Price
+        document.getElementById('totalSalesPriceDisplay').textContent = `Cəmi: ${totalSalesPrice.toFixed(2)} AZN`;
+        if(!isPriceManuallyChanged) {
+            document.getElementById('totalSalesPriceInput').value = totalSalesPrice.toFixed(2);
+        }
+    }
+
+    window.removeProduct = function(index) {
+        const item = selectedProducts[index];
+        totalSalesPrice -= (item.salesPrice * item.quantity);
+        selectedProducts.splice(index, 1);
+        updateUI();
+    };
+
+    document.getElementById('totalSalesPriceInput').addEventListener('input', () => {
+        isPriceManuallyChanged = true;
+    });
+
+    // --- Order Submission ---
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if(selectedProducts.length === 0) {
+            alert('Səbət boşdur.');
+            return;
+        }
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Göndərilir...';
+
+        const finalPrice = isPriceManuallyChanged 
+            ? parseFloat(document.getElementById('totalSalesPriceInput').value)
+            : totalSalesPrice;
+
+        const payload = {
+            action: 'createOrder',
+            customerName: document.getElementById('customerName').value,
+            contactInfo: document.getElementById('contactInfo').value,
+            deliveryAddress: document.getElementById('deliveryAddress').value,
+            orderDate: document.getElementById('orderDate').value,
+            specialInstructions: document.getElementById('specialInstructions').value,
+            paymentMethod: document.getElementById('paymentMethod').value,
+            salesSource: document.getElementById('salesSource').value,
+            staffUsername: document.getElementById('staffUsername').value,
+            products: JSON.stringify(selectedProducts),
+            totalSalesPrice: finalPrice.toFixed(2)
+        };
+
+        fetch(ORDER_CREATION_SCRIPT_URL, {
+            method: 'POST',
+            body: new URLSearchParams(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                // Show success
+                document.getElementById('orderSuccess').style.display = 'block';
+                setTimeout(() => { document.getElementById('orderSuccess').style.display = 'none'; }, 3000);
+                
+                // Logic to update Stock (from your original logic)
+                updateStock(); 
+
+                // Reset
+                resetForm();
+                
+                // Refresh Order List
+                const dateFilter = document.getElementById('orderDateFilter').value;
+                fetchOrdersForStaff(payload.staffUsername, dateFilter);
+
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(err => {
+            document.getElementById('orderError').style.display = 'block';
+            console.error(err);
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Sifarişi Təsdiqlə';
+        });
+    });
+
+    function resetForm() {
+        document.getElementById('orderForm').reset();
+        selectedProducts = [];
+        totalSalesPrice = 0;
+        isPriceManuallyChanged = false;
+        updateUI();
+        
+        // Restore defaults
+        const staff = localStorage.getItem('staff_username');
+        if(staff) document.getElementById('staffUsername').value = staff;
+        
+        const tmr = new Date();
+        tmr.setDate(tmr.getDate() + 1);
+        document.getElementById('orderDate').value = tmr.toISOString().split('T')[0];
+    }
+
+    // --- Stock Logic (Preserved) ---
+    function updateStock() {
+        selectedProducts.forEach(product => {
+            fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if(data.success) {
+                        const newStock = data.product.stock - product.quantity;
+                        updateProductStock(product.productName, newStock);
+                        
+                        // Component Logic
+                        if(data.product.components && data.product.components.length > 0) {
+                            data.product.components.forEach(comp => {
+                                const compStock = comp.stock - (comp.quantity * product.quantity);
+                                updateProductStock(comp.productName, compStock);
+                            });
+                        }
+                    }
+                });
+        });
+    }
+
+    function updateProductStock(name, stock) {
+        if(stock < 0) return; // Prevention
+        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=updateStock`, {
+            method: 'POST',
+            body: new URLSearchParams({ productName: name, newStock: stock })
+        });
+    }
+
+    // --- FETCH & DISPLAY ORDERS ---
+    function fetchOrdersForStaff(staffName, date) {
+        const container = document.getElementById('orderCardsContainer');
+        container.innerHTML = '<div style="text-align:center;">Yüklənir...</div>';
+
+        fetch(`${ORDER_CREATION_SCRIPT_URL}?action=getOrdersByStaffAndDate&staffUsername=${encodeURIComponent(staffName)}&date=${encodeURIComponent(date)}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    displayOrders(data.orders);
+                } else {
+                    container.innerHTML = '<div style="text-align:center;">Sifariş tapılmadı.</div>';
+                }
+            })
+            .catch(err => {
+                container.innerHTML = '<div style="text-align:center; color:red;">Xəta baş verdi.</div>';
+            });
+    }
+
+    function displayOrders(orders) {
+        const container = document.getElementById('orderCardsContainer');
+        container.innerHTML = '';
+
+        if(!orders || orders.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:#8E8E93;">Bu tarixdə sifariş yoxdur.</div>';
+            return;
+        }
+
+        orders.forEach(order => {
+            // Mapping based on your Google Sheet structure assumption
+            // ID=0, Customer=1, Address=3, Details=4, NOTE=5 (Column F), Status=6, Courier=7, Payment=9, Amount=10, Source=11, Staff=16
+            
+            const statusClass = (order[6] === 'Delivered') ? 'delivered' : 'pending';
+            const statusLabel = (order[6] === 'Delivered') ? 'status-delivered' : 'status-pending';
+            const noteContent = order[5] || ''; // Column F
+
+            const html = `
+                <div class="order-card ${statusClass}" id="card-${order[0]}">
+                    <div class="order-header">
+                        <span class="order-id">#${order[0]}</span>
+                        <span class="order-status ${statusLabel}">${order[6]}</span>
+                    </div>
+                    
+                    <div class="order-detail-row">
+                        <span class="detail-label">Müştəri:</span>
+                        <span class="detail-value">${order[1]}</span>
+                    </div>
+                    <div class="order-detail-row">
+                        <span class="detail-label">Məbləğ:</span>
+                        <span class="detail-value" style="color: var(--ios-blue); font-weight:700;">${parseFloat(order[10]).toFixed(2)} AZN</span>
+                    </div>
+                    <div class="order-detail-row">
+                        <span class="detail-label">Ünvan:</span>
+                        <span class="detail-value">${order[3]}</span>
+                    </div>
+                    <div class="order-detail-row">
+                        <span class="detail-label">Çatdırıcı:</span>
+                        <span class="detail-value">${order[7] || '-'}</span>
+                    </div>
+                     <div class="order-detail-row">
+                        <span class="detail-label">Məhsullar:</span>
+                        <span class="detail-value" style="font-size:13px;">${order[4]}</span>
+                    </div>
+
+                    <div class="note-section">
+                        <label for="note-${order[0]}" style="margin-bottom:5px; display:block;">Xüsusi Təlimatlar (Qeyd)</label>
+                        <textarea id="note-${order[0]}" class="form-control" style="font-size:14px; background:white;">${noteContent}</textarea>
+                        <div class="note-actions">
+                            <button class="btn btn-primary btn-sm" onclick="saveNote('${order[0]}')">Yadda saxla</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
+    // --- Save Note Functionality ---
+    window.saveNote = function(orderId) {
+        const noteVal = document.getElementById(`note-${orderId}`).value;
+        const btn = document.querySelector(`#card-${orderId} .btn-primary`);
+        
+        const originalText = btn.textContent;
+        btn.textContent = '...';
+        btn.disabled = true;
+
+        // Note: Your Google Apps Script must handle 'updateOrderNote' action
+        fetch(ORDER_CREATION_SCRIPT_URL, {
+            method: 'POST',
+            body: new URLSearchParams({
+                action: 'updateOrderNote', // ENSURE BACKEND HANDLES THIS
+                orderId: orderId,
+                newNote: noteVal
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                btn.textContent = '✓';
+                btn.style.backgroundColor = 'var(--ios-green)';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '';
+                    btn.disabled = false;
+                }, 2000);
+            } else {
+                alert('Xəta: ' + data.message);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Server xətası.');
+            btn.disabled = false;
+            btn.textContent = originalText;
+        });
+    };
+  </script>
 </body>
 </html>
