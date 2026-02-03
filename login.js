@@ -26,10 +26,10 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         window.location.href = 'admin-dashboard.html';
       } else if (data.role === 'Staff') {
         // Store the staff username in localStorage
-        localStorage.setItem('satici_adi', username);
+        localStorage.setItem('staff_username', username);
         
         // Redirect to the staff dashboard
-window.location.href = 'https://brendimo-co.github.io/brendimo/staff-dashboard.html';
+        window.location.href = 'staff-dashboard.html';
       } else if (data.role === 'Delivery') {
         // Store the delivery username in localStorage
         localStorage.setItem('delivery_username', username);
@@ -51,4 +51,3 @@ window.location.href = 'https://brendimo-co.github.io/brendimo/staff-dashboard.h
   })
   .catch(err => console.error('Login error:', err));  // Log any errors in the console
 });
-
