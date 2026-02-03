@@ -29,7 +29,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         localStorage.setItem('staff_username', username);
         
         // Redirect to the staff dashboard
-        window.location.href = 'staff-dashboard.html';
+window.location.href = 'https://brendimo-co.github.io/brendimo/staff-dashboard.html';
       } else if (data.role === 'Delivery') {
         // Store the delivery username in localStorage
         localStorage.setItem('delivery_username', username);
