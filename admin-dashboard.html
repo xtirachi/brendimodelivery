@@ -437,20 +437,20 @@ function recalculateLocalStats() {
         const status = card.querySelector(`select[id^="statusSelect"]`).value;
         const courierSelect = card.querySelector(`select[id^="courierSelect"]`);
         // Get courier text from select or fallback to display span if select isn't loaded yet
-        let courier = courierSelect.options[courierSelect.selectedIndex]?.text || card.querySelector(`span[id^="courier-display"]`).innerText;
+let courier = card.querySelector(`span[id^="courier-display"]`).innerText;
         if(courier === 'Kuryer Seçin...' || courier === 'Təyin edilməyib') courier = '';
 
         const payment = card.querySelector(`select[id^="paymentSelect"]`).value;
 
         if (status !== 'Canceled' && status !== 'Deleted') {
-            totalAmount += (amount - 5); // Assuming -5 base fee logic from original code
+            totalAmount += (amount - 5.8); // Assuming -5 base fee logic from original code
             totalCount++;
         }
 
         if (status === 'Delivered' || status === 'Canceled') {
             if(courier) {
                 if (!courierStats[courier]) courierStats[courier] = 0;
-                courierStats[courier] -= 5;
+                courierStats[courier] -= 5.8;
                 if (status === 'Delivered' && payment === 'cash') {
                     courierStats[courier] += amount;
                 }
