@@ -268,6 +268,11 @@
         </div>
       </div>
 
+   <div class="form-group">
+        <label for="addCourierPayment">Əlavə Kuriyer ödənişi</label>
+        <input type="number" id="addCourierPayment" min="0" step="0.01" placeholder="0.00">
+      </div>
+
       <div class="form-group">
         <label>Səbət</label>
         <ul id="selectedProductsList"></ul>
@@ -337,7 +342,7 @@
 
   <script>
     // --- Configuration ---
-    const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8ZN9o_rXhSQ8Xxb_XzzHeOTVe8T-WF3IhXIdQOuinw6W4kNvMxzfNbd-j6FMQn1xV/exec';   
+    const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhhZMZi7QcB-Q2IJlgQsxTsPrL22Sgi_FRCT86XP2rZKC7OshKhKFLsTHGscuI5Juu/exec';   
     const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';   
 
     // --- State ---
@@ -490,7 +495,7 @@
             ? parseFloat(document.getElementById('totalSalesPriceInput').value)
             : totalSalesPrice;
 
-        const payload = {
+   const payload = {
             action: 'createOrder',
             customerName: document.getElementById('customerName').value,
             contactInfo: document.getElementById('contactInfo').value,
@@ -500,6 +505,7 @@
             paymentMethod: document.getElementById('paymentMethod').value,
             salesSource: document.getElementById('salesSource').value,
             staffUsername: document.getElementById('staffUsername').value,
+            addCourierPayment: document.getElementById('addCourierPayment').value || 0, // NEW LINE
             products: JSON.stringify(selectedProducts),
             totalSalesPrice: finalPrice.toFixed(2)
         };
