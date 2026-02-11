@@ -349,12 +349,23 @@ function renderOrders(orders) {
         const courier = order[7] || '';
         const paymentMethod = (order[9] || 'cash').toLowerCase();
         const orderDetails = order[4] || '---';
+        const seller = order[16] || 'Digər'; // Get Seller Name
+        const additionalPayment = parseFloat(order[19]) || 0; 
 
         html += `
-        <div class="order-card ${getStatusClass(status, courier)}" id="order-${orderId}" data-amount="${orderAmount}" data-status="${status}" data-courier="${courier}" data-payment="${paymentMethod}">
-            <div class="order-info">
-                <h3><span>#${orderId}</span> <span id="status-badge-${orderId}" style="font-size:0.8rem; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${status}</span></h3>
-                <p><strong><i class="fas fa-store"></i> Mağaza:</strong> ${order[16] || '---'}</p>
+        <div class="order-card ${getStatusClass(status, courier)}" 
+             id="order-${orderId}" 
+             data-amount="${orderAmount}" 
+             data-status="${status}" 
+             data-courier="${courier}" 
+             data-payment="${paymentMethod}"
+             data-additional="${additionalPayment}"
+             data-seller="${seller}"> <div class="order-info">
+                <h3>
+                    <span>#${orderId}</span> 
+                    <span id="status-badge-${orderId}" style="font-size:0.8rem; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${status}</span>
+                </h3>
+                <p><strong><i class="fas fa-store"></i> Satış Təmsilçisi:</strong> ${seller}</p>
                 <p><strong><i class="fas fa-user"></i> Müştəri:</strong> ${order[1]}</p>
                 <p><strong><i class="fas fa-truck"></i> Kuryer:</strong> <span id="courier-display-${orderId}">${courier || 'Təyin edilməyib'}</span></p>
                 <p><strong><i class="fas fa-phone"></i> Tel:</strong> <a href="tel:${order[2]}">${order[2]}</a></p>
@@ -378,6 +389,8 @@ function renderOrders(orders) {
                         </select>
                     </div>
                 </div>
+
+                ${additionalPayment > 0 ? `<div style="margin-top:5px; color:var(--dark-green); font-size:0.85rem;"><strong><i class="fas fa-plus-circle"></i> Kuryer Bonusu:</strong> ${additionalPayment} AZN</div>` : ''}
 
                 <div class="order-detail-box">
                     <strong>Sifariş tərkibi:</strong><br>${orderDetails}
@@ -403,14 +416,13 @@ function renderOrders(orders) {
             </div>
         </div>`;
         
-        // Fetch couriers asynchronously for each card (or optimize to fetch once globally, but per request keeping logic simple)
-        // Optimization: Fetch couriers ONCE, then populate. But for now, using existing pattern lazily.
         setTimeout(() => fetchDeliveryUsers(orderId), 100); 
     });
 
     listContainer.innerHTML = html;
-    recalculateLocalStats(); // Calculate totals based on rendered HTML
+    recalculateLocalStats(); 
 }
+
 
 // --- LOCAL LOGIC FOR UI UPDATES ---
 
@@ -428,50 +440,112 @@ function getStatusClass(status, courier) {
 }
 
 function recalculateLocalStats() {
-    let totalAmount = 0;
-    let totalCount = 0;
-    let courierStats = {};
+    // 1. Data Structure for Counts & Sales
+    let stats = {
+        count: { total: 0, cash: 0, card: 0, courier: {}, seller: {} },
+        sales: { total: 0, cash: 0, card: 0, courier: {}, seller: {} }
+    };
+    
+    // 2. Data Structure for Courier Debt (The 3rd Card)
+    let courierDebt = {};
 
     document.querySelectorAll('.order-card').forEach(card => {
         const amount = parseFloat(card.querySelector(`input[id^="orderPrice"]`).value) || 0;
         const status = card.querySelector(`select[id^="statusSelect"]`).value;
-        const courierSelect = card.querySelector(`select[id^="courierSelect"]`);
-        // Get courier text from select or fallback to display span if select isn't loaded yet
-let courier = card.querySelector(`span[id^="courier-display"]`).innerText;
-        if(courier === 'Kuryer Seçin...' || courier === 'Təyin edilməyib') courier = '';
-
         const payment = card.querySelector(`select[id^="paymentSelect"]`).value;
+        const seller = card.dataset.seller || 'Digər';
+        const additionalPay = parseFloat(card.dataset.additional) || 0;
 
+        let courier = card.querySelector(`span[id^="courier-display"]`).innerText;
+        if(courier === 'Kuryer Seçin...' || courier === 'Təyin edilməyib') courier = 'Təyin edilməyib';
+
+        // --- Logic: Only count Active orders (Not Canceled/Deleted) ---
         if (status !== 'Canceled' && status !== 'Deleted') {
-            totalAmount += (amount - 5.8); // Assuming -5 base fee logic from original code
-            totalCount++;
+            
+            // A. Global Totals
+            stats.count.total++;
+            stats.sales.total += amount;
+
+            // B. Payment Breakdown
+            if (payment === 'cash') {
+                stats.count.cash++;
+                stats.sales.cash += amount;
+            } else {
+                stats.count.card++;
+                stats.sales.card += amount;
+            }
+
+            // C. Courier Breakdown (Performance)
+            if (!stats.count.courier[courier]) { stats.count.courier[courier] = 0; stats.sales.courier[courier] = 0; }
+            stats.count.courier[courier]++;
+            stats.sales.courier[courier] += amount;
+
+            // D. Seller Breakdown
+            if (!stats.count.seller[seller]) { stats.count.seller[seller] = 0; stats.sales.seller[seller] = 0; }
+            stats.count.seller[seller]++;
+            stats.sales.seller[seller] += amount;
         }
 
-        if (status === 'Delivered' || status === 'Canceled') {
-            if(courier) {
-                if (!courierStats[courier]) courierStats[courier] = 0;
-                courierStats[courier] -= 5.8;
-                if (status === 'Delivered' && payment === 'cash') {
-                    courierStats[courier] += amount;
-                }
+        // --- Logic: Courier Debt Calculation (Existing Logic for Card 3) ---
+        // Note: Debt is calculated even if Canceled (for the 5.8 fee deduction logic)
+        // But strictly speaking, usually we only calculate debt on Delivery.
+        // Keeping your previous logic:
+        if (courier !== 'Təyin edilməyib' && (status === 'Delivered' || status === 'Canceled')) {
+            if (!courierDebt[courier]) courierDebt[courier] = { net: 0, card: 0 };
+            
+            // 1. Fee & Bonus
+            courierDebt[courier].net -= 5.8; 
+            courierDebt[courier].net -= additionalPay;
+
+            // 2. Cash Collection
+            if (status === 'Delivered') {
+                if (payment === 'cash') courierDebt[courier].net += amount;
+                else courierDebt[courier].card += amount;
             }
         }
     });
 
-    updateStatsUI(totalCount, totalAmount, courierStats);
+    updateStatsUI(stats, courierDebt);
 }
 
-function updateStatsUI(count, amount, courierData) {
-    document.getElementById('totalOrdersCount').textContent = count;
-    document.getElementById('totalAmount').textContent = `${amount.toFixed(2)} AZN`;
+function updateStatsUI(stats, courierDebt) {
+    // --- Helper to generate mini-tables ---
+    const generateTable = (dataObj, isCurrency) => {
+        let html = '<div style="max-height:100px; overflow-y:auto; margin-top:5px; font-size:0.75rem; border-top:1px solid #eee; padding-top:5px;">';
+        const sorted = Object.entries(dataObj).sort((a,b) => b[1] - a[1]);
+        
+        sorted.forEach(([key, val]) => {
+            if(val > 0) {
+                const displayVal = isCurrency ? `${val.toFixed(2)} ₼` : val;
+                html += `<div style="display:flex; justify-content:space-between;"><span>${key}</span> <strong>${displayVal}</strong></div>`;
+            }
+        });
+        html += '</div>';
+        return html;
+    };
 
-    let html = '';
-    for (const [name, val] of Object.entries(courierData)) {
-        html += `<div style="display:flex; justify-content:space-between; margin-top:5px; border-bottom:1px dashed #eee;">
-            <span>${name}:</span> <strong>${val.toFixed(2)} ₼</strong>
-        </div>`;
-    }
-    document.getElementById('totalPerCourier').innerHTML = `<small>Kuryer Net:</small>${html || '<div style="margin-top:5px">Məlumat yoxdur</div>'}`;
+    // --- CARD 1: ORDER COUNTS ---
+    const countCardHtml = `
+        <small>Ümumi Sifariş</small>
+        <div style="font-size: 1.5rem; font-weight: 700;">${stats.count.total}</div>
+        
+        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">
+            <i class="fas fa-money-bill"></i> Nağd: <b>${stats.count.cash}</b> | <i class="fas fa-credit-card"></i> Kart: <b>${stats.count.card}</b>
+        </div>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+                <strong style="font-size:0.7rem;">Kuryerlər:</strong>
+                ${generateTable(stats.count.courier, false)}
+            </div>
+            <div>
+                <strong style="font-size:0.7rem;">Satış Təmsilçisi:</strong>
+                ${generateTable(stats.count.seller, false)}
+            </div>
+        </div>
+    `;
+    document.getElementsByClassName('stat-card')[0].innerHTML = countCardHtml;
+
 }
 
 // --- ACTION FUNCTIONS ---
