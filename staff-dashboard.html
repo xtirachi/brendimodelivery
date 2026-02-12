@@ -785,8 +785,8 @@ async function saveNote(orderId) {
         animateValue("statRevenue", revenue.toFixed(2) + " ₼");
         animateValue("statProfit", profit.toFixed(2) + " ₼");
         animateValue("statCount", count);
-        animateValue("statRate", rate + "%");
-        animateValue("statAOV", aov + " ₼");
+      animateValue("statRate", `${rate}% (${deliveredCount})`);
+      animateValue("statAOV", aov + " ₼");
     }
 
     function animateValue(id, endValue) {
