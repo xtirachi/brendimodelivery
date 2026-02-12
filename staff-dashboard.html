@@ -5,497 +5,580 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Brendimo Staff Dashboard</title>
   <style>
-    /* --- iOS Design Variables --- */
+    /* --- iOS Design System --- */
     :root {
-      --ios-bg: #F2F2F7;
-      --ios-card-bg: #FFFFFF;
-      --ios-blue: #007AFF;
-      --ios-green: #34C759;
-      --ios-red: #FF3B30;
-      --ios-text: #1C1C1E;
-      --ios-text-secondary: #8E8E93;
-      --ios-input-bg: #E5E5EA;
-      --ios-border-radius: 16px;
-      --ios-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-      --ios-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --primary: #007AFF;
+      --success: #34C759;
+      --warning: #FF9500;
+      --danger: #FF3B30;
+      --bg: #F2F2F7;
+      --card-bg: #FFFFFF;
+      --text-main: #1C1C1E;
+      --text-sec: #8E8E93;
+      --border: #E5E5EA;
+      --input-bg: #F2F2F7;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+      --nav-height: 85px;
     }
-    
-  
-    /* --- Reset & Base --- */
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
     body {
       margin: 0;
-      padding: 20px;
-      font-family: var(--ios-font);
-      background-color: var(--ios-bg);
-      color: var(--ios-text);
-      line-height: 1.5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      overflow: hidden;
     }
 
-    h2 {
-      font-weight: 700;
-      font-size: 28px;
+    /* --- Views (Tabs) --- */
+    .view-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 20px 100px 20px; /* Space for bottom nav */
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .view-container.active { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    h2 { margin: 10px 0 20px; font-size: 26px; font-weight: 800; text-align: center; letter-spacing: -0.5px; }
+    h4 { margin: 0 0 10px; font-size: 17px; font-weight: 600; }
+
+    /* --- Cards --- */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
       margin-bottom: 20px;
-      letter-spacing: -0.5px;
-      text-align: center;
     }
 
-    h4 {
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    /* --- Containers & Cards --- */
-    .container {
-      width: 100%;
-      max-width: 600px;
-      background: var(--ios-card-bg);
-      border-radius: var(--ios-border-radius);
-      padding: 24px;
-      box-shadow: var(--ios-shadow);
-      margin-bottom: 30px;
-      transition: transform 0.2s ease;
-    }
-
-    /* --- Forms & Inputs --- */
-    .form-group { margin-bottom: 20px; }
-    
+    /* --- Inputs --- */
     label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ios-text-secondary);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      display: block; font-size: 12px; font-weight: 600; text-transform: uppercase;
+      color: var(--text-sec); margin-bottom: 6px; margin-left: 4px;
     }
 
     input, select, textarea {
-      width: 100%;
-      padding: 14px 16px;
-      border: none;
-      background-color: var(--ios-input-bg);
-      border-radius: 12px;
-      font-size: 16px; /* Prevents zoom on iPhone */
-      font-family: var(--ios-font);
-      color: var(--ios-text);
-      transition: background-color 0.2s;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      background-color: #D1D1D6;
-    }
-
-    textarea { resize: vertical; min-height: 80px; }
-
-    /* --- Buttons --- */
-    .btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .btn:active { transform: scale(0.98); opacity: 0.8; }
-
-    .btn-primary { background-color: var(--ios-blue); color: white; }
-    .btn-success { background-color: var(--ios-green); color: white; }
-    .btn-danger { background-color: var(--ios-red); color: white; font-size: 14px; padding: 8px 12px; width: auto; }
-    .btn-sm { padding: 8px 16px; font-size: 14px; width: auto; display: inline-block; margin-top: 5px; }
-
-    /* --- Product List --- */
-    #selectedProductsList {
-      list-style: none;
-      padding: 0;
-      margin-top: 10px;
-    }
-
-    #selectedProductsList li {
-      background-color: #F9F9F9;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      border: 1px solid #E5E5EA;
-    }
-
-    .product-controls {
-      display: flex;
-      gap: 10px;
-    }
-
-    /* --- Total Price --- */
-    #totalSalesPriceDisplay {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--ios-blue);
-      text-align: center;
-      margin: 20px 0;
-    }
-
-    /* --- Status Messages --- */
-    .status-msg {
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 15px;
-      text-align: center;
-      font-weight: 600;
-      display: none;
-    }
-    .text-success { background-color: #E0F8E5; color: var(--ios-green); }
-    .text-danger { background-color: #FFE5E5; color: var(--ios-red); }
-
-    /* --- Order Cards (My Orders) --- */
-    .order-cards-container { display: flex; flex-direction: column; gap: 20px; }
-
-    .order-card {
-      background: white;
-      border-radius: var(--ios-border-radius);
-      padding: 20px;
-      box-shadow: var(--ios-shadow);
-      position: relative;
-      overflow: hidden;
-      border-left: 6px solid transparent;
-    }
-
-    .order-card.delivered { border-left-color: var(--ios-green); }
-    .order-card.pending { border-left-color: #FF9500; } /* Orange */
-
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #F2F2F7;
-    }
-
-    .order-id { font-weight: 800; font-size: 18px; color: var(--ios-text); }
-    .order-status { 
-      font-size: 12px; 
-      font-weight: 700; 
-      padding: 4px 10px; 
-      border-radius: 20px; 
-      text-transform: uppercase; 
-    }
-    .status-delivered { background: #E0F8E5; color: var(--ios-green); }
-    .status-pending { background: #FFF4E5; color: #FF9500; }
-
-    .order-detail-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 14px;
+      width: 100%; padding: 14px; background: var(--input-bg);
+      border: 1px solid transparent; border-radius: 12px;
+      font-size: 16px; color: var(--text-main); font-family: inherit;
+      margin-bottom: 15px; transition: 0.2s;
     }
     
-    .detail-label { color: var(--ios-text-secondary); }
-    .detail-value { font-weight: 500; text-align: right; max-width: 60%; }
+    input:focus, select:focus, textarea:focus { background: #fff; border-color: var(--primary); }
+    
+    /* --- Buttons --- */
+    .btn {
+      width: 100%; padding: 16px; border-radius: 14px; border: none;
+      font-weight: 700; font-size: 16px; cursor: pointer;
+      display: flex; justify-content: center; align-items: center;
+      transition: transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: rgba(255, 59, 48, 0.1); color: var(--danger); font-size: 14px; padding: 8px 12px; width: auto;}
+    .btn-sm { padding: 8px 16px; font-size: 13px; width: auto; }
 
-    /* Editable Note Area */
-    .note-section {
-      margin-top: 15px;
-      background: #FAFAFA;
-      padding: 10px;
-      border-radius: 10px;
+    /* --- List Items --- */
+    .item-list { list-style: none; padding: 0; margin: 0; }
+    .item-list li {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
     }
-    .note-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 8px;
+    .item-list li:last-child { border-bottom: none; }
+
+    /* --- Badges --- */
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .badge.Delivered { background: #E0F8E5; color: var(--success); }
+    .badge.Preparing, .badge.Pending { background: #FFF4E5; color: var(--warning); }
+    .badge.Deleted { background: #FFE5E5; color: var(--danger); }
+
+    /* --- Stats Grid --- */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card {
+      background: var(--card-bg); padding: 15px; border-radius: var(--radius);
+      box-shadow: var(--shadow); text-align: center;
+    }
+    .stat-val { font-size: 20px; font-weight: 800; margin: 5px 0; }
+    .stat-label { font-size: 11px; color: var(--text-sec); text-transform: uppercase; }
+
+    /* --- Bottom Navigation --- */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.95);
+      border-top: 1px solid var(--border);
+      height: var(--nav-height);
+      display: flex; justify-content: space-around;
+      padding-bottom: 20px; z-index: 1000;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     }
 
-    @media (max-width: 600px) {
-      body { padding: 10px; }
-      .container { padding: 20px; }
-      h2 { font-size: 24px; }
+    .nav-item {
+      background: none; border: none; flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: #C7C7CC; font-size: 10px; font-weight: 600;
+      cursor: pointer; transition: color 0.2s;
     }
+    .nav-item svg { width: 26px; height: 26px; margin-bottom: 4px; fill: currentColor; }
+    .nav-item.active { color: var(--primary); }
+
+    /* --- Loading Overlay --- */
+    #loader {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.8); z-index: 2000;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid var(--border);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* --- Date Inputs Wrapper --- */
+    .date-row { display: flex; gap: 10px; }
+    .date-row div { flex: 1; }
+
+/* --- NEW STYLES FOR LIST DETAILS --- */
+.row-detail {
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 8px; 
+    font-size: 14px;
+    border-bottom: 1px dashed #f0f0f0;
+    padding-bottom: 4px;
+}
+.label-detail { color: #8E8E93; font-weight: 500; }
+.val-detail { font-weight: 600; text-align: right; max-width: 65%; color: #333; }
+
+.note-area {
+    margin-top: 10px;
+    background: #FAFAFA;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #E5E5EA;
+}
+.note-textarea {
+    width: 100%;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+}
+.note-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+.row-detail {
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 6px; 
+    font-size: 14px;
+}
+.label-detail { color: #8E8E93; }
+.val-detail { font-weight: 500; text-align: right; max-width: 65%; }
+
+
+    
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Yeni Sifariş Yarat</h2>
+  <div id="loader" style="display: none;">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; font-weight: 600; color: #8E8E93;">Məlumatlar Yüklənir...</p>
+  </div>
+
+  <div id="tab-add" class="view-container active">
+    <h2>Yeni Sifariş</h2>
     
+    <div class="card" style="text-align:center; padding:10px;">
+        <label>İstifadəçi</label>
+        <span id="displayUsername" style="font-weight:700; font-size:18px; color:var(--primary);">...</span>
+    </div>
+
     <form id="orderForm">
-      <div class="form-group">
-        <label for="customerName">Müştəri Adı</label>
+      <div class="card">
+        <h4>Müştəri Məlumatları</h4>
         <input type="text" id="customerName" placeholder="Ad və Soyad" required>
-      </div>
-      <div class="form-group">
-        <label for="contactInfo">Əlaqə Nömrəsi</label>
-        <input type="number" id="contactInfo" placeholder="994501234567" required>
-      </div>
-      <div class="form-group">
-        <label for="deliveryAddress">Çatdırılma Ünvanı</label>
-        <input type="text" id="deliveryAddress" placeholder="Küçə, Bina, Mənzil" required>
-      </div>
-
-      <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-        <h4>Məhsul Seçimi</h4>
-        <div class="form-group">
-          <label for="productSearch">Məhsul Axtar</label>
-          <input type="text" id="productSearch" placeholder="Axtarış...">
-        </div>
-        <div class="form-group">
-          <label for="productSelect">Məhsul Seçin</label>
-          <select id="productSelect">
-            <option value="">Siyahıdan seçin</option>
-          </select>
-        </div>
-        <div class="form-group" style="display: flex; gap: 10px;">
-          <div style="flex: 1;">
-            <label for="quantity">Miqdar</label>
-            <input type="number" id="quantity" min="1" step="1" value="1">
-          </div>
-          <div style="flex: 1; display: flex; align-items: flex-end;">
-            <button type="button" id="addProductButton" class="btn btn-primary" style="height: 50px;">Əlavə Et</button>
-          </div>
+        <input type="tel" id="contactInfo" placeholder="Əlaqə Nömrəsi (994...)" required>
+        <input type="text" id="deliveryAddress" placeholder="Çatdırılma Ünvanı" required>
+        
+        <div class="date-row">
+           <div>
+             <label>Sifariş Tarixi</label>
+             <input type="date" id="orderDate" required>
+           </div>
+           <div>
+             <label>Mənbə</label>
+             <select id="salesSource" required>
+               <option value="Brendimoaz">Brendimoaz</option>
+               <option value="Brendimo.az">Brendimo.az</option>
+               <option value="Idealhediyyeler">Idealhediyyeler</option>
+               <option value="Idealhediyye.az">Idealhediyye.az</option>
+               <option value="Whatsapp35">Whatsapp35</option>
+               <option value="Whatsapp29">Whatsapp29</option>
+               <option value="Brendimo.lei">Brendimo.lei</option>
+             </select>
+           </div>
         </div>
       </div>
 
-   <div class="form-group">
-        <label for="addCourierPayment">Əlavə Kuriyer ödənişi</label>
-        <input type="number" id="addCourierPayment" min="0" step="0.01" placeholder="0.00">
+      <div class="card">
+        <h4>Səbət</h4>
+        <div style="display: flex; gap: 10px;">
+           <input type="text" id="productSearch" placeholder="Məhsul axtar..." style="flex:2;">
+           <input type="number" id="qtyInput" value="1" min="1" style="flex:1;">
+        </div>
+        
+        <select id="productSearchResults" style="display:none; margin-top:-10px;"></select>
+
+        <button type="button" id="btnAddProduct" class="btn btn-primary btn-sm" style="width:100%; margin-bottom:15px;">Səbətə Əlavə Et</button>
+
+        <ul id="cartList" class="item-list"></ul>
+        
+        <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <label style="margin:0;">Əlavə Kuriyer Ödənişi (AZN)</label>
+                <input type="number" id="courierCost" value="0" step="0.01" style="width:80px; text-align:right; margin:0;">
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:600; font-size:16px;">CƏMİ:</span>
+                <span id="displayTotal" style="font-weight:800; font-size:24px; color:var(--primary);">0.00 ₼</span>
+            </div>
+        </div>
+
+        <label style="margin-top:15px;">Qiyməti Əllə Dəyiş (Könüllü)</label>
+        <input type="number" id="manualTotal" placeholder="Avtomatik hesablanır" step="0.01">
       </div>
 
-      <div class="form-group">
-        <label>Səbət</label>
-        <ul id="selectedProductsList"></ul>
-        <div id="totalSalesPriceDisplay">0.00 AZN</div>
-      </div>
-
-      <div class="form-group">
-        <label for="totalSalesPriceInput">Qiyməti Dəyiş (Könüllü)</label>
-        <input type="number" id="totalSalesPriceInput" min="0" step="0.01" placeholder="Avtomatik hesablanır">
-      </div>
-
-      <div class="form-group">
-        <label for="specialInstructions">Xüsusi Təlimatlar (Qeyd)</label>
-        <textarea id="specialInstructions" rows="3" placeholder="Sifariş barədə xüsusi qeydlər..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="orderDate">Sifariş Tarixi</label>
-        <input type="date" id="orderDate" required>
-      </div>
-      <div class="form-group">
-        <label for="paymentMethod">Ödəniş Metodu</label>
+      <div class="card">
+        <label>Ödəniş Metodu</label>
         <select id="paymentMethod" required>
           <option value="cash">Nağd</option>
-          <option value="card">Karta</option>
+          <option value="card">Kart</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label for="salesSource">Satış Mənbəyi</label>
-        <select id="salesSource" required>
-          <option value="Brendimoaz">Brendimoaz</option>
-          <option value="Brendimo.az">Brendimo.az</option>
-          <option value="Idealhediyyeler">Idealhediyyeler</option>
-          <option value="Idealhediyye.az">Idealhediyye.az</option>
-          <option value="Whatsapp35">Whatsapp35</option>
-          <option value="Whatsapp29">Whatsapp29</option>
-          <option value="Brendimo.lei">Brendimo.lei</option>
-        </select>
-      </div>
 
-      <div class="form-group">
-        <label for="staffUsername">Satıcı</label>
-        <input type="text" id="staffUsername" readonly style="color: #8E8E93; cursor: not-allowed;">
-      </div>
+        <label>Xüsusi Qeydlər</label>
+        <textarea id="specialInstructions" rows="3" placeholder="Məs: Məhsul, paketləmə və ya çatdırılma barədə əlavə qeydlər..."></textarea>
 
-      <button type="submit" class="btn btn-success">Sifarişi Təsdiqlə</button>
+        <button type="submit" class="btn btn-success">Sifarişi Təsdiqlə</button>
+      </div>
     </form>
-
-    <div id="orderSuccess" class="status-msg text-success">Sifariş uğurla yaradıldı!</div>
-    <div id="orderError" class="status-msg text-danger">Xəta baş verdi.</div>
   </div>
 
-  <div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Sifarişlərim</h2>
+  <div id="tab-list" class="view-container">
+    <h2>Sifarişlər</h2>
+
+    <div class="card">
+       <label>Tarix Aralığı</label>
+       <div class="date-row">
+         <input type="date" id="filterStart">
+         <input type="date" id="filterEnd">
+       </div>
+       <button onclick="renderOrderList()" class="btn btn-primary btn-sm" style="margin-top:5px;">Yenilə</button>
     </div>
+
+    <div class="stats-grid" style="margin-bottom: 20px;">
+       <div class="stat-card" style="background: var(--primary); color: white;">
+          <div class="stat-val" id="listTotalCount">0</div>
+          <div class="stat-label" style="color: rgba(255,255,255,0.8);">Sifariş Sayı</div>
+       </div>
+       <div class="stat-card" style="background: var(--success); color: white;">
+          <div class="stat-val" id="listTotalRevenue">0.00 ₼</div>
+          <div class="stat-label" style="color: rgba(255,255,255,0.8);">Toplam Məbləğ</div>
+       </div>
+    </div>
+
+    <div id="ordersContainer"></div>
+  </div>
+
+  <div id="tab-stats" class="view-container">
+    <h2>Performans Analizi</h2>
     
-    <div class="form-group">
-      <label for="orderDateFilter">Tarixə görə Filtrlə</label>
-      <input type="date" id="orderDateFilter">
+    <div class="card">
+       <label>Dövr</label>
+       <select id="statsPeriod" onchange="renderStats()">
+          <option value="today">Bu Gün</option>
+          <option value="yesterday">Dünən</option>
+          <option value="thisMonth" selected>Bu Ay</option>
+          <option value="lastMonth">Keçən Ay</option>
+          <option value="all">Bütün Zamanlar</option>
+       </select>
     </div>
 
-    <div id="orderCardsContainer" class="order-cards-container">
-      <div style="text-align: center; color: #8E8E93; padding: 20px;">Yüklənir...</div>
+    <div class="stats-grid">
+       <div class="stat-card">
+          <div class="stat-label">Toplam Satış</div>
+          <div class="stat-val" id="statRevenue" style="color:var(--primary)">0 ₼</div>
+       </div>
+       <div class="stat-card">
+          <div class="stat-label">Xalis Gəlir (Təxmini)</div>
+          <div class="stat-val" id="statProfit" style="color:var(--success)">0 ₼</div>
+       </div>
+       <div class="stat-card">
+          <div class="stat-label">Sifariş Sayı</div>
+          <div class="stat-val" id="statCount">0</div>
+       </div>
+       <div class="stat-card">
+          <div class="stat-label">Uğurlu Çatdırılma</div>
+          <div class="stat-val" id="statRate">0%</div>
+       </div>
+       <div class="stat-card" style="grid-column: span 2;">
+          <div class="stat-label">Ortalama Sifariş Dəyəri (AOV)</div>
+          <div class="stat-val" id="statAOV">0 ₼</div>
+       </div>
     </div>
   </div>
 
-  <script>
-    // --- Configuration ---
-    const ORDER_CREATION_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhhZMZi7QcB-Q2IJlgQsxTsPrL22Sgi_FRCT86XP2rZKC7OshKhKFLsTHGscuI5Juu/exec';   
-    const PRODUCT_FETCH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';   
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('tab-add', this)">
+      <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      <span>Yeni</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('tab-list', this)">
+      <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+      <span>Siyahı</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('tab-stats', this)">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      <span>Analiz</span>
+    </button>
+  </nav>
 
-    // --- State ---
-    let selectedProducts = [];
-    let totalSalesPrice = 0;
-    let isPriceManuallyChanged = false;
+ <script>
+    // --- CONFIGURATION ---
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz7I75KZEM5HXOyCp1WbsVA2vRZM8iHwfBdP_dQwKArXVZxpWSJJGs5l7gH9d5wxEygew/exec';
+    const PRODUCT_API = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';
 
-    // --- Initialization ---
+    // --- STATE MANAGEMENT ---
+    let currentUser = '';
+    let cart = [];
+    let globalOrdersData = []; 
+
+    // --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        // Date format YYYY-MM-DD
-        const todayStr = today.toISOString().split('T')[0];
-        const tomorrowStr = tomorrow.toISOString().split('T')[0];
-
-        // Set inputs
-        document.getElementById('orderDate').value = tomorrowStr;
+        // 1. Detect Username
+        const params = new URLSearchParams(window.location.search);
+        const urlUser = params.get('username') || params.get('user');
         
-        const filterInput = document.getElementById('orderDateFilter');
-        if(filterInput) {
-            filterInput.value = todayStr;
-            // Listen for filter changes
-            filterInput.addEventListener('change', () => {
-                fetchOrdersForStaff(document.getElementById('staffUsername').value, filterInput.value);
-            });
+        if (urlUser) {
+            currentUser = urlUser;
+            localStorage.setItem('staff_username', currentUser);
+        } else {
+            currentUser = localStorage.getItem('staff_username') || '';
         }
 
-        // Auth/Staff Check
-        const staffUsername = localStorage.getItem('staff_username');
-        if (staffUsername) {
-            document.getElementById('staffUsername').value = staffUsername;
-            // Initial fetch
-            fetchOrdersForStaff(staffUsername, todayStr);
-        } else {
-            alert('Satıcı adı tapılmadı. Zəhmət olmasa yenidən daxil olun.');
-        }
+        const displayUser = currentUser ? currentUser : "Admin Modu (Hamısı)";
+        document.getElementById('displayUsername').textContent = displayUser;
+
+        // 2. Set Default Dates
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        
+        document.getElementById('orderDate').value = tomorrow;
+        document.getElementById('filterStart').value = today;
+        document.getElementById('filterEnd').value = tomorrow;
+
+        // 3. Load Data
+        fetchAllData();
     });
 
-    // --- Product Logic ---
-    
-    // Search
-    document.getElementById('productSearch').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        if(searchTerm.length < 2) return; // Optimization
+    // --- NAVIGATION ---
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
 
-        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProducts&searchTerm=${encodeURIComponent(searchTerm)}`)
-            .then(res => res.json())
-            .then(data => {
-                const select = document.getElementById('productSelect');
-                select.innerHTML = '<option value="">Məhsul seçin</option>';
+        if (tabId === 'tab-list') renderOrderList();
+        if (tabId === 'tab-stats') renderStats();
+    }
+
+    // --- CORE DATA FETCHING ---
+    async function fetchAllData() {
+        toggleLoader(true);
+        try {
+            const response = await fetch(`${API_URL}?action=getGlobalStats`);
+            const json = await response.json();
+            
+            if (json.success) {
+                globalOrdersData = json.data;
+                if (currentUser) {
+                    globalOrdersData = globalOrdersData.filter(o => o.staff === currentUser);
+                }
+                console.log("Data loaded:", globalOrdersData.length, "orders");
+                renderOrderList();
+                renderStats();
+            } else {
+                alert("Məlumatları yükləmək mümkün olmadı.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("İnternet xətası.");
+        } finally {
+            toggleLoader(false);
+        }
+    }
+
+    // --- TAB 1: NEW ORDER LOGIC ---
+    
+    // Product Search & Populate Dropdown
+    document.getElementById('productSearch').addEventListener('input', async function(e) {
+        const term = e.target.value.toLowerCase();
+        const select = document.getElementById('productSearchResults');
+        
+        if (term.length < 2) {
+            select.style.display = 'none';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${PRODUCT_API}?action=getProducts&searchTerm=${encodeURIComponent(term)}`);
+            const data = await res.json();
+            
+            select.innerHTML = '';
+            
+            if (data.products && data.products.length > 0) {
+                select.style.display = 'block';
+
+                // --- FIXED: Placeholder logic moved HERE ---
+                const placeholder = document.createElement('option');
+                placeholder.text = "Siyahıdan seçin...";
+                placeholder.value = "";
+                select.appendChild(placeholder);
+                // -----------------------------------------
+
                 data.products.forEach(p => {
                     const opt = document.createElement('option');
                     opt.value = p.productName;
                     opt.text = p.productName;
                     select.appendChild(opt);
                 });
-            })
-            .catch(err => console.error('Search error:', err));
+            } else {
+                select.style.display = 'none';
+            }
+        } catch (e) { console.error(e); }
     });
 
-    // Add Product
-    document.getElementById('addProductButton').addEventListener('click', function() {
-        const select = document.getElementById('productSelect');
-        const qtyInput = document.getElementById('quantity');
-        const prodName = select.value;
+    // Handle Dropdown Selection
+    document.getElementById('productSearchResults').addEventListener('change', function() {
+        if(this.value) {
+            // Copy exact name to input
+            document.getElementById('productSearch').value = this.value; 
+            // Hide dropdown
+            this.style.display = 'none'; 
+        }
+    });
+
+    // Add To Cart
+    document.getElementById('btnAddProduct').addEventListener('click', async () => {
+        const select = document.getElementById('productSearchResults');
+        // Grab value from input box (which is now populated correctly)
+        const productName = document.getElementById('productSearch').value;
+        const qtyInput = document.getElementById('qtyInput');
         const qty = parseInt(qtyInput.value);
 
-        if(!prodName || qty < 1) {
-            alert('Məhsul seçin və düzgün miqdar daxil olun.');
+        if (!productName || qty < 1) {
+            alert("Zəhmət olmasa məhsul seçin.");
             return;
         }
 
-        // Get Details
-        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(prodName)}`)
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    const price = parseFloat(data.product.salesPrice) || 0;
-                    
-                    selectedProducts.push({
-                        productName: prodName,
-                        quantity: qty,
-                        salesPrice: price
-                    });
-
-                    totalSalesPrice += (price * qty);
-                    
-                    updateUI();
-                    
-                    // Reset inputs
-                    select.value = '';
-                    qtyInput.value = 1;
-                } else {
-                    alert('Məhsul detalları tapılmadı.');
-                }
-            })
-            .catch(err => console.error('Add product error:', err));
+        toggleLoader(true);
+        
+        try {
+            const res = await fetch(`${PRODUCT_API}?action=getProductDetails&productName=${encodeURIComponent(productName)}`);
+            const data = await res.json();
+            
+            if (data.success) {
+                const price = parseFloat(data.product.salesPrice) || 0;
+                cart.push({
+                    productName: productName,
+                    quantity: qty,
+                    salesPrice: price
+                });
+                updateCartUI();
+                
+                // Reset Fields
+                document.getElementById('productSearch').value = '';
+                select.style.display = 'none';
+                qtyInput.value = 1;
+            } else {
+                alert("Məhsul detalları tapılmadı.");
+            }
+        } catch(e) {
+            alert("Xəta baş verdi.");
+        } finally {
+            toggleLoader(false);
+        }
     });
 
-    function updateUI() {
-        // List
-        const list = document.getElementById('selectedProductsList');
+    function updateCartUI() {
+        const list = document.getElementById('cartList');
         list.innerHTML = '';
-        selectedProducts.forEach((item, index) => {
+        let productTotal = 0;
+
+        cart.forEach((item, index) => {
+            productTotal += (item.salesPrice * item.quantity);
             const li = document.createElement('li');
             li.innerHTML = `
-                <span><strong>${item.productName}</strong> <br> <small>x${item.quantity}</small></span>
-                <div class="product-controls">
-                    <span>${(item.salesPrice * item.quantity).toFixed(2)} AZN</span>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${index})">Sil</button>
+                <div>
+                    <strong>${item.productName}</strong> <br>
+                    <span style="color:var(--text-sec); font-size:12px;">${item.quantity} ədəd x ${item.salesPrice} ₼</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:600;">${(item.salesPrice * item.quantity).toFixed(2)} ₼</span>
+                    <button type="button" class="btn btn-danger" onclick="removeFromCart(${index})">X</button>
                 </div>
             `;
             list.appendChild(li);
         });
 
-        // Price
-        document.getElementById('totalSalesPriceDisplay').textContent = `Cəmi: ${totalSalesPrice.toFixed(2)} AZN`;
-        if(!isPriceManuallyChanged) {
-            document.getElementById('totalSalesPriceInput').value = totalSalesPrice.toFixed(2);
-        }
+        const courier = parseFloat(document.getElementById('courierCost').value) || 0;
+        const grandTotal = productTotal + courier;
+
+        document.getElementById('displayTotal').innerText = grandTotal.toFixed(2) + " ₼";
     }
 
-    window.removeProduct = function(index) {
-        const item = selectedProducts[index];
-        totalSalesPrice -= (item.salesPrice * item.quantity);
-        selectedProducts.splice(index, 1);
-        updateUI();
+    window.removeFromCart = (index) => {
+        cart.splice(index, 1);
+        updateCartUI();
     };
 
-    document.getElementById('totalSalesPriceInput').addEventListener('input', () => {
-        isPriceManuallyChanged = true;
-    });
+    document.getElementById('courierCost').addEventListener('input', updateCartUI);
 
-    // --- Order Submission ---
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
+    // SUBMIT ORDER
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        if(selectedProducts.length === 0) {
-            alert('Səbət boşdur.');
-            return;
-        }
+        if (cart.length === 0) return alert("Səbət boşdur.");
+        if (!currentUser && !confirm("İstifadəçi adı yoxdur. Admin kimi davam edilsin?")) return;
 
-        const submitBtn = this.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Göndərilir...';
+        toggleLoader(true);
 
-        const finalPrice = isPriceManuallyChanged 
-            ? parseFloat(document.getElementById('totalSalesPriceInput').value)
-            : totalSalesPrice;
+        // Calculate Final Price
+        let calculatedTotal = 0;
+        cart.forEach(p => calculatedTotal += (p.salesPrice * p.quantity));
+        calculatedTotal += (parseFloat(document.getElementById('courierCost').value) || 0);
+        
+        const manualTotal = parseFloat(document.getElementById('manualTotal').value);
+        const finalTotal = isNaN(manualTotal) ? calculatedTotal : manualTotal;
 
-   const payload = {
+        const payload = {
             action: 'createOrder',
             customerName: document.getElementById('customerName').value,
             contactInfo: document.getElementById('contactInfo').value,
@@ -504,211 +587,215 @@
             specialInstructions: document.getElementById('specialInstructions').value,
             paymentMethod: document.getElementById('paymentMethod').value,
             salesSource: document.getElementById('salesSource').value,
-            staffUsername: document.getElementById('staffUsername').value,
-            addCourierPayment: document.getElementById('addCourierPayment').value || 0, // NEW LINE
-            products: JSON.stringify(selectedProducts),
-            totalSalesPrice: finalPrice.toFixed(2)
+            staffUsername: currentUser,
+            addCourierPayment: document.getElementById('courierCost').value || 0,
+            products: JSON.stringify(cart),
+            totalSalesPrice: finalTotal.toFixed(2)
         };
 
-        fetch(ORDER_CREATION_SCRIPT_URL, {
-            method: 'POST',
-            body: new URLSearchParams(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                // Show success
-                document.getElementById('orderSuccess').style.display = 'block';
-                setTimeout(() => { document.getElementById('orderSuccess').style.display = 'none'; }, 3000);
-                
-                // Logic to update Stock (from your original logic)
-                updateStock(); 
+        try {
+            const formData = new URLSearchParams();
+            for (const key in payload) formData.append(key, payload[key]);
 
-                // Reset
-                resetForm();
-                
-                // Refresh Order List
-                const dateFilter = document.getElementById('orderDateFilter').value;
-                fetchOrdersForStaff(payload.staffUsername, dateFilter);
+            const res = await fetch(API_URL, { method: 'POST', body: formData });
+            const data = await res.json();
 
+            if (data.success) {
+                alert("Sifariş uğurla yaradıldı!");
+                document.getElementById('orderForm').reset();
+                cart = [];
+                updateCartUI();
+                fetchAllData();
+                const listBtn = document.querySelectorAll('.nav-item')[1];
+                switchTab('tab-list', listBtn);
             } else {
-                throw new Error(data.message);
+                alert("Xəta: " + data.message);
             }
-        })
-        .catch(err => {
-            document.getElementById('orderError').style.display = 'block';
-            console.error(err);
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Sifarişi Təsdiqlə';
-        });
+        } catch (error) {
+            console.error(error);
+            alert("Server xətası.");
+        } finally {
+            toggleLoader(false);
+        }
     });
 
-    function resetForm() {
-        document.getElementById('orderForm').reset();
-        selectedProducts = [];
-        totalSalesPrice = 0;
-        isPriceManuallyChanged = false;
-        updateUI();
-        
-        // Restore defaults
-        const staff = localStorage.getItem('staff_username');
-        if(staff) document.getElementById('staffUsername').value = staff;
-        
-        const tmr = new Date();
-        tmr.setDate(tmr.getDate() + 1);
-        document.getElementById('orderDate').value = tmr.toISOString().split('T')[0];
-    }
+    // --- TAB 2: LIST LOGIC ---
+// --- TAB 2: LIST LOGIC ---
+function renderOrderList() {
+    const container = document.getElementById('ordersContainer');
+    const start = document.getElementById('filterStart').value;
+    const end = document.getElementById('filterEnd').value;
+    const today = new Date().toISOString().split('T')[0]; // Get today's date (yyyy-mm-dd)
 
-    // --- Stock Logic (Preserved) ---
-    function updateStock() {
-        selectedProducts.forEach(product => {
-            fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=getProductDetails&productName=${encodeURIComponent(product.productName)}`)
-                .then(r => r.json())
-                .then(data => {
-                    if(data.success) {
-                        const newStock = data.product.stock - product.quantity;
-                        updateProductStock(product.productName, newStock);
-                        
-                        // Component Logic
-                        if(data.product.components && data.product.components.length > 0) {
-                            data.product.components.forEach(comp => {
-                                const compStock = comp.stock - (comp.quantity * product.quantity);
-                                updateProductStock(comp.productName, compStock);
-                            });
-                        }
-                    }
-                });
-        });
-    }
+    container.innerHTML = '';
+    
+    const filtered = globalOrdersData.filter(o => o.date >= start && o.date <= end);
+    filtered.sort((a,b) => b.id - a.id); // Sort Newest First
 
-    function updateProductStock(name, stock) {
-        if(stock < 0) return; // Prevention
-        fetch(`${PRODUCT_FETCH_SCRIPT_URL}?action=updateStock`, {
-            method: 'POST',
-            body: new URLSearchParams({ productName: name, newStock: stock })
-        });
-    }
+    let totalRev = 0;
+    let totalCnt = 0;
 
-    // --- FETCH & DISPLAY ORDERS ---
-    function fetchOrdersForStaff(staffName, date) {
-        const container = document.getElementById('orderCardsContainer');
-        container.innerHTML = '<div style="text-align:center;">Yüklənir...</div>';
-
-        fetch(`${ORDER_CREATION_SCRIPT_URL}?action=getOrdersByStaffAndDate&staffUsername=${encodeURIComponent(staffName)}&date=${encodeURIComponent(date)}`)
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    displayOrders(data.orders);
-                } else {
-                    container.innerHTML = '<div style="text-align:center;">Sifariş tapılmadı.</div>';
-                }
-            })
-            .catch(err => {
-                container.innerHTML = '<div style="text-align:center; color:red;">Xəta baş verdi.</div>';
-            });
-    }
-
-    function displayOrders(orders) {
-        const container = document.getElementById('orderCardsContainer');
-        container.innerHTML = '';
-
-        if(!orders || orders.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#8E8E93;">Bu tarixdə sifariş yoxdur.</div>';
-            return;
-        }
-
-        orders.forEach(order => {
-            // Mapping based on your Google Sheet structure assumption
-            // ID=0, Customer=1, Address=3, Details=4, NOTE=5 (Column F), Status=6, Courier=7, Payment=9, Amount=10, Source=11, Staff=16
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:#8E8E93">Sifariş tapılmadı</div>';
+    } else {
+        filtered.forEach(o => {
+            totalCnt++;
+            totalRev += parseFloat(o.revenue || 0);
             
-            const statusClass = (order[6] === 'Delivered') ? 'delivered' : 'pending';
-            const statusLabel = (order[6] === 'Delivered') ? 'status-delivered' : 'status-pending';
-            const noteContent = order[5] || ''; // Column F
+            // 1. Badge Color Logic
+            let badgeClass = 'Pending';
+            if (o.status === 'Delivered') badgeClass = 'Delivered';
+            if (o.status === 'Deleted') badgeClass = 'Deleted';
 
-            const html = `
-                <div class="order-card ${statusClass}" id="card-${order[0]}">
-                    <div class="order-header">
-                        <span class="order-id">#${order[0]}</span>
-                        <span class="order-status ${statusLabel}">${order[6]}</span>
-                    </div>
-                    
-                    <div class="order-detail-row">
-                        <span class="detail-label">Müştəri:</span>
-                        <span class="detail-value">${order[1]}</span>
-                    </div>
-                    <div class="order-detail-row">
-                        <span class="detail-label">Məbləğ:</span>
-                        <span class="detail-value" style="color: var(--ios-blue); font-weight:700;">${parseFloat(order[10]).toFixed(2)} AZN</span>
-                    </div>
-                    <div class="order-detail-row">
-                        <span class="detail-label">Ünvan:</span>
-                        <span class="detail-value">${order[3]}</span>
-                    </div>
-                    <div class="order-detail-row">
-                        <span class="detail-label">Çatdırıcı:</span>
-                        <span class="detail-value">${order[7] || '-'}</span>
-                    </div>
-                     <div class="order-detail-row">
-                        <span class="detail-label">Məhsullar:</span>
-                        <span class="detail-value" style="font-size:13px;">${order[4]}</span>
-                    </div>
+            // 2. Editable Logic (Only Today or Future)
+            const isEditable = (o.date >= today); 
+            const disabledAttr = isEditable ? '' : 'disabled';
+            const btnDisplay = isEditable ? 'inline-block' : 'none';
+            const bgColor = isEditable ? '#fff' : '#f5f5f5';
 
-                    <div class="note-section">
-                        <label for="note-${order[0]}" style="margin-bottom:5px; display:block;">Xüsusi Təlimatlar (Qeyd)</label>
-                        <textarea id="note-${order[0]}" class="form-control" style="font-size:14px; background:white;">${noteContent}</textarea>
-                        <div class="note-actions">
-                            <button class="btn btn-primary btn-sm" onclick="saveNote('${order[0]}')">Yadda saxla</button>
-                        </div>
+            // 3. Render Card
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <span style="font-weight:800; font-size:18px;">#${o.id}</span>
+                    <span class="badge ${badgeClass}">${o.status}</span>
+                </div>
+                
+                <div class="row-detail">
+                    <span class="label-detail">Müştəri:</span>
+                    <span class="val-detail">${o.name}</span>
+                </div>
+                <div class="row-detail">
+                    <span class="label-detail">Məbləğ:</span>
+                    <span class="val-detail" style="color:var(--primary); font-weight:700;">${parseFloat(o.revenue).toFixed(2)} ₼</span>
+                </div>
+                <div class="row-detail">
+                    <span class="label-detail">Ünvan:</span>
+                    <span class="val-detail">${o.address || '-'}</span>
+                </div>
+                <div class="row-detail">
+                    <span class="label-detail">Çatdırıcı:</span>
+                    <span class="val-detail">${o.courier || '-'}</span>
+                </div>
+                
+                <div style="margin-top:10px;">
+                    <span class="label-detail" style="display:block; margin-bottom:4px;">Məhsullar:</span>
+                    <div style="font-size:13px; color:#333; background:#f9f9f9; padding:8px; border-radius:8px;">${o.products}</div>
+                </div>
+
+                <div class="note-area">
+                    <label style="margin-bottom:5px;">Xüsusi Təlimatlar (Qeyd)</label>
+                    <textarea id="note-${o.id}" rows="2" class="note-textarea" style="background:${bgColor}" ${disabledAttr}>${o.note || ''}</textarea>
+                    <div style="text-align:right; margin-top:5px; display:${btnDisplay}">
+                        <button class="btn btn-primary btn-sm" onclick="saveNote('${o.id}')" style="padding:6px 15px; font-size:12px;">Yadda Saxla</button>
                     </div>
                 </div>
+                
+                <div style="text-align:right; font-size:11px; color:#aaa; margin-top:8px;">${o.date}</div>
             `;
-            container.insertAdjacentHTML('beforeend', html);
+            container.appendChild(card);
         });
     }
 
-    // --- Save Note Functionality ---
-    window.saveNote = function(orderId) {
-        const noteVal = document.getElementById(`note-${orderId}`).value;
-        const btn = document.querySelector(`#card-${orderId} .btn-primary`);
-        
-        const originalText = btn.textContent;
-        btn.textContent = '...';
-        btn.disabled = true;
+    document.getElementById('listTotalCount').textContent = totalCnt;
+    document.getElementById('listTotalRevenue').textContent = totalRev.toFixed(2) + " ₼";
+}
+ 
 
-        // Note: Your Google Apps Script must handle 'updateOrderNote' action
-        fetch(ORDER_CREATION_SCRIPT_URL, {
-            method: 'POST',
-            body: new URLSearchParams({
-                action: 'updateOrderNote', // ENSURE BACKEND HANDLES THIS
-                orderId: orderId,
-                newNote: noteVal
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                btn.textContent = '✓';
-                btn.style.backgroundColor = 'var(--ios-green)';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.backgroundColor = '';
-                    btn.disabled = false;
-                }, 2000);
-            } else {
-                alert('Xəta: ' + data.message);
-                btn.disabled = false;
+// --- NEW FUNCTION: SAVE NOTE ---
+async function saveNote(orderId) {
+    const noteField = document.getElementById(`note-${orderId}`);
+    const newNote = noteField.value;
+    const btn = noteField.nextElementSibling.querySelector('button');
+    const originalText = btn.textContent;
+
+    // UI Loading State
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    const formData = new URLSearchParams();
+    formData.append('action', 'updateOrderNote');
+    formData.append('orderId', orderId);
+    formData.append('newNote', newNote);
+
+    try {
+        const res = await fetch(API_URL, { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+            btn.textContent = '✓';
+            btn.style.background = 'var(--success)';
+            
+            // Update local data cache so we don't need to reload
+            const order = globalOrdersData.find(o => o.id == orderId);
+            if(order) order.note = newNote;
+
+            setTimeout(() => {
                 btn.textContent = originalText;
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Server xətası.');
+                btn.style.background = '';
+                btn.disabled = false;
+            }, 2000);
+        } else {
+            alert('Xəta: ' + data.message);
             btn.disabled = false;
             btn.textContent = originalText;
-        });
-    };
+        }
+    } catch (e) {
+        console.error(e);
+        alert('İnternet xətası');
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+    // --- TAB 3: ANALYSIS LOGIC ---
+    function renderStats() {
+        const period = document.getElementById('statsPeriod').value;
+        const now = new Date();
+        let start, end;
+
+        if (period === 'today') {
+            start = end = now.toISOString().split('T')[0];
+        } else if (period === 'yesterday') {
+            const y = new Date(now); y.setDate(y.getDate() - 1);
+            start = end = y.toISOString().split('T')[0];
+        } else if (period === 'thisMonth') {
+            start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+            end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+        } else if (period === 'lastMonth') {
+            start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
+            end = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0];
+        } else {
+            start = '2020-01-01'; end = '2030-12-31';
+        }
+
+        const relevantOrders = globalOrdersData.filter(o => 
+            o.date >= start && o.date <= end && o.status !== 'Deleted'
+        );
+
+        const count = relevantOrders.length;
+        const revenue = relevantOrders.reduce((acc, o) => acc + (parseFloat(o.revenue) || 0), 0);
+        const cost = relevantOrders.reduce((acc, o) => acc + (parseFloat(o.cost) || 0), 0);
+        const profit = 0; // Always show 0
+        const deliveredCount = relevantOrders.filter(o => o.status === 'Delivered').length;
+        const rate = count > 0 ? ((deliveredCount / count) * 100).toFixed(0) : 0;
+        const aov = count > 0 ? (revenue / count).toFixed(2) : 0;
+
+        animateValue("statRevenue", revenue.toFixed(2) + " ₼");
+        animateValue("statProfit", profit.toFixed(2) + " ₼");
+        animateValue("statCount", count);
+        animateValue("statRate", rate + "%");
+        animateValue("statAOV", aov + " ₼");
+    }
+
+    function animateValue(id, endValue) {
+        document.getElementById(id).textContent = endValue;
+    }
+
+    function toggleLoader(show) {
+        document.getElementById('loader').style.display = show ? 'flex' : 'none';
+    }
   </script>
 </body>
 </html>
