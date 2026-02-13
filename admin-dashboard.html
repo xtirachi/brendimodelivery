@@ -221,6 +221,68 @@
         }
         
         iframe { width: 100%; height: 500px; border: none; border-radius: 12px; margin-top: 30px; display: none; }
+
+/* --- Image Modal (Popup) Styles --- */
+.image-modal {
+    display: none; 
+    position: fixed; 
+    z-index: 2000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.8); 
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s;
+}
+
+.image-modal-content {
+    margin: auto;
+    display: block;
+    width: 90%;       /* Changed from max-width */
+    height: 80vh;     /* Set a fixed height (80% of screen) */
+    border: none;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+    z-index: 2001;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+/* New Button Style */
+.btn-image {
+    background: #0ea5e9; /* Light Blue */
+    color: white;
+    width: 100%;
+    margin-top: 10px;
+}
+.btn-image:hover { background: #0284c7; }
+
+        
     </style>
 </head>
 <body>
@@ -266,12 +328,17 @@
 
 <div id="toast-container"></div>
 
+<div id="imageModal" class="image-modal">
+  <span class="close-modal" onclick="closeImageModal()">&times;</span>
+<iframe class="image-modal-content" id="modalImage"></iframe>
+</div>
+    
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
 <script>
 // --- CONFIGURATION ---
-const API_URL = 'https://script.google.com/macros/s/AKfycbxTqcTJ1WVzDqqHsYeq2HqWU9sFJcx2SjnMEZ-g4IYvRmksEDLbPCPvSC980Vtx5xSq/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbypg5mEs_x1PH7qLwVJ-YMVgs6dF5IfcZ3xZ9sV82Eo1WHEqmLHg3lwk0zI0Z9eLjrJ/exec';
 const UPDATE_URL = 'https://script.google.com/macros/s/AKfycbw6Zet-0OcZwOK3-UT1A9bq7mwEKm9QMe_8GiENnCxbvCPkBkWz1T4YWD7Ym6YFq0um/exec';
 
 // --- INITIALIZATION ---
@@ -349,8 +416,22 @@ function renderOrders(orders) {
         const courier = order[7] || '';
         const paymentMethod = (order[9] || 'cash').toLowerCase();
         const orderDetails = order[4] || '---';
-        const seller = order[16] || 'Digər'; // Get Seller Name
+        const seller = order[16] || 'Digər';
         const additionalPayment = parseFloat(order[19]) || 0; 
+        
+        // --- NEW: Get Image Link from Column U (Index 20) ---
+        const imageLink = order[20] || ''; 
+        let imageButtonHtml = '';
+
+        if(imageLink && imageLink.length > 5) {
+            // We pass the link to the openImageModal function
+            imageButtonHtml = `
+                <button class="btn btn-image" onclick="openImageModal('${imageLink}')">
+                    <i class="fas fa-camera"></i> Sifariş Fotosu
+                </button>
+            `;
+        }
+        // ----------------------------------------------------
 
         html += `
         <div class="order-card ${getStatusClass(status, courier)}" 
@@ -360,7 +441,8 @@ function renderOrders(orders) {
              data-courier="${courier}" 
              data-payment="${paymentMethod}"
              data-additional="${additionalPayment}"
-             data-seller="${seller}"> <div class="order-info">
+             data-seller="${seller}"> 
+             <div class="order-info">
                 <h3>
                     <span>#${orderId}</span> 
                     <span id="status-badge-${orderId}" style="font-size:0.8rem; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px;">${status}</span>
@@ -395,6 +477,8 @@ function renderOrders(orders) {
                 <div class="order-detail-box">
                     <strong>Sifariş tərkibi:</strong><br>${orderDetails}
                 </div>
+
+                ${imageButtonHtml}
 
                 <div style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:10px;">
                     <label>Status Yenilə:</label>
@@ -690,6 +774,34 @@ function populateCourierSelect(selectElement, users) {
     }
 }
 
+
+// --- IMAGE MODAL FUNCTIONS ---
+function openImageModal(url) {
+    const modal = document.getElementById('imageModal');
+    const modalFrame = document.getElementById('modalImage'); // This is now an iframe
+    
+    if(url) {
+        // Fix: Convert 'view' link to 'preview' link for iframe embedding
+        // Example: .../d/XYZ/view -> .../d/XYZ/preview
+        if (url.includes('drive.google.com')) {
+             url = url.replace(/\/view.*/, '/preview');
+        }
+
+        modal.style.display = "flex"; 
+        modalFrame.src = url; // Load URL into iframe
+    } else {
+        showToast('Şəkil tapılmadı', 'error');
+    }
+}
+
+// Ensure closing clears the source (stops video/loading)
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    const modalFrame = document.getElementById('modalImage');
+    modal.style.display = "none";
+    modalFrame.src = ""; // Clear src to stop loading
+}
+    
 function deleteOrder(orderId) {
     if (confirm("Bu sifarişi silmək istədiyinizə əminsiniz?")) {
         const card = document.getElementById(`order-${orderId}`);
