@@ -601,150 +601,13 @@
         reader.onerror = (err) => reject(err);
     });
 
-    // --- REPLACED SUBMIT ORDER LOGIC ---
-    document.getElementById('orderForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        if (cart.length === 0) return alert("Səbət boşdur.");
-        if (!currentUser && !confirm("İstifadəçi adı yoxdur. Admin kimi davam edilsin?")) return;
 
-        toggleLoader(true);
 
-        try {
-            // 1. Calculate Final Price
-            let calculatedTotal = 0;
-            cart.forEach(p => calculatedTotal += (p.salesPrice * p.quantity));
-            calculatedTotal += (parseFloat(document.getElementById('courierCost').value) || 0);
-            
-            const manualTotal = parseFloat(document.getElementById('manualTotal').value);
-            const finalTotal = isNaN(manualTotal) ? calculatedTotal : manualTotal;
-
-            // 2. Process Image (With Compression)
-            let base64String = "";
-            const fileInput = document.getElementById('orderImageFile');
-            
-            if (fileInput.files.length > 0) {
-                try {
-                    base64String = await processImage(fileInput.files[0]);
-                } catch (imgErr) {
-                    console.error("Image processing failed", imgErr);
-                    alert("Şəkil emal edilə bilmədi.");
-                    toggleLoader(false);
-                    return;
-                }
-            }
-
-            // 3. Prepare Payload
-            const payload = {
-                action: 'createOrder',
-                customerName: document.getElementById('customerName').value,
-                contactInfo: document.getElementById('contactInfo').value,
-                deliveryAddress: document.getElementById('deliveryAddress').value,
-                orderDate: document.getElementById('orderDate').value,
-                specialInstructions: document.getElementById('specialInstructions').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                salesSource: document.getElementById('salesSource').value,
-                staffUsername: currentUser,
-                addCourierPayment: document.getElementById('courierCost').value || 0,
-                products: JSON.stringify(cart),
-                totalSalesPrice: finalTotal.toFixed(2),
-                orderImage: base64String // Sent as compressed string
-            };
-
-            const formData = new URLSearchParams();
-            for (const key in payload) formData.append(key, payload[key]);
-
-            const res = await fetch(API_URL, { method: 'POST', body: formData });
-            const data = await res.json();
-
-            if (data.success) {
-                alert("Sifariş uğurla yaradıldı!");
-                document.getElementById('orderForm').reset();
-                cart = [];
-                updateCartUI();
-                fetchAllData();
-                const listBtn = document.querySelectorAll('.nav-item')[1];
-                switchTab('tab-list', listBtn);
-            } else {
-                alert("Xəta: " + data.message);
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Server xətası: " + error.message);
-        } finally {
-            toggleLoader(false);
-        }
-    });
 
    
     // SUBMIT ORDER
  // SUBMIT ORDER
-    document.getElementById('orderForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        if (cart.length === 0) return alert("Səbət boşdur.");
-        if (!currentUser && !confirm("İstifadəçi adı yoxdur. Admin kimi davam edilsin?")) return;
-
-        toggleLoader(true);
-
-        try {
-            // 1. Calculate Final Price
-            let calculatedTotal = 0;
-            cart.forEach(p => calculatedTotal += (p.salesPrice * p.quantity));
-            calculatedTotal += (parseFloat(document.getElementById('courierCost').value) || 0);
-            
-            const manualTotal = parseFloat(document.getElementById('manualTotal').value);
-            const finalTotal = isNaN(manualTotal) ? calculatedTotal : manualTotal;
-
-            // 2. Process Image (NEW STEP)
-            let base64String = "";
-            const fileInput = document.getElementById('orderImageFile');
-            if (fileInput.files.length > 0) {
-                base64String = await toBase64(fileInput.files[0]);
-            }
-
-            // 3. Prepare Payload
-            const payload = {
-                action: 'createOrder',
-                customerName: document.getElementById('customerName').value,
-                contactInfo: document.getElementById('contactInfo').value,
-                deliveryAddress: document.getElementById('deliveryAddress').value,
-                orderDate: document.getElementById('orderDate').value,
-                specialInstructions: document.getElementById('specialInstructions').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                salesSource: document.getElementById('salesSource').value,
-                staffUsername: currentUser,
-                addCourierPayment: document.getElementById('courierCost').value || 0,
-                products: JSON.stringify(cart),
-                totalSalesPrice: finalTotal.toFixed(2),
-                orderImage: base64String // <--- Added this to payload
-            };
-
-            const formData = new URLSearchParams();
-            for (const key in payload) formData.append(key, payload[key]);
-
-            const res = await fetch(API_URL, { method: 'POST', body: formData });
-            const data = await res.json();
-
-            if (data.success) {
-                alert("Sifariş uğurla yaradıldı!");
-                document.getElementById('orderForm').reset();
-                document.getElementById('imagePreview').innerHTML = ''; // Clear preview
-                cart = [];
-                updateCartUI();
-                fetchAllData();
-                const listBtn = document.querySelectorAll('.nav-item')[1];
-                switchTab('tab-list', listBtn);
-            } else {
-                alert("Xəta: " + data.message);
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Server xətası.");
-        } finally {
-            toggleLoader(false);
-        }
-    });
+ocument.getElementById('orderForm').addEventListener
 
     // --- TAB 2: LIST LOGIC ---
 // --- TAB 2: LIST LOGIC ---
@@ -920,9 +783,12 @@ async function saveNote(orderId) {
         document.getElementById(id).textContent = endValue;
     }
 
-    function toggleLoader(show) {
-        document.getElementById('loader').style.display = show ? 'flex' : 'none';
-    }
+  function toggleLoader(show, message = "Məlumatlar Yüklənir...") {
+    const loader = document.getElementById('loader');
+    const text = loader.querySelector('p');
+    if (text) text.textContent = message;
+    loader.style.display = show ? 'flex' : 'none';
+}
   </script>
 </body>
 </html>
