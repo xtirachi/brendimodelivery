@@ -602,12 +602,98 @@
     });
 
 
+// --- UNIFIED SUBMIT ORDER LOGIC ---
+document.getElementById('orderForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
+    if (cart.length === 0) return alert("Səbət boşdur.");
+    if (!currentUser && !confirm("İstifadəçi adı yoxdur. Admin kimi davam edilsin?")) return;
 
-   
-    // SUBMIT ORDER
- // SUBMIT ORDER
-ocument.getElementById('orderForm').addEventListener
+    // 1. Show Loader with specific message
+    // This solves the "user needs to be informed" issue
+    toggleLoader(true, "Sifariş və Şəkil serverə yüklənir... Zəhmət olmasa pəncərəni bağlamayın.");
+
+    try {
+        // 2. Calculate Final Price
+        let calculatedTotal = 0;
+        cart.forEach(p => calculatedTotal += (p.salesPrice * p.quantity));
+        calculatedTotal += (parseFloat(document.getElementById('courierCost').value) || 0);
+
+        const manualTotal = parseFloat(document.getElementById('manualTotal').value);
+        const finalTotal = isNaN(manualTotal) ? calculatedTotal : manualTotal;
+
+        // 3. Process Image (With Compression)
+        // This solves the "Server Error" caused by sending files that are too large
+        let base64String = "";
+        const fileInput = document.getElementById('orderImageFile');
+
+        if (fileInput.files.length > 0) {
+            try {
+                // Update loader text to show image is processing
+                toggleLoader(true, "Şəkil sıxılır və hazırlanır...");
+                base64String = await processImage(fileInput.files[0]);
+            } catch (imgErr) {
+                console.error("Image processing failed", imgErr);
+                alert("Şəkil emal edilə bilmədi. Sifariş şəkilsiz göndəriləcək?");
+                if (!confirm("Davam edilsin?")) {
+                    toggleLoader(false);
+                    return;
+                }
+            }
+        }
+
+        // 4. Update loader for the network request
+        toggleLoader(true, "Serverə göndərilir...");
+
+        // 5. Prepare Payload
+        const payload = {
+            action: 'createOrder',
+            customerName: document.getElementById('customerName').value,
+            contactInfo: document.getElementById('contactInfo').value,
+            deliveryAddress: document.getElementById('deliveryAddress').value,
+            orderDate: document.getElementById('orderDate').value,
+            specialInstructions: document.getElementById('specialInstructions').value,
+            paymentMethod: document.getElementById('paymentMethod').value,
+            salesSource: document.getElementById('salesSource').value,
+            staffUsername: currentUser,
+            addCourierPayment: document.getElementById('courierCost').value || 0,
+            products: JSON.stringify(cart),
+            totalSalesPrice: finalTotal.toFixed(2),
+            orderImage: base64String // Sent as compressed string
+        };
+
+        const formData = new URLSearchParams();
+        for (const key in payload) formData.append(key, payload[key]);
+
+        // 6. Send Request
+        const res = await fetch(API_URL, { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+            alert("Sifariş uğurla yaradıldı!");
+            
+            // Reset Form and UI
+            document.getElementById('orderForm').reset();
+            document.getElementById('imagePreview').innerHTML = ''; 
+            cart = [];
+            updateCartUI();
+            
+            // Refresh Data
+            await fetchAllData();
+            
+            // Switch to List View
+            const listBtn = document.querySelectorAll('.nav-item')[1];
+            switchTab('tab-list', listBtn);
+        } else {
+            alert("Xəta: " + data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Server xətası: " + error.message);
+    } finally {
+        toggleLoader(false);
+    }
+});
 
     // --- TAB 2: LIST LOGIC ---
 // --- TAB 2: LIST LOGIC ---
