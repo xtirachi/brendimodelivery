@@ -622,10 +622,16 @@ document.getElementById('orderForm').addEventListener('submit', async (e) => {
         const manualTotal = parseFloat(document.getElementById('manualTotal').value);
         const finalTotal = isNaN(manualTotal) ? calculatedTotal : manualTotal;
 
-        // 3. Process Image (With Compression)
-        // This solves the "Server Error" caused by sending files that are too large
+     // 3. Process Image (MANDATORY CHECK ADDED)
         let base64String = "";
         const fileInput = document.getElementById('orderImageFile');
+
+        // --- NEW: MANDATORY CHECK ---
+        if (fileInput.files.length === 0) {
+            alert("Zəhmət olmasa sifarişin fotosunu (skrinşot) mütləq əlavə edin!");
+            return; // Stops the process here
+        }
+        // -----------------------------
 
         if (fileInput.files.length > 0) {
             try {
@@ -634,12 +640,11 @@ document.getElementById('orderForm').addEventListener('submit', async (e) => {
                 base64String = await processImage(fileInput.files[0]);
             } catch (imgErr) {
                 console.error("Image processing failed", imgErr);
-                alert("Şəkil emal edilə bilmədi. Sifariş şəkilsiz göndəriləcək?");
-                if (!confirm("Davam edilsin?")) {
-                    toggleLoader(false);
-                    return;
-                }
+                alert("Şəkil emal edilə bilmədi. Başqa şəkil yoxlayın.");
+                toggleLoader(false);
+                return; 
             }
+        }
         }
 
         // 4. Update loader for the network request
