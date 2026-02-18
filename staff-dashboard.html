@@ -589,9 +589,63 @@ async function fetchAllData() {
         }
     });
 
-    // Add To Cart
+// --- NEW ORDER ADD TO CART LOGIC ---
+document.getElementById('btnAddProduct').addEventListener('click', async () => {
+    const nameInput = document.getElementById('productSearch');
+    const qtyInput = document.getElementById('qtyInput');
+    const name = nameInput.value;
+    const qty = parseInt(qtyInput.value);
+
+    if (!name || qty < 1) {
+        alert("Zəhmət olmasa məhsul adını daxil edin.");
+        return;
+    }
+
+    // UX: Show loading on button
+    const btn = document.getElementById('btnAddProduct');
+    const originalText = btn.innerText;
+    btn.innerText = "Yüklənir...";
+    btn.disabled = true;
+
+    try {
+        // 1. Fetch Price from Server to ensure accuracy
+        const res = await fetch(`${PRODUCT_API}?action=getProductDetails&productName=${encodeURIComponent(name)}`);
+        const data = await res.json();
+
+        if (data.success) {
+            // 2. Get the Price
+            const price = parseFloat(data.product.salesPrice) || 0;
+
+            // 3. Add to Global Cart Array
+            cart.push({ 
+                productName: name, 
+                quantity: qty, 
+                salesPrice: price 
+            });
+
+            // 4. Update the UI
+            updateCartUI();
+            
+            // 5. Reset Inputs
+            nameInput.value = '';
+            qtyInput.value = 1;
+            document.getElementById('productSearchResults').style.display = 'none';
+        } else {
+            alert("Məhsul bazada tapılmadı (və ya qiyməti yoxdur).");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("İnternet xətası: Qiymət gətirilə bilmədi.");
+    } finally {
+        // Reset Button
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+});  
+   
+// Add To Cart
 // --- CORRECTED EDIT MODAL ADD PRODUCT LOGIC ---
-document.getElementById('btnEditAddProduct').addEventListener('click', async () => {
+document.getElementById('btnEditAddProduct').addEventListener('click', async () => {    
     const name = document.getElementById('editProductSearch').value;
     const qtyInput = document.getElementById('editQtyInput');
     const qty = parseInt(qtyInput.value);
@@ -1106,15 +1160,6 @@ document.getElementById('editProductSearchResults').addEventListener('change', f
     this.style.display = 'none';
 });
 
-document.getElementById('btnEditAddProduct').addEventListener('click', () => {
-    const name = document.getElementById('editProductSearch').value;
-    const qty = parseInt(document.getElementById('editQtyInput').value);
-    if(name && qty > 0) {
-        editCart.push({ productName: name, quantity: qty, salesPrice: 0 });
-        updateEditCartUI();
-        document.getElementById('editProductSearch').value = '';
-    }
-});
 
 document.getElementById('editCourierCost').addEventListener('input', updateEditTotal);
 document.getElementById('editManualTotal').addEventListener('input', updateEditTotal);
