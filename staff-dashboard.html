@@ -348,6 +348,91 @@
     </div>
   </div>
 
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:3000; justify-content:center; align-items:flex-end;">
+  <div style="background:#fff; width:100%; height:90vh; border-radius: 20px 20px 0 0; padding:20px; overflow-y:auto; animation: slideUp 0.3s ease-out;">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 style="margin:0;">Sifarişi Düzəlt</h2>
+      <button onclick="closeEditModal()" style="background:none; border:none; font-size:24px; color:#333;">&times;</button>
+    </div>
+
+    <form id="editOrderForm">
+      <input type="hidden" id="editOrderId">
+      
+      <div class="card">
+        <h4>Müştəri Məlumatları</h4>
+        <input type="text" id="editCustomerName" placeholder="Ad və Soyad" required>
+        <input type="tel" id="editContactInfo" placeholder="Əlaqə Nömrəsi" required>
+        <input type="text" id="editDeliveryAddress" placeholder="Ünvan" required>
+        
+        <div class="date-row">
+           <div><label>Tarix</label><input type="date" id="editOrderDate" required></div>
+           <div>
+             <label>Mənbə</label>
+             <select id="editSalesSource" required>
+               <option value="Brendimoaz">Brendimoaz</option>
+               <option value="Brendimo.az">Brendimo.az</option>
+               <option value="Idealhediyyeler">Idealhediyyeler</option>
+               <option value="Idealhediyye.az">Idealhediyye.az</option>
+               <option value="Whatsapp35">Whatsapp35</option>
+               <option value="Whatsapp29">Whatsapp29</option>
+               <option value="Brendimo.lei">Brendimo.lei</option>
+             </select>
+           </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Səbət (Düzəliş)</h4>
+        <div style="display: flex; gap: 10px;">
+           <input type="text" id="editProductSearch" placeholder="Məhsul əlavə et..." style="flex:2;">
+           <input type="number" id="editQtyInput" value="1" min="1" style="flex:1;">
+        </div>
+        <select id="editProductSearchResults" style="display:none; margin-top:-10px;"></select>
+        <button type="button" id="btnEditAddProduct" class="btn btn-primary btn-sm" style="width:100%; margin-bottom:15px; margin-top:5px;">Əlavə Et</button>
+        
+        <ul id="editCartList" class="item-list"></ul>
+        
+        <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top:10px;">
+           <div style="display:flex; justify-content:space-between;">
+             <label>Kuriyer (AZN)</label>
+             <input type="number" id="editCourierCost" style="width:80px; text-align:right;">
+           </div>
+           <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:700;">YENİ CƏM:</span>
+              <span id="editDisplayTotal" style="font-weight:800; color:var(--primary); font-size:20px;">0.00 ₼</span>
+           </div>
+           <label style="margin-top:10px;">Qiyməti Əllə Dəyiş</label>
+           <input type="number" id="editManualTotal" step="0.01">
+        </div>
+      </div>
+
+      <div class="card">
+        <label>Mövcud Foto</label>
+        <div id="existingImageLink" style="font-size:12px; color:blue; margin-bottom:10px; overflow:hidden; text-overflow:ellipsis;"></div>
+        
+        <label>Yeni Foto Yüklə (Əgər dəyişəcəksə)</label>
+        <input type="file" id="editOrderImageFile" accept="image/*">
+        
+        <label>Ödəniş Metodu</label>
+        <select id="editPaymentMethod">
+          <option value="cash">Nağd</option>
+          <option value="card">Kart</option>
+        </select>
+
+        <label>Xüsusi Qeydlər</label>
+        <textarea id="editSpecialInstructions" rows="3"></textarea>
+
+        <button type="submit" class="btn btn-warning" style="color:white; background:#FF9500;">Yadda Saxla</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+</style>
+  
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchTab('tab-add', this)">
       <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
@@ -365,7 +450,7 @@
 
  <script>
     // --- CONFIGURATION ---
-    const API_URL = 'https://script.google.com/macros/s/AKfycbypg5mEs_x1PH7qLwVJ-YMVgs6dF5IfcZ3xZ9sV82Eo1WHEqmLHg3lwk0zI0Z9eLjrJ/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyCwhq9748BXSmLIY2ZExD0TPLf3SsMbS7nDTm-zGqHMFZJZH5CkpymfegJ5M7at4Bw/exec';
     const PRODUCT_API = 'https://script.google.com/macros/s/AKfycbx4epS0yxkG51pVRq0GAZs_GcWyHjUHq8CFDcNk16XQjNVdFbuBoeGgOZWLTzL_uKMe/exec';
 
     // --- STATE MANAGEMENT ---
@@ -427,7 +512,7 @@
     }
 
     // --- CORE DATA FETCHING ---
-   async function fetchAllData() {
+async function fetchAllData() {
         if (!currentUser) return; // EXTRA SECURITY: Do not fetch if no user
 
         toggleLoader(true);
@@ -505,46 +590,58 @@
     });
 
     // Add To Cart
-    document.getElementById('btnAddProduct').addEventListener('click', async () => {
-        const select = document.getElementById('productSearchResults');
-        // Grab value from input box (which is now populated correctly)
-        const productName = document.getElementById('productSearch').value;
-        const qtyInput = document.getElementById('qtyInput');
-        const qty = parseInt(qtyInput.value);
+// --- CORRECTED EDIT MODAL ADD PRODUCT LOGIC ---
+document.getElementById('btnEditAddProduct').addEventListener('click', async () => {
+    const name = document.getElementById('editProductSearch').value;
+    const qtyInput = document.getElementById('editQtyInput');
+    const qty = parseInt(qtyInput.value);
 
-        if (!productName || qty < 1) {
-            alert("Zəhmət olmasa məhsul seçin.");
-            return;
-        }
+    if (!name || qty < 1) {
+        alert("Zəhmət olmasa məhsul seçin.");
+        return;
+    }
 
-        toggleLoader(true);
-        
-        try {
-            const res = await fetch(`${PRODUCT_API}?action=getProductDetails&productName=${encodeURIComponent(productName)}`);
-            const data = await res.json();
+    // Show loading state on the button
+    const btn = document.getElementById('btnEditAddProduct');
+    const originalText = btn.innerText;
+    btn.innerText = "Yüklənir...";
+    btn.disabled = true;
+
+    try {
+        // 1. Fetch Price from Server (Same logic as New Order)
+        const res = await fetch(`${PRODUCT_API}?action=getProductDetails&productName=${encodeURIComponent(name)}`);
+        const data = await res.json();
+
+        if (data.success) {
+            // 2. Get the Price (Column C)
+            const price = parseFloat(data.product.salesPrice) || 0;
+
+            // 3. Add to Edit Cart
+            editCart.push({ 
+                productName: name, 
+                quantity: qty, 
+                salesPrice: price // Now this has the real price!
+            });
+
+            // 4. Update UI
+            updateEditCartUI();
             
-            if (data.success) {
-                const price = parseFloat(data.product.salesPrice) || 0;
-                cart.push({
-                    productName: productName,
-                    quantity: qty,
-                    salesPrice: price
-                });
-                updateCartUI();
-                
-                // Reset Fields
-                document.getElementById('productSearch').value = '';
-                select.style.display = 'none';
-                qtyInput.value = 1;
-            } else {
-                alert("Məhsul detalları tapılmadı.");
-            }
-        } catch(e) {
-            alert("Xəta baş verdi.");
-        } finally {
-            toggleLoader(false);
+            // 5. Reset Inputs
+            document.getElementById('editProductSearch').value = '';
+            document.getElementById('editProductSearchResults').style.display = 'none';
+            qtyInput.value = 1;
+        } else {
+            alert("Məhsul tapılmadı və ya qiymət yoxdur.");
         }
-    });
+    } catch (err) {
+        console.error(err);
+        alert("İnternet xətası: Qiymət gətirilə bilmədi.");
+    } finally {
+        // Reset Button
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+});
 
     function updateCartUI() {
         const list = document.getElementById('cartList');
@@ -717,17 +814,16 @@ document.getElementById('orderForm').addEventListener('submit', async (e) => {
 });
 
     // --- TAB 2: LIST LOGIC ---
-// --- TAB 2: LIST LOGIC ---
 function renderOrderList() {
     const container = document.getElementById('ordersContainer');
     const start = document.getElementById('filterStart').value;
     const end = document.getElementById('filterEnd').value;
-    const today = new Date().toISOString().split('T')[0]; // Get today's date (yyyy-mm-dd)
+    const today = new Date().toISOString().split('T')[0];
 
     container.innerHTML = '';
     
     const filtered = globalOrdersData.filter(o => o.date >= start && o.date <= end);
-    filtered.sort((a,b) => b.id - a.id); // Sort Newest First
+    filtered.sort((a,b) => b.id - a.id);
 
     let totalRev = 0;
     let totalCnt = 0;
@@ -739,42 +835,27 @@ function renderOrderList() {
             totalCnt++;
             totalRev += parseFloat(o.revenue || 0);
             
-            // 1. Badge Color Logic
-            let badgeClass = 'Pending';
-            if (o.status === 'Delivered') badgeClass = 'Delivered';
-            if (o.status === 'Deleted') badgeClass = 'Deleted';
-
-            // 2. Editable Logic (Only Today or Future)
-            const isEditable = (o.date >= today); 
-            const disabledAttr = isEditable ? '' : 'disabled';
-            const btnDisplay = isEditable ? 'inline-block' : 'none';
-            const bgColor = isEditable ? '#fff' : '#f5f5f5';
-
-            // 3. Render Card
+            let badgeClass = o.status === 'Delivered' ? 'Delivered' : (o.status === 'Deleted' ? 'Deleted' : 'Pending');
+            const isEditable = true; // Allow editing always or add condition: (o.date >= today);
+            
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
-                    <span style="font-weight:800; font-size:18px;">#${o.id}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-weight:800; font-size:18px;">#${o.id}</span>
+                        <button class="btn btn-primary btn-sm" style="padding:4px 10px;" onclick="openEditModal(${o.id})">
+                           <svg style="width:16px; height:16px; fill:white;" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </button>
+                    </div>
                     <span class="badge ${badgeClass}">${o.status}</span>
                 </div>
                 
-                <div class="row-detail">
-                    <span class="label-detail">Müştəri:</span>
-                    <span class="val-detail">${o.name}</span>
-                </div>
-                <div class="row-detail">
-                    <span class="label-detail">Məbləğ:</span>
-                    <span class="val-detail" style="color:var(--primary); font-weight:700;">${parseFloat(o.revenue).toFixed(2)} ₼</span>
-                </div>
-                <div class="row-detail">
-                    <span class="label-detail">Ünvan:</span>
-                    <span class="val-detail">${o.address || '-'}</span>
-                </div>
-                <div class="row-detail">
-                    <span class="label-detail">Çatdırıcı:</span>
-                    <span class="val-detail">${o.courier || '-'}</span>
-                </div>
+                <div class="row-detail"><span class="label-detail">Müştəri:</span><span class="val-detail">${o.name}</span></div>
+                <div class="row-detail"><span class="label-detail">Telefon:</span><span class="val-detail">${o.phone}</span></div>
+                <div class="row-detail"><span class="label-detail">Məbləğ:</span><span class="val-detail" style="color:var(--primary); font-weight:700;">${parseFloat(o.revenue).toFixed(2)} ₼</span></div>
+                <div class="row-detail"><span class="label-detail">Ünvan:</span><span class="val-detail">${o.address || '-'}</span></div>
+                <div class="row-detail"><span class="label-detail">Çatdırıcı:</span><span class="val-detail">${o.courier || '-'}</span></div>
                 
                 <div style="margin-top:10px;">
                     <span class="label-detail" style="display:block; margin-bottom:4px;">Məhsullar:</span>
@@ -782,23 +863,20 @@ function renderOrderList() {
                 </div>
 
                 <div class="note-area">
-                    <label style="margin-bottom:5px;">Xüsusi Təlimatlar (Qeyd)</label>
-                    <textarea id="note-${o.id}" rows="2" class="note-textarea" style="background:${bgColor}" ${disabledAttr}>${o.note || ''}</textarea>
-                    <div style="text-align:right; margin-top:5px; display:${btnDisplay}">
+                    <label style="margin-bottom:5px;">Qeyd</label>
+                    <textarea id="note-${o.id}" rows="2" class="note-textarea">${o.note || ''}</textarea>
+                    <div style="text-align:right; margin-top:5px;">
                         <button class="btn btn-primary btn-sm" onclick="saveNote('${o.id}')" style="padding:6px 15px; font-size:12px;">Yadda Saxla</button>
                     </div>
                 </div>
-                
-                <div style="text-align:right; font-size:11px; color:#aaa; margin-top:8px;">${o.date}</div>
+                <div style="text-align:right; font-size:11px; color:#aaa; margin-top:8px;">${o.date} | ${o.source}</div>
             `;
             container.appendChild(card);
         });
     }
-
     document.getElementById('listTotalCount').textContent = totalCnt;
     document.getElementById('listTotalRevenue').textContent = totalRev.toFixed(2) + " ₼";
 }
- 
 
 // --- NEW FUNCTION: SAVE NOTE ---
 async function saveNote(orderId) {
@@ -896,6 +974,207 @@ async function saveNote(orderId) {
     if (text) text.textContent = message;
     loader.style.display = show ? 'flex' : 'none';
 }
+
+// --- EDIT MODAL LOGIC ---
+
+let editCart = []; // Separate cart for editing
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+function openEditModal(orderId) {
+    const order = globalOrdersData.find(o => o.id == orderId);
+    if (!order) return alert("Sifariş məlumatı tapılmadı.");
+
+    // 1. Populate Basic Fields
+    document.getElementById('editOrderId').value = order.id;
+    document.getElementById('editCustomerName').value = order.name;
+    document.getElementById('editContactInfo').value = order.phone;
+    document.getElementById('editDeliveryAddress').value = order.address;
+    document.getElementById('editOrderDate').value = order.date;
+    document.getElementById('editSalesSource').value = order.source;
+    document.getElementById('editPaymentMethod').value = order.payment;
+    document.getElementById('editSpecialInstructions').value = order.note;
+    document.getElementById('editManualTotal').value = order.revenue; // Start with existing total
+    
+    // Courier Cost (Need to parse if not explicit, for now default 0 or try to guess)
+    // Since we don't store courier cost separately in getGlobalStats, we default to 0 and let user adjust
+    document.getElementById('editCourierCost').value = 0; 
+
+    // Image Link
+    const imgDiv = document.getElementById('existingImageLink');
+    if(order.imageLink && order.imageLink.includes('http')) {
+       imgDiv.innerHTML = `<a href="${order.imageLink}" target="_blank">Mövcud Şəkilə Bax</a>`;
+    } else {
+       imgDiv.textContent = "Şəkil yoxdur";
+    }
+
+    // 2. Reconstruct Cart from String "Product (Qty), Product (Qty)"
+    editCart = [];
+    if (order.products) {
+        const items = order.products.split(', ');
+        items.forEach(itemStr => {
+            // Regex to match "Name (Qty)"
+            const match = itemStr.match(/(.+)\s\((\d+)\)/);
+            if (match) {
+                editCart.push({
+                    productName: match[1],
+                    quantity: parseInt(match[2]),
+                    salesPrice: 0 // We don't know the unit price from summary, set 0
+                });
+            } else {
+                // If regex fails, just add as text with qty 1
+                editCart.push({ productName: itemStr, quantity: 1, salesPrice: 0 });
+            }
+        });
+    }
+    updateEditCartUI();
+
+    // 3. Show Modal
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+// Update UI for Edit Cart
+function updateEditCartUI() {
+    const list = document.getElementById('editCartList');
+    list.innerHTML = '';
+    
+    let calculatedTotal = 0;
+
+    editCart.forEach((item, index) => {
+        // Calculate Line Item Total
+        const lineTotal = item.quantity * (item.salesPrice || 0);
+        calculatedTotal += lineTotal;
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div style="flex:1;">
+                <strong>${item.productName}</strong> 
+                <div style="font-size:12px; color:#888;">
+                    ${item.quantity} x ${item.salesPrice ? item.salesPrice.toFixed(2) : 0} ₼
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-weight:600;">${lineTotal.toFixed(2)} ₼</span>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeFromEditCart(${index})" style="width:auto; padding:5px 10px;">X</button>
+            </div>
+        `;
+        list.appendChild(li);
+    });
+    
+    // Update the Manual Total Input with the calculated sum
+    // (This ensures the total price updates automatically when you add products)
+    const courier = parseFloat(document.getElementById('editCourierCost').value) || 0;
+    const finalTotal = calculatedTotal + courier;
+    
+    document.getElementById('editManualTotal').value = finalTotal.toFixed(2);
+    document.getElementById('editDisplayTotal').innerText = finalTotal.toFixed(2) + " ₼";
+}
+
+function removeFromEditCart(index) {
+    editCart.splice(index, 1);
+    updateEditCartUI();
+}
+
+// Add Product inside Edit Modal (Reuse logic slightly)
+// Note: You need to duplicate the product search listener for the edit inputs
+document.getElementById('editProductSearch').addEventListener('input', async function(e) {
+    const term = e.target.value.toLowerCase();
+    const select = document.getElementById('editProductSearchResults');
+    if (term.length < 2) { select.style.display = 'none'; return; }
+    
+    // Reuse existing PRODUCT_API
+    try {
+        const res = await fetch(`${PRODUCT_API}?action=getProducts&searchTerm=${encodeURIComponent(term)}`);
+        const data = await res.json();
+        select.innerHTML = '';
+        if (data.products && data.products.length > 0) {
+            select.style.display = 'block';
+            data.products.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.productName;
+                opt.text = p.productName; // We don't have price readily available in simple search
+                select.appendChild(opt);
+            });
+        }
+    } catch(err) { console.error(err); }
+});
+
+document.getElementById('editProductSearchResults').addEventListener('change', function() {
+    document.getElementById('editProductSearch').value = this.value;
+    this.style.display = 'none';
+});
+
+document.getElementById('btnEditAddProduct').addEventListener('click', () => {
+    const name = document.getElementById('editProductSearch').value;
+    const qty = parseInt(document.getElementById('editQtyInput').value);
+    if(name && qty > 0) {
+        editCart.push({ productName: name, quantity: qty, salesPrice: 0 });
+        updateEditCartUI();
+        document.getElementById('editProductSearch').value = '';
+    }
+});
+
+document.getElementById('editCourierCost').addEventListener('input', updateEditTotal);
+document.getElementById('editManualTotal').addEventListener('input', updateEditTotal);
+
+function updateEditTotal() {
+    const man = parseFloat(document.getElementById('editManualTotal').value) || 0;
+    // Just update display, logic relies on manual input primarily in edit mode
+    document.getElementById('editDisplayTotal').innerText = man.toFixed(2) + " ₼";
+}
+
+// --- SUBMIT EDIT ---
+document.getElementById('editOrderForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(!confirm("Dəyişiklikləri yadda saxlamaq istəyirsiniz?")) return;
+
+    toggleLoader(true, "Dəyişikliklər göndərilir...");
+
+    try {
+        let base64String = "";
+        const fileInput = document.getElementById('editOrderImageFile');
+        if (fileInput.files.length > 0) {
+             base64String = await processImage(fileInput.files[0]);
+        }
+
+        const payload = {
+            action: 'editFullOrder',
+            orderId: document.getElementById('editOrderId').value,
+            customerName: document.getElementById('editCustomerName').value,
+            contactInfo: document.getElementById('editContactInfo').value,
+            deliveryAddress: document.getElementById('editDeliveryAddress').value,
+            orderDate: document.getElementById('editOrderDate').value,
+            salesSource: document.getElementById('editSalesSource').value,
+            products: JSON.stringify(editCart),
+            addCourierPayment: document.getElementById('editCourierCost').value,
+            totalSalesPrice: document.getElementById('editManualTotal').value,
+            paymentMethod: document.getElementById('editPaymentMethod').value,
+            specialInstructions: document.getElementById('editSpecialInstructions').value,
+            newImage: base64String // Optional
+        };
+
+        const formData = new URLSearchParams();
+        for (const key in payload) formData.append(key, payload[key]);
+
+        const res = await fetch(API_URL, { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+            alert("Düzəliş edildi!");
+            closeEditModal();
+            fetchAllData(); // Refresh list
+        } else {
+            alert("Xəta: " + data.message);
+        }
+    } catch(err) {
+        alert("Server xətası");
+    } finally {
+        toggleLoader(false);
+    }
+});
+   
   </script>
 </body>
 </html>
