@@ -373,7 +373,7 @@
     let cart = [];
     let globalOrdersData = []; 
 
-    // --- INITIALIZATION ---
+// --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
         // 1. Detect Username
         const params = new URLSearchParams(window.location.search);
@@ -386,7 +386,21 @@
             currentUser = localStorage.getItem('staff_username') || '';
         }
 
-        const displayUser = currentUser ? currentUser : "Admin Modu (Hamısı)";
+        // --- NEW MODIFICATION: BLOCK ACCESS IF NO USER ---
+        if (!currentUser) {
+            // Wipe the body and show a warning message
+            document.body.innerHTML = `
+                <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; background:#F2F2F7;">
+                    <h2 style="color:#FF3B30; margin-bottom:10px;">Giriş Qadağandır</h2>
+                    <p style="color:#1C1C1E; font-size:16px;">Sistemdən istifadə etmək üçün istifadəçi adı mütləqdir.</p>
+                    <p style="color:#8E8E93; font-size:14px; margin-top:20px;">Zəhmət olmasa sizə göndərilən <b>xüsusi linkdən</b> istifadə edin.</p>
+                </div>
+            `;
+            return; // STOP EXECUTION HERE (Data will not load)
+        }
+        // -------------------------------------------------
+
+        const displayUser = currentUser;
         document.getElementById('displayUsername').textContent = displayUser;
 
         // 2. Set Default Dates
@@ -413,7 +427,9 @@
     }
 
     // --- CORE DATA FETCHING ---
-    async function fetchAllData() {
+   async function fetchAllData() {
+        if (!currentUser) return; // EXTRA SECURITY: Do not fetch if no user
+
         toggleLoader(true);
         try {
             const response = await fetch(`${API_URL}?action=getGlobalStats`);
