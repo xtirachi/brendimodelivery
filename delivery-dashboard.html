@@ -951,99 +951,56 @@ function updateOrder(orderId) {
   });
 }
 
-// ── MAP MODAL ─────────────────────────────────────────────
 function openMapModal(mapLink, address, customerName) {
-  document.getElementById('modalAddress').textContent = address || 'Ünvan məlumatı yoxdur';
+  const modalAddrElem = document.getElementById('modalAddress');
+  modalAddrElem.textContent = address || 'Ünvan məlumatı yoxdur';
 
-  // Build map embed (Google Maps)
   const embedContainer = document.getElementById('mapEmbed');
   const linksGrid = document.getElementById('mapLinksGrid');
 
-  // Try to embed map
-  // If mapLink looks like a Google Maps short/full URL, show it
-  if (mapLink) {
-    // Extract coords from Google Maps link if possible
-    const coordsMatch = mapLink.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-    const placeMatch = mapLink.match(/place\/([^/]+)/);
-    let embedSrc = '';
+  let cleanLink = mapLink ? mapLink.trim() : "";
+  
+  // Şərt: Tam olaraq sizin qeyd etdiyiniz linkdirsə və ya "googleusercontent.com" tərkiblidirsə
+  const isBadLink = cleanLink === "https://maps.google.com/?q=40.397185821857335,49.82498482041213" || cleanLink.includes("googleusercontent.com");
 
-    if (coordsMatch) {
-      const lat = coordsMatch[1], lng = coordsMatch[2];
-      embedSrc = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
-    } else {
-      // Use address as fallback for embed
-      const query = encodeURIComponent(address || customerName);
-      embedSrc = `https://maps.google.com/maps?q=${query}&output=embed`;
-    }
-
-    embedContainer.innerHTML = `<iframe src="${embedSrc}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-
-    // Build deep links for navigation apps
-    let gMapsNav = mapLink;
-    let wazeLink = '';
-    let yandexLink = '';
-    let appleLink = '';
-
-    if (coordsMatch) {
-      const lat = coordsMatch[1], lng = coordsMatch[2];
-      gMapsNav = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-      wazeLink = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
-      yandexLink = `https://yandex.com/maps/?rtext=~${lat},${lng}&rtt=auto`;
-      appleLink = `http://maps.apple.com/?daddr=${lat},${lng}`;
-    } else {
-      const enc = encodeURIComponent(address || '');
-      gMapsNav = `https://www.google.com/maps/dir/?api=1&destination=${enc}`;
-      wazeLink = `https://waze.com/ul?q=${enc}&navigate=yes`;
-      yandexLink = `https://yandex.com/maps/?text=${enc}&rtt=auto`;
-      appleLink = `http://maps.apple.com/?daddr=${enc}`;
-    }
-
-    linksGrid.innerHTML = `
-      <a href="${gMapsNav}" target="_blank" rel="noopener" class="map-app-btn gmaps">
-        <div class="map-icon">🗺️</div>
-        Google Maps
-      </a>
-      <a href="${wazeLink}" target="_blank" rel="noopener" class="map-app-btn waze">
-        <div class="map-icon">🚗</div>
-        Waze
-      </a>
-      <a href="${yandexLink}" target="_blank" rel="noopener" class="map-app-btn yandex">
-        <div class="map-icon">🔴</div>
-        Yandex Maps
-      </a>
-      <a href="${appleLink}" target="_blank" rel="noopener" class="map-app-btn apple">
-        <div class="map-icon">🍎</div>
-        Apple Maps
-      </a>`;
+  if (isBadLink || cleanLink === "") {
+    // Axtarış etmirik, xəritə yükləmirik. Sadəcə ünvanı böyük şəkildə göstəririk.
+    embedContainer.innerHTML = `
+      <div class="map-embed-placeholder" style="text-align: center; padding: 20px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:12px;">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">Xəritə linki yoxdur, yalnız ünvan:</p>
+        <p style="font-size: 16px; font-weight: 700; color: var(--text);">${address || 'Ünvan qeyd edilməyib'}</p>
+      </div>`;
+      
+    // İşə yaramayan naviqasiya düymələrini gizlədirik
+    linksGrid.innerHTML = '';
+    
   } else {
-    const q = encodeURIComponent(address || '');
+    // Normal link (məsələn, müştərinin atdığı real Google Maps linki) varsa:
     embedContainer.innerHTML = `
       <div class="map-embed-placeholder">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <p>Xəritə linki yoxdur. Ünvana görə axtarış edilir.</p>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom:10px;">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <p style="color: var(--text);">Müştərinin xəritə linki mövcuddur</p>
       </div>`;
+
+    // Birbaşa verilmiş linki açan tək və geniş düymə
     linksGrid.innerHTML = `
-      <a href="https://www.google.com/maps/search/${q}" target="_blank" rel="noopener" class="map-app-btn gmaps">
-        <div class="map-icon">🗺️</div>
-        Google Maps
-      </a>
-      <a href="https://waze.com/ul?q=${q}&navigate=yes" target="_blank" rel="noopener" class="map-app-btn waze">
-        <div class="map-icon">🚗</div>
-        Waze
-      </a>
-      <a href="https://yandex.com/maps/?text=${q}" target="_blank" rel="noopener" class="map-app-btn yandex">
-        <div class="map-icon">🔴</div>
-        Yandex Maps
-      </a>
-      <a href="http://maps.apple.com/?q=${q}" target="_blank" rel="noopener" class="map-app-btn apple">
-        <div class="map-icon">🍎</div>
-        Apple Maps
+      <a href="${cleanLink}" target="_blank" rel="noopener" class="map-app-btn gmaps" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 8px; padding: 14px;">
+        <div class="map-icon" style="width: 32px; height: 32px; font-size: 16px;">📍</div>
+        Link ilə Xəritədə Aç
       </a>`;
   }
 
   document.getElementById('mapModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
+
 
 function closeMapModal() {
   document.getElementById('mapModal').classList.remove('open');
