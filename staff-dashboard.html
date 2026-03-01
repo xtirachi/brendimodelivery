@@ -1133,7 +1133,7 @@ async function fetchAllData() {
     if (filtered.length === 0) {
       container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-box-open"></i><p>Bu tarixdə sifariş tapılmadı</p></div>';
     } else {
-   filtered.forEach(o => {
+filtered.forEach(o => {
         totalRev += parseFloat(o.revenue || 0);
 
         const statusMap = {
@@ -1150,20 +1150,20 @@ async function fetchAllData() {
         }[badgeClass] || o.status;
 
         // --- Safe Financial Extraction ---
-        // Matching exact payload keys from Yeni page
-        let productNum    = parseFloat(o.productPrice);
+        // Uses the exact keys mapped from Columns K (Product) and T (Courier)
+        let productNum    = parseFloat(o.productPrice) || 0;
         const courierNum  = parseFloat(o.courieradditional) || 0;
-        const discountNum = parseFloat(o.discountApplied) || parseFloat(o.discount) || 0;
-        const depositNum  = parseFloat(o.depositPaid) || parseFloat(o.deposit) || 0;
+        const discountNum = parseFloat(o.discountApplied || o.discount) || 0;
+        const depositNum  = parseFloat(o.depositPaid || o.deposit) || 0;
         
-        // Fallback for older orders missing productPrice
+        // Safety Fallback: If Column K was empty on older orders, calculate backwards
         const recordedRevenue = parseFloat(o.revenue || o.price) || 0;
-        if (isNaN(productNum)) {
+        if (productNum === 0 && recordedRevenue > 0) {
           productNum = recordedRevenue + discountNum + depositNum - courierNum;
           if (productNum < 0) productNum = 0;
         }
 
-        // Exact sum customer pays at the door
+        // The exact sum the customer physically pays at the door
         const finalSumToPay = (productNum + courierNum) - discountNum - depositNum;
 
         const card = document.createElement('div');
@@ -1197,12 +1197,12 @@ async function fetchAllData() {
 
           <div style="background:#F7F7FA; padding:10px 12px; border-radius:10px; margin-top:12px; border:1px solid #E5E5EA;">
             <div class="row-detail" style="border:none; margin-bottom:4px; padding-bottom:0;">
-              <span class="label-detail">Məhsullar</span>
+              <span class="label-detail">Məhsullar (Sütun K)</span>
               <span class="val-detail">${productNum.toFixed(2)} ₼</span>
             </div>
             
             <div class="row-detail" style="border:none; margin-bottom:4px; padding-bottom:0;">
-              <span class="label-detail">Kuriyer Xərci</span>
+              <span class="label-detail">Kuriyer Xərci (Sütun T)</span>
               <span class="val-detail">${courierNum.toFixed(2)} ₼</span>
             </div>
             
