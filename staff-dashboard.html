@@ -1133,7 +1133,7 @@ async function fetchAllData() {
     if (filtered.length === 0) {
       container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-box-open"></i><p>Bu tarixdə sifariş tapılmadı</p></div>';
     } else {
-      filtered.forEach(o => {
+     filtered.forEach(o => {
         totalRev += parseFloat(o.revenue || 0);
 
         const statusMap = {
@@ -1149,11 +1149,18 @@ async function fetchAllData() {
           OnWay:'Yoldadır', Deleted:'Ləğv'
         }[badgeClass] || o.status;
 
-const revenueNum = parseFloat(o.revenue || 0);
+        // --- Safe Financial Extraction ---
+        const revenueNum  = parseFloat(o.revenue || o.price) || 0;
+        const courierNum  = parseFloat(o.courieradditional) || 0;
+        const discountNum = parseFloat(o.discountApplied || o.discount) || 0;
+        const depositNum  = parseFloat(o.depositPaid || o.deposit) || 0;
         
-        // --- ADDED: Extract or calculate product and courier prices ---
-        const courierNum = parseFloat(o.courieradditional || o.courierCost || 0);
-        const productNum = parseFloat(o.productPrice) || (revenueNum - courierNum);
+        // Ensure product price doesn't return NaN
+        let productNum = parseFloat(o.productPrice);
+        if (isNaN(productNum)) {
+          productNum = revenueNum + discountNum + depositNum - courierNum;
+          if (productNum < 0) productNum = 0;
+        }
 
         const card = document.createElement('div');
         card.className = 'card';
@@ -1171,27 +1178,6 @@ const revenueNum = parseFloat(o.revenue || 0);
             <span class="label-detail">Telefon</span>
             <span class="val-detail"><a href="tel:${esc(o.phone)}" style="color:var(--primary);text-decoration:none;font-weight:700;">${esc(o.phone)}</a></span>
           </div>` : ''}
-          
-          <div class="row-detail">
-            <span class="label-detail">Məhsullar</span>
-            <span class="val-detail">${productNum.toFixed(2)} ₼</span>
-          </div>
-          <div class="row-detail">
-            <span class="label-detail">Kuriyer</span>
-            <span class="val-detail">${courierNum.toFixed(2)} ₼</span>
-          </div>
-          <div class="row-detail">
-            <span class="label-detail">Cəmi Məbləğ</span>
-            <span class="val-detail" style="color:var(--primary);font-weight:800;">${revenueNum.toFixed(2)} ₼</span>
-          </div>
-          ${o.phone ? `<div class="row-detail">
-            <span class="label-detail">Telefon</span>
-            <span class="val-detail"><a href="tel:${esc(o.phone)}" style="color:var(--primary);text-decoration:none;font-weight:700;">${esc(o.phone)}</a></span>
-          </div>` : ''}
-          <div class="row-detail">
-            <span class="label-detail">Məbləğ</span>
-            <span class="val-detail" style="color:var(--primary);font-weight:800;">${revenueNum.toFixed(2)} ₼</span>
-          </div>
           ${o.address ? `<div class="row-detail">
             <span class="label-detail">Ünvan</span>
             <span class="val-detail">${esc(o.address)}</span>
@@ -1201,12 +1187,40 @@ const revenueNum = parseFloat(o.revenue || 0);
             <span class="val-detail">${esc(o.timeSlot)}</span>
           </div>` : ''}
           ${o.courier ? `<div class="row-detail">
-            <span class="label-detail">Kuriyer</span>
+            <span class="label-detail">Kuriyer (Ad)</span>
             <span class="val-detail">${esc(o.courier)}</span>
           </div>` : ''}
 
-          ${o.products ? `<div style="margin-top:8px;">
-            <div class="label-detail" style="display:block;margin-bottom:5px;">Məhsullar</div>
+          <div style="background:#F7F7FA; padding:10px 12px; border-radius:10px; margin-top:12px; border:1px solid #E5E5EA;">
+            <div class="row-detail" style="border:none; margin-bottom:4px; padding-bottom:0;">
+              <span class="label-detail">Məhsullar</span>
+              <span class="val-detail">${productNum.toFixed(2)} ₼</span>
+            </div>
+            
+            <div class="row-detail" style="border:none; margin-bottom:4px; padding-bottom:0;">
+              <span class="label-detail">Kuriyer Xərci</span>
+              <span class="val-detail">${courierNum.toFixed(2)} ₼</span>
+            </div>
+            
+            ${discountNum > 0 ? `
+            <div class="row-detail" style="border:none; margin-bottom:4px; padding-bottom:0;">
+              <span class="label-detail" style="color:var(--success);">Endirim</span>
+              <span class="val-detail" style="color:var(--success);">- ${discountNum.toFixed(2)} ₼</span>
+            </div>` : ''}
+            
+            ${depositNum > 0 ? `
+            <div class="row-detail" style="border:none; margin-bottom:4px; padding-bottom:0;">
+              <span class="label-detail" style="color:var(--warning);">Beh Ödənilib</span>
+              <span class="val-detail" style="color:var(--warning);">- ${depositNum.toFixed(2)} ₼</span>
+            </div>` : ''}
+            
+            <div class="row-detail" style="margin-top:8px; border-top: 1.5px dashed #D1D1D6; padding-top:8px; border-bottom:none; margin-bottom:0;">
+              <span class="label-detail" style="color:#1C1C1E; font-weight:800;">Qalan Ödəniş</span>
+              <span class="val-detail" style="color:var(--primary);font-weight:800;font-size:15px;">${revenueNum.toFixed(2)} ₼</span>
+            </div>
+          </div>
+          ${o.products ? `<div style="margin-top:12px;">
+            <div class="label-detail" style="display:block;margin-bottom:5px;">Sifariş Edilən Məhsullar</div>
             <div class="products-box">${esc(o.products)}</div>
           </div>` : ''}
 
