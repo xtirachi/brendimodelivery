@@ -775,16 +775,27 @@ function updateStats() {
 function updateCashSummary() {
   let totalCash = 0;
   let deliveredCount = 0;
+  
   allOrders.forEach(o => {
     if (o[6] === 'Delivered') {
       deliveredCount++;
       if (String(o[9]).toLowerCase() === 'cash') {
-        totalCash += parseFloat(o[10]) || 0;
+        // Yekun nağd ödənişi hesablayıb ümumi kassaya əlavə edirik
+        const pNum = parseFloat(o[10]) || 0;
+        const cNum = parseFloat(o[19]) || 0;
+        const disNum = parseFloat(o[15]) || 0; // Endirim (əgər varsa)
+        const depNum = parseFloat(o[16]) || 0; // Beh (əgər varsa)
+        
+        let finalCash = (pNum + cNum) - disNum - depNum;
+        if (finalCash < 0) finalCash = 0;
+        
+        totalCash += finalCash;
       }
     }
   });
-  const deduction = deliveredCount * 5;
-  const returnAmt = totalCash - deduction;
+  
+  const deduction = deliveredCount * 5.8;
+  const returnAmt = totalCash - deduction - cNum;
 
   document.getElementById('cashTotal').textContent = totalCash.toFixed(2) + ' ₼';
   document.getElementById('cashDeduction').textContent = deduction.toFixed(2) + ' ₼';
@@ -823,16 +834,29 @@ function buildCard(order, idx) {
   const notes = order[5] || '';
   const status = order[6] || '';
   const payment = order[9] || '';
-  const price = order[10];
   const mapLink = order[21] || ''; // Column V (index 21)
+
+  // --- 💰 MALİYYƏ HESABLAMALARI ---
+  // Google Sheets Sütun İndeksləri (A=0, B=1 ... K=10, T=19)
+  const productNum  = parseFloat(order[10]) || 0; // Sütun K (Məhsulun qiyməti)
+  const courierNum  = parseFloat(order[19]) || 0; // Sütun T (Kuriyer əlavəsi)
+  
+  // DİQQƏT: Əgər Endirim və Beh sütunlarınız varsa, indekslərini bura yazın (Məsələn P sütunu üçünsə 15 yazın).
+  // Yoxdursa və ya hələlik bilmirsinizsə, olduğu kimi (0) saxlayın.
+  const discountNum = parseFloat(order[23]) || 0; // Endirim sütunu (Dəyişə bilərsiniz)
+  const depositNum  = parseFloat(order[24]) || 0; // Beh sütunu (Dəyişə bilərsiniz)
+
+  // Kuriyerin qapıda alacağı yekun nağd pul
+  const finalSumToPay = (productNum + courierNum) - discountNum - depositNum;
 
   const statusClass = statusToClass(status);
   const statusLabel = statusToLabel(status);
+  
+  // Əgər kartla ödənilibsə, kuriyer qapıda 0 ₼ alacaq
   const isCard = String(payment).toLowerCase() === 'card';
-  const priceDisplay = isCard ? '0.00 ₼ (Kart)' : (parseFloat(price) || 0).toFixed(2) + ' ₼';
+  const priceDisplay = isCard ? '0.00 ₼ (Kart)' : (finalSumToPay > 0 ? finalSumToPay.toFixed(2) : '0.00') + ' ₼';
 
   const hasMap = mapLink && mapLink.trim().length > 5;
-
   const delay = idx * 0.04;
 
   return `
@@ -846,20 +870,47 @@ function buildCard(order, idx) {
       <span class="status-chip ${statusClass}">${statusLabel}</span>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
+    
     <div class="card-body" id="card-body-${id}">
       <div class="info-grid">
         <div class="info-item full">
           <div class="info-label">📍 Çatdırılma Ünvanı</div>
           <div class="info-value">${escHtml(address) || '—'}</div>
         </div>
-        <div class="info-item">
-          <div class="info-label">💰 Məbləğ</div>
-          <div class="info-value accent">${priceDisplay}</div>
+
+        <div class="info-item full" style="background: var(--surface2); padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+            <span style="color:var(--text-muted);">Məhsullar</span>
+            <span style="font-weight:600; color:var(--text);">${productNum.toFixed(2)} ₼</span>
+          </div>
+          
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+            <span style="color:var(--text-muted);">Kuriyer Xərci</span>
+            <span style="font-weight:600; color:var(--text);">${courierNum.toFixed(2)} ₼</span>
+          </div>
+          
+          ${discountNum > 0 ? `
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+            <span style="color:var(--green);">Endirim</span>
+            <span style="font-weight:600; color:var(--green);">- ${discountNum.toFixed(2)} ₼</span>
+          </div>` : ''}
+          
+          ${depositNum > 0 ? `
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+            <span style="color:var(--yellow);">Beh Ödənilib</span>
+            <span style="font-weight:600; color:var(--yellow);">- ${depositNum.toFixed(2)} ₼</span>
+          </div>` : ''}
+          
+          <div style="display:flex; justify-content:space-between; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); font-size:14px;">
+            <span style="font-weight:700; color:var(--text);">Qapıda Ödəniş (Cəmi)</span>
+            <span style="font-weight:800; color:var(--accent);">${priceDisplay}</span>
+          </div>
         </div>
         <div class="info-item">
-          <div class="info-label">💳 Ödəniş</div>
+          <div class="info-label">💳 Ödəniş Növü</div>
           <div class="info-value"><span class="payment-badge ${isCard ? 'card' : 'cash'}">${escHtml(payment)}</span></div>
         </div>
+
         <div class="info-item full">
           <div class="info-label">🛍️ Məhsullar</div>
           <div class="info-value">${escHtml(products)}</div>
