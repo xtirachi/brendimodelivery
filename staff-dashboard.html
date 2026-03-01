@@ -1149,7 +1149,11 @@ async function fetchAllData() {
           OnWay:'Yoldadır', Deleted:'Ləğv'
         }[badgeClass] || o.status;
 
-        const revenueNum = parseFloat(o.revenue || 0);
+const revenueNum = parseFloat(o.revenue || 0);
+        
+        // --- ADDED: Extract or calculate product and courier prices ---
+        const courierNum = parseFloat(o.courieradditional || o.courierCost || 0);
+        const productNum = parseFloat(o.productPrice) || (revenueNum - courierNum);
 
         const card = document.createElement('div');
         card.className = 'card';
@@ -1162,6 +1166,23 @@ async function fetchAllData() {
           <div class="row-detail">
             <span class="label-detail">Müştəri</span>
             <span class="val-detail">${esc(o.name || '—')}</span>
+          </div>
+          ${o.phone ? `<div class="row-detail">
+            <span class="label-detail">Telefon</span>
+            <span class="val-detail"><a href="tel:${esc(o.phone)}" style="color:var(--primary);text-decoration:none;font-weight:700;">${esc(o.phone)}</a></span>
+          </div>` : ''}
+          
+          <div class="row-detail">
+            <span class="label-detail">Məhsullar</span>
+            <span class="val-detail">${productNum.toFixed(2)} ₼</span>
+          </div>
+          <div class="row-detail">
+            <span class="label-detail">Kuriyer</span>
+            <span class="val-detail">${courierNum.toFixed(2)} ₼</span>
+          </div>
+          <div class="row-detail">
+            <span class="label-detail">Cəmi Məbləğ</span>
+            <span class="val-detail" style="color:var(--primary);font-weight:800;">${revenueNum.toFixed(2)} ₼</span>
           </div>
           ${o.phone ? `<div class="row-detail">
             <span class="label-detail">Telefon</span>
