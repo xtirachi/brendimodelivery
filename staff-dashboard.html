@@ -1133,7 +1133,7 @@ async function fetchAllData() {
     if (filtered.length === 0) {
       container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-box-open"></i><p>Bu tarixdə sifariş tapılmadı</p></div>';
     } else {
-     filtered.forEach(o => {
+   filtered.forEach(o => {
         totalRev += parseFloat(o.revenue || 0);
 
         const statusMap = {
@@ -1150,17 +1150,21 @@ async function fetchAllData() {
         }[badgeClass] || o.status;
 
         // --- Safe Financial Extraction ---
-        const revenueNum  = parseFloat(o.revenue || o.price) || 0;
+        // Matching exact payload keys from Yeni page
+        let productNum    = parseFloat(o.productPrice);
         const courierNum  = parseFloat(o.courieradditional) || 0;
-        const discountNum = parseFloat(o.discountApplied || o.discount) || 0;
-        const depositNum  = parseFloat(o.depositPaid || o.deposit) || 0;
+        const discountNum = parseFloat(o.discountApplied) || parseFloat(o.discount) || 0;
+        const depositNum  = parseFloat(o.depositPaid) || parseFloat(o.deposit) || 0;
         
-        // Ensure product price doesn't return NaN
-        let productNum = parseFloat(o.productPrice);
+        // Fallback for older orders missing productPrice
+        const recordedRevenue = parseFloat(o.revenue || o.price) || 0;
         if (isNaN(productNum)) {
-          productNum = revenueNum + discountNum + depositNum - courierNum;
+          productNum = recordedRevenue + discountNum + depositNum - courierNum;
           if (productNum < 0) productNum = 0;
         }
+
+        // Exact sum customer pays at the door
+        const finalSumToPay = (productNum + courierNum) - discountNum - depositNum;
 
         const card = document.createElement('div');
         card.className = 'card';
@@ -1215,8 +1219,8 @@ async function fetchAllData() {
             </div>` : ''}
             
             <div class="row-detail" style="margin-top:8px; border-top: 1.5px dashed #D1D1D6; padding-top:8px; border-bottom:none; margin-bottom:0;">
-              <span class="label-detail" style="color:#1C1C1E; font-weight:800;">Qalan Ödəniş</span>
-              <span class="val-detail" style="color:var(--primary);font-weight:800;font-size:15px;">${revenueNum.toFixed(2)} ₼</span>
+              <span class="label-detail" style="color:#1C1C1E; font-weight:800;">Qalan Ödəniş (Cəmi)</span>
+              <span class="val-detail" style="color:var(--primary);font-weight:800;font-size:15px;">${finalSumToPay.toFixed(2)} ₼</span>
             </div>
           </div>
           ${o.products ? `<div style="margin-top:12px;">
