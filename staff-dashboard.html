@@ -1685,7 +1685,7 @@ filtered.forEach(o => {
     const productCode  = coCart.map(p => p.code).join(', ');
     const productPrice = coCart.reduce((s, p) => s + p.price, 0);
     const customImage  = coCart.find(p => p.isCustom && p.image)?.image || '';
-
+    const productImages = coCart.map(p => p.image).filter(img => img !== '').join(', ');
     const discountApplied = (payMethod === 'cash' && coDepositChecked) ? 4  : 0;
     const depositPaid     = (payMethod === 'cash' && coDepositChecked) ? 10 : 0;
 
