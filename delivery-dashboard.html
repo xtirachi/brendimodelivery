@@ -31,12 +31,7 @@
     --shadow: 0 4px 24px rgba(0,0,0,0.4);
   }
 
-  * { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-    -webkit-tap-highlight-color: transparent; 
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
     font-family: 'DM Sans', sans-serif;
@@ -68,10 +63,7 @@
     letter-spacing: -0.5px;
     flex-shrink: 0;
   }
-  .header-brand span { 
-    color: var(--text-muted); 
-    font-weight: 700; 
-  }
+  .header-brand span { color: var(--text-muted); font-weight: 700; }
   .header-user {
     display: flex;
     align-items: center;
@@ -83,33 +75,18 @@
     cursor: pointer;
     transition: border-color 0.2s;
   }
-  .header-user:hover { 
-    border-color: var(--accent); 
-  }
+  .header-user:hover { border-color: var(--accent); }
   .avatar {
-    width: 28px; 
-    height: 28px;
+    width: 28px; height: 28px;
     background: var(--accent-dim);
     border-radius: 50%;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    font-size: 12px; 
-    font-weight: 700; 
-    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--accent);
     flex-shrink: 0;
   }
-  .username-text { 
-    font-size: 13px; 
-    font-weight: 600; 
-    color: var(--text-sub); 
-    max-width: 80px; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    white-space: nowrap; 
-  }
+  .username-text { font-size: 13px; font-weight: 600; color: var(--text-sub); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  /* ── DATE BAR (SIMPLIFIED) ── */
+  /* ── DATE BAR ── */
   .date-bar {
     padding: 14px 20px;
     display: flex;
@@ -152,17 +129,9 @@
     gap: 6px;
     flex-shrink: 0;
   }
-  .btn-load:hover { 
-    background: #ffb700; 
-    transform: translateY(-1px); 
-  }
-  .btn-load:active { 
-    transform: translateY(0); 
-  }
-  .btn-load.loading { 
-    opacity: 0.7; 
-    pointer-events: none; 
-  }
+  .btn-load:hover { background: #ffb700; transform: translateY(-1px); }
+  .btn-load:active { transform: translateY(0); }
+  .btn-load.loading { opacity: 0.7; pointer-events: none; }
 
   /* ── STATS BAR ── */
   .stats-bar {
@@ -184,22 +153,10 @@
     color: var(--text);
     line-height: 1;
   }
-  .stat-value.green { 
-    color: var(--green); 
-  }
-  .stat-value.amber { 
-    color: var(--accent); 
-  }
-  .stat-value.red { 
-    color: var(--red); 
-  }
-  .stat-label { 
-    font-size: 10px; 
-    color: var(--text-muted); 
-    margin-top: 3px; 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px; 
-  }
+  .stat-value.green { color: var(--green); }
+  .stat-value.amber { color: var(--accent); }
+  .stat-value.red { color: var(--red); }
+  .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
 
   /* ── CASH SUMMARY ── */
   .cash-summary {
@@ -213,72 +170,10 @@
     align-items: center;
     gap: 12px;
   }
-  .cash-item { 
-    text-align: center; 
-  }
-  .cash-value { 
-    font-family: 'Syne', sans-serif; 
-    font-size: 18px; 
-    font-weight: 800; 
-    color: var(--accent); 
-  }
-  .cash-label { 
-    font-size: 10px; 
-    color: var(--text-muted); 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px; 
-    margin-top: 2px; 
-  }
-  .cash-divider { 
-    width: 1px; 
-    height: 36px; 
-    background: rgba(240,165,0,0.2); 
-  }
-
-  /* ── URGENT UPDATE BAR ── */
-  .urgent-update-bar {
-    margin: 0 20px 12px 20px;
-    background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1));
-    border: 2px solid rgba(239,68,68,0.4);
-    border-radius: var(--radius);
-    padding: 14px 18px;
-    text-align: center;
-    animation: urgentPulse 2s ease-in-out infinite;
-  }
-  @keyframes urgentPulse {
-    0%, 100% { 
-      opacity: 1; 
-      transform: scale(1);
-    }
-    50% { 
-      opacity: 0.9; 
-      transform: scale(1.01);
-    }
-  }
-  .urgent-update-bar.hidden {
-    display: none !important;
-  }
-  .urgent-label {
-    font-size: 12px;
-    color: var(--red);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-  .urgent-label svg {
-    width: 16px;
-    height: 16px;
-    animation: blink 1s ease-in-out infinite;
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
+  .cash-item { text-align: center; }
+  .cash-value { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--accent); }
+  .cash-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .cash-divider { width: 1px; height: 36px; background: rgba(240,165,0,0.2); }
 
   /* ── FILTER TABS ── */
   .filter-tabs {
@@ -288,9 +183,7 @@
     overflow-x: auto;
     scrollbar-width: none;
   }
-  .filter-tabs::-webkit-scrollbar { 
-    display: none; 
-  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
   .tab-btn {
     flex-shrink: 0;
     background: var(--surface2);
@@ -304,15 +197,8 @@
     transition: all 0.2s;
     white-space: nowrap;
   }
-  .tab-btn:hover { 
-    border-color: var(--accent); 
-    color: var(--accent); 
-  }
-  .tab-btn.active { 
-    background: var(--accent-dim); 
-    border-color: var(--accent); 
-    color: var(--accent); 
-  }
+  .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tab-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
   /* ── ORDER LIST ── */
   .orders-wrapper {
@@ -332,32 +218,13 @@
     animation: slideIn 0.3s ease both;
   }
   @keyframes slideIn {
-    from { 
-      opacity: 0; 
-      transform: translateY(10px); 
-    }
-    to   { 
-      opacity: 1; 
-      transform: translateY(0); 
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  .order-card:hover { 
-    border-color: rgba(255,255,255,0.15); 
-  }
-  .order-card.delivered { 
-    border-color: rgba(34,197,94,0.3); 
-    background: linear-gradient(135deg, var(--surface), rgba(34,197,94,0.04)); 
-  }
-  .order-card.out-for-delivery { 
-    border-color: rgba(245,158,11,0.3); 
-    background: linear-gradient(135deg, var(--surface), rgba(245,158,11,0.04)); 
-  }
-  .order-card.canceled, 
-  .order-card.deleted { 
-    border-color: rgba(239,68,68,0.2); 
-    background: linear-gradient(135deg, var(--surface), rgba(239,68,68,0.03)); 
-    opacity: 0.7; 
-  }
+  .order-card:hover { border-color: rgba(255,255,255,0.15); }
+  .order-card.delivered { border-color: rgba(34,197,94,0.3); background: linear-gradient(135deg, var(--surface), rgba(34,197,94,0.04)); }
+  .order-card.out-for-delivery { border-color: rgba(245,158,11,0.3); background: linear-gradient(135deg, var(--surface), rgba(245,158,11,0.04)); }
+  .order-card.canceled, .order-card.deleted { border-color: rgba(239,68,68,0.2); background: linear-gradient(135deg, var(--surface), rgba(239,68,68,0.03)); opacity: 0.7; }
 
   /* Card header */
   .card-header {
@@ -379,10 +246,7 @@
     color: var(--accent);
     flex-shrink: 0;
   }
-  .card-title-wrap { 
-    flex: 1; 
-    min-width: 0; 
-  }
+  .card-title-wrap { flex: 1; min-width: 0; }
   .customer-name {
     font-size: 15px;
     font-weight: 600;
@@ -406,38 +270,17 @@
     letter-spacing: 0.4px;
     border: 1px solid transparent;
   }
-  .status-chip.delivered { 
-    background: var(--green-dim); 
-    color: var(--green); 
-    border-color: rgba(34,197,94,0.3); 
-  }
-  .status-chip.out-for-delivery { 
-    background: var(--yellow-dim); 
-    color: var(--yellow); 
-    border-color: rgba(245,158,11,0.3); 
-  }
-  .status-chip.canceled, 
-  .status-chip.deleted { 
-    background: var(--red-dim); 
-    color: var(--red); 
-    border-color: rgba(239,68,68,0.3); 
-  }
-  .status-chip.preparing, 
-  .status-chip.new { 
-    background: var(--blue-dim); 
-    color: var(--blue); 
-    border-color: rgba(59,130,246,0.3); 
-  }
+  .status-chip.delivered { background: var(--green-dim); color: var(--green); border-color: rgba(34,197,94,0.3); }
+  .status-chip.out-for-delivery { background: var(--yellow-dim); color: var(--yellow); border-color: rgba(245,158,11,0.3); }
+  .status-chip.canceled, .status-chip.deleted { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.3); }
+  .status-chip.preparing, .status-chip.new { background: var(--blue-dim); color: var(--blue); border-color: rgba(59,130,246,0.3); }
   .chevron {
     flex-shrink: 0;
     color: var(--text-muted);
     transition: transform 0.3s;
-    width: 18px; 
-    height: 18px;
+    width: 18px; height: 18px;
   }
-  .card-header.open .chevron { 
-    transform: rotate(180deg); 
-  }
+  .card-header.open .chevron { transform: rotate(180deg); }
 
   /* Card body */
   .card-body {
@@ -445,18 +288,10 @@
     padding: 0 16px 16px;
     animation: fadeDown 0.2s ease;
   }
-  .card-body.open { 
-    display: block; 
-  }
+  .card-body.open { display: block; }
   @keyframes fadeDown {
-    from { 
-      opacity: 0; 
-      transform: translateY(-6px); 
-    }
-    to   { 
-      opacity: 1; 
-      transform: translateY(0); 
-    }
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* Info rows */
@@ -471,35 +306,12 @@
     border-radius: var(--radius-sm);
     padding: 10px 12px;
   }
-  .info-item.full { 
-    grid-column: 1 / -1; 
-  }
-  .info-label { 
-    font-size: 10px; 
-    color: var(--text-muted); 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px; 
-    margin-bottom: 4px; 
-  }
-  .info-value { 
-    font-size: 13px; 
-    color: var(--text); 
-    font-weight: 500; 
-    word-break: break-word; 
-  }
-  .info-value.accent { 
-    color: var(--accent); 
-    font-family: 'Syne', sans-serif; 
-    font-size: 15px; 
-    font-weight: 800; 
-  }
-  .info-value.phone-link { 
-    color: var(--blue); 
-    text-decoration: none; 
-  }
-  .info-value.phone-link:hover { 
-    text-decoration: underline; 
-  }
+  .info-item.full { grid-column: 1 / -1; }
+  .info-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .info-value { font-size: 13px; color: var(--text); font-weight: 500; word-break: break-word; }
+  .info-value.accent { color: var(--accent); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; }
+  .info-value.phone-link { color: var(--blue); text-decoration: none; }
+  .info-value.phone-link:hover { text-decoration: underline; }
 
   /* Action buttons */
   .action-bar {
@@ -525,67 +337,20 @@
     gap: 6px;
     text-decoration: none;
   }
-  .btn:active { 
-    transform: scale(0.97); 
-  }
-  .btn-primary { 
-    background: var(--accent); 
-    color: #000; 
-  }
-  .btn-primary:hover { 
-    background: #ffb700; 
-  }
-  .btn-primary.danger { 
-    background: var(--red); 
-  }
-  .btn-primary.danger:hover { 
-    background: #ff2222; 
-  }
-  .btn-secondary { 
-    background: var(--surface2); 
-    color: var(--text-sub); 
-    border: 1px solid var(--border); 
-  }
-  .btn-secondary:hover { 
-    border-color: var(--accent); 
-    color: var(--accent); 
-  }
-  .btn-call { 
-    background: var(--green-dim); 
-    color: var(--green); 
-    border: 1px solid rgba(34,197,94,0.25); 
-  }
-  .btn-call:hover { 
-    background: rgba(34,197,94,0.2); 
-  }
-  .btn-map { 
-    background: var(--blue-dim); 
-    color: var(--blue); 
-    border: 1px solid rgba(59,130,246,0.25); 
-  }
-  .btn-map:hover { 
-    background: rgba(59,130,246,0.2); 
-  }
-  .btn-maps-disabled { 
-    background: var(--surface2); 
-    color: var(--text-muted); 
-    border: 1px solid var(--border); 
-    cursor: not-allowed; 
-    opacity: 0.5; 
-  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #ffb700; }
+  .btn-secondary { background: var(--surface2); color: var(--text-sub); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-call { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .btn-call:hover { background: rgba(34,197,94,0.2); }
+  .btn-map { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+  .btn-map:hover { background: rgba(59,130,246,0.2); }
+  .btn-maps-disabled { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); cursor: not-allowed; opacity: 0.5; }
 
   /* Status select */
-  .status-section { 
-    margin-top: 12px; 
-  }
-  .status-section label { 
-    font-size: 11px; 
-    color: var(--text-muted); 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px; 
-    display: block; 
-    margin-bottom: 6px; 
-  }
+  .status-section { margin-top: 12px; }
+  .status-section label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
   .status-select {
     width: 100%;
     background: var(--surface2);
@@ -605,9 +370,7 @@
     background-position: right 12px center;
     transition: border-color 0.2s;
   }
-  .status-select:focus { 
-    border-color: var(--accent); 
-  }
+  .status-select:focus { border-color: var(--accent); }
 
   /* ── MAP MODAL ── */
   .modal-overlay {
@@ -620,9 +383,7 @@
     align-items: flex-end;
     justify-content: center;
   }
-  .modal-overlay.open { 
-    display: flex; 
-  }
+  .modal-overlay.open { display: flex; }
   .map-modal {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -634,14 +395,8 @@
     animation: slideUp 0.3s ease;
   }
   @keyframes slideUp {
-    from { 
-      transform: translateY(60px); 
-      opacity: 0; 
-    }
-    to   { 
-      transform: translateY(0); 
-      opacity: 1; 
-    }
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
   }
   .map-modal-header {
     padding: 20px 20px 16px;
@@ -649,38 +404,12 @@
     align-items: center;
     gap: 12px;
     border-bottom: 1px solid var(--border);
-    position: sticky; 
-    top: 0; 
-    background: var(--surface); 
-    z-index: 1;
+    position: sticky; top: 0; background: var(--surface); z-index: 1;
   }
-  .map-modal-header h3 { 
-    flex: 1; 
-    font-family: 'Syne', sans-serif; 
-    font-size: 16px; 
-    font-weight: 800; 
-  }
-  .close-btn { 
-    background: var(--surface2); 
-    border: 1px solid var(--border); 
-    border-radius: 8px; 
-    padding: 6px; 
-    cursor: pointer; 
-    color: var(--text-muted); 
-    transition: all 0.2s; 
-    display: flex; 
-  }
-  .close-btn:hover { 
-    color: var(--text); 
-    border-color: var(--red); 
-    color: var(--red); 
-  }
-  .map-modal-body { 
-    padding: 20px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-  }
+  .map-modal-header h3 { flex: 1; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; }
+  .close-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; display: flex; }
+  .close-btn:hover { color: var(--text); border-color: var(--red); color: var(--red); }
+  .map-modal-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 
   .address-display {
     background: var(--surface2);
@@ -691,11 +420,7 @@
     border-left: 3px solid var(--accent);
     line-height: 1.6;
   }
-  .map-links-grid { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 10px; 
-  }
+  .map-links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .map-app-btn {
     display: flex;
     flex-direction: column;
@@ -713,31 +438,12 @@
     font-weight: 600;
     text-align: center;
   }
-  .map-app-btn:hover { 
-    border-color: var(--accent); 
-    background: var(--accent-dim); 
-  }
-  .map-app-btn .map-icon { 
-    width: 40px; 
-    height: 40px; 
-    border-radius: 12px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-size: 20px; 
-  }
-  .map-app-btn.gmaps .map-icon { 
-    background: rgba(59,130,246,0.15); 
-  }
-  .map-app-btn.waze .map-icon { 
-    background: rgba(90,200,250,0.15); 
-  }
-  .map-app-btn.yandex .map-icon { 
-    background: rgba(240,60,60,0.15); 
-  }
-  .map-app-btn.apple .map-icon { 
-    background: rgba(255,255,255,0.08); 
-  }
+  .map-app-btn:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .map-app-btn .map-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .map-app-btn.gmaps .map-icon { background: rgba(59,130,246,0.15); }
+  .map-app-btn.waze .map-icon { background: rgba(90,200,250,0.15); }
+  .map-app-btn.yandex .map-icon { background: rgba(240,60,60,0.15); }
+  .map-app-btn.apple .map-icon { background: rgba(255,255,255,0.08); }
 
   /* Embedded map iframe */
   .map-embed {
@@ -748,11 +454,7 @@
     background: var(--surface2);
     position: relative;
   }
-  .map-embed iframe { 
-    width: 100%; 
-    height: 100%; 
-    border: none; 
-  }
+  .map-embed iframe { width: 100%; height: 100%; border: none; }
   .map-embed-placeholder {
     display: flex;
     flex-direction: column;
@@ -784,18 +486,9 @@
     pointer-events: none;
     box-shadow: var(--shadow);
   }
-  .toast.show { 
-    opacity: 1; 
-    transform: translateX(-50%) translateY(0); 
-  }
-  .toast.success { 
-    border-color: var(--green); 
-    color: var(--green); 
-  }
-  .toast.error { 
-    border-color: var(--red); 
-    color: var(--red); 
-  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
 
   /* ── EMPTY STATE ── */
   .empty-state {
@@ -808,31 +501,19 @@
     color: var(--text-muted);
     text-align: center;
   }
-  .empty-state .empty-icon { 
-    font-size: 48px; 
-    opacity: 0.5; 
-  }
-  .empty-state p { 
-    font-size: 15px; 
-    max-width: 240px; 
-    line-height: 1.5; 
-  }
+  .empty-state .empty-icon { font-size: 48px; opacity: 0.5; }
+  .empty-state p { font-size: 15px; max-width: 240px; line-height: 1.5; }
 
   /* ── SPINNER ── */
   .spinner {
     display: inline-block;
-    width: 18px; 
-    height: 18px;
+    width: 18px; height: 18px;
     border: 2px solid rgba(0,0,0,0.3);
     border-top-color: #000;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
   }
-  @keyframes spin { 
-    to { 
-      transform: rotate(360deg); 
-    } 
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── SKELETON ── */
   .skeleton-card {
@@ -850,26 +531,10 @@
     animation: shimmer 1.2s infinite;
     border-radius: 6px;
   }
-  @keyframes shimmer { 
-    to { 
-      background-position: -200% 0; 
-    } 
-  }
-  .skel-circle { 
-    width: 40px; 
-    height: 40px; 
-    border-radius: 50%; 
-    flex-shrink: 0; 
-  }
-  .skel-lines { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-  }
-  .skel-line { 
-    height: 12px; 
-  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+  .skel-circle { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+  .skel-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .skel-line { height: 12px; }
 
   /* ── PAYMENT BADGE ── */
   .payment-badge {
@@ -883,74 +548,15 @@
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
-  .payment-badge.cash { 
-    background: var(--green-dim); 
-    color: var(--green); 
-  }
-  .payment-badge.card { 
-    background: var(--blue-dim); 
-    color: var(--blue); 
-  }
-
-  /* ── QUICK UPDATE BUTTON SECTION ── */
-  .quick-update-button-container {
-    padding: 0 20px 12px;
-  }
-  .btn-quick-update {
-    width: 100%;
-    background: linear-gradient(135deg, var(--red), #ff5555);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 16px rgba(239,68,68,0.3);
-  }
-  .btn-quick-update:hover {
-    background: linear-gradient(135deg, #ff3333, #ff6666);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(239,68,68,0.4);
-  }
-  .btn-quick-update:active {
-    transform: translateY(0);
-  }
-  .btn-quick-update.hidden {
-    display: none !important;
-  }
-  .btn-quick-update svg {
-    width: 20px;
-    height: 20px;
-    animation: rocket 1s ease-in-out infinite;
-  }
-  @keyframes rocket {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-  }
+  .payment-badge.cash { background: var(--green-dim); color: var(--green); }
+  .payment-badge.card { background: var(--blue-dim); color: var(--blue); }
 
   /* ── BOTTOM NAV ── */
-  .bottom-safe { 
-    height: env(safe-area-inset-bottom, 0px); 
-    background: var(--surface); 
-  }
+  .bottom-safe { height: env(safe-area-inset-bottom, 0px); background: var(--surface); }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 360px) {
-    .info-grid { 
-      grid-template-columns: 1fr; 
-    }
-    .map-links-grid { 
-      grid-template-columns: 1fr 1fr; 
-    }
+    .info-grid { grid-template-columns: 1fr; }
+    .map-links-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -965,7 +571,7 @@
   </div>
 </header>
 
-<!-- DATE BAR (SIMPLIFIED - TODAY ONLY) -->
+<!-- DATE BAR -->
 <div class="date-bar">
   <div class="date-bar-info">
     📅 Bugünün Sifarişləri
@@ -1008,24 +614,6 @@
   <div class="cash-item">
     <div class="cash-value" id="cashReturn">0.00</div>
     <div class="cash-label">Qaytarılacaq</div>
-  </div>
-</div>
-
-<!-- URGENT UPDATE BAR (PROMINENT) -->
-<div class="urgent-update-bar hidden" id="urgentUpdateBar">
-  <div class="urgent-label">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-    </svg>
-    TƏCİLİ: SIFARIŞLRI YÜKLƏYIN
-  </div>
-  <div class="quick-update-button-container">
-    <button class="btn-quick-update" id="quickUpdateAllBtn" onclick="quickUpdateAll()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M13 3L3 14h9l-1 8 10-11h-9l1-8z"/>
-      </svg>
-      BÜTÜN STATUSU TƏLƏFON HƏDDİNƏ YÜKlə
-    </button>
   </div>
 </div>
 
@@ -1076,47 +664,24 @@
 
 <script>
 // ═════════════════════════════════════════════════════════════════════
-// COMPLETE DELIVERY DASHBOARD - FULL & COMPREHENSIVE VERSION
-// Modified for TODAY-ONLY Orders with Urgent Update Feature
+// DELIVERY DASHBOARD - TODAY ONLY ORDERS
 // ═════════════════════════════════════════════════════════════════════
 
-// ── CONFIGURATION & CONSTANTS ──────────────────────────────────────
 const API_URLS = [
   'https://script.google.com/macros/s/AKfycbyV5tiuhDyteKE2Ug03l8F3qJeulRIyWkkrepSr_tC_1HffeXKBV_9nxOmqeHFY8VzQ/exec',
   'https://script.google.com/macros/s/AKfycbxzYNQMOtV5Bk96fhRNTAeb7ZAx92dW-3F4h8jGuFXlemwM_3RfzPSbl1qY6Y3xbqsSjg/exec'
 ];
 
-const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
-const TOAST_DURATION = 2800; // milliseconds
-const CARD_STAGGER_DELAY = 40; // milliseconds between card animations
-
-// ── GLOBAL STATE ───────────────────────────────────────────────────
 let allOrders = [];
 let currentFilter = 'all';
-let autoRefreshInterval = null;
 let toastTimer = null;
-let updateInProgress = false;
 
-// ──────────────────────────────────────────────────────────────────
-// AUTHENTICATION FUNCTIONS
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Get username from local storage
- * Redirects to login if no user is authenticated
- */
 function getUsername() {
-  const username = localStorage.getItem('delivery_username');
-  if (!username) { 
-    window.location.href = 'login.html'; 
-    return null; 
-  }
-  return username;
+  const u = localStorage.getItem('delivery_username');
+  if (!u) { window.location.href = 'login.html'; return null; }
+  return u;
 }
 
-/**
- * Logout user and clear local storage
- */
 function logout() {
   if (confirm('Çıxmaq istəyirsiniz?')) {
     localStorage.removeItem('delivery_username');
@@ -1124,90 +689,35 @@ function logout() {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────
-// INITIALIZATION & PAGE LOAD
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Initialize page on DOM content loaded
- */
 window.addEventListener('DOMContentLoaded', () => {
   const username = getUsername();
   if (!username) return;
 
-  // Set header user display
   document.getElementById('headerUsername').textContent = username;
   document.getElementById('avatarInitial').textContent = username.charAt(0).toUpperCase();
 
-  // Set current date display
   displayCurrentDate();
 
-  // Setup filter tabs event listeners
-  setupFilterTabs();
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderOrders();
+    });
+  });
 
-  // Auto-load today's orders immediately
   const today = new Date().toISOString().split('T')[0];
   loadOrdersByDate(today);
-
-  // Setup auto-refresh every 30 seconds
-  setupAutoRefresh(today);
 });
 
-/**
- * Display current date in a readable format
- */
 function displayCurrentDate() {
   const today = new Date();
-  const options = { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  };
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const dateString = today.toLocaleDateString('az-AZ', options);
   document.getElementById('currentDateDisplay').textContent = dateString;
 }
 
-/**
- * Setup filter tab event listeners
- */
-function setupFilterTabs() {
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Remove active class from all buttons
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      // Add active class to clicked button
-      btn.classList.add('active');
-      // Update current filter
-      currentFilter = btn.dataset.filter;
-      // Re-render orders with new filter
-      renderOrders();
-    });
-  });
-}
-
-/**
- * Setup auto-refresh interval
- * Refreshes orders every 30 seconds
- */
-function setupAutoRefresh(date) {
-  // Clear existing interval if any
-  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-  
-  // Set new interval
-  autoRefreshInterval = setInterval(() => {
-    loadOrdersByDate(date);
-  }, AUTO_REFRESH_INTERVAL);
-}
-
-// ──────────────────────────────────────────────────────────────────
-// MAIN DATA LOADING FUNCTION
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Load orders by date from all API endpoints
- * Combines results from multiple APIs and filters by current user
- */
 function loadOrdersByDate(date) {
   const username = getUsername();
   if (!username) return;
@@ -1215,63 +725,47 @@ function loadOrdersByDate(date) {
   const selectedDate = date || new Date().toISOString().split('T')[0];
   const btn = document.getElementById('loadBtn');
 
-  // Show loading state
   btn.classList.add('loading');
   btn.innerHTML = `<span class="spinner"></span> Yüklənir`;
   showSkeletons();
 
-  // Fetch from all API endpoints simultaneously
-  const fetchPromises = API_URLS.map(url => 
+  const fetches = API_URLS.map(url => 
     fetch(`${url}?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
-      .then(response => response.json())
+      .then(r => r.json())
       .then(data => {
-        if (data.success && Array.isArray(data.orders)) {
-          // Attach source API for later updates
-          return data.orders.map(order => { 
-            order.sourceApi = url; 
-            return order; 
-          });
+        if (data.success) {
+          return data.orders.map(o => { o.sourceApi = url; return o; });
         }
         return [];
       })
-      .catch(error => {
-        console.error('API Error:', url, error);
-        return []; // Continue with other APIs if one fails
+      .catch(err => {
+        console.error('API Error:', url, err);
+        return [];
       })
   );
 
-  // Wait for all API calls to complete
-  Promise.all(fetchPromises)
+  Promise.all(fetches)
     .then(results => {
-      // Restore button state
       btn.classList.remove('loading');
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Yenilə`;
 
-      // Combine all results into one array
       let combinedOrders = [];
       results.forEach(orders => {
         combinedOrders.push(...orders);
       });
 
-      // Filter by current username
-      allOrders = combinedOrders.filter(order => 
-        String(order[7]).trim() === username
-      );
+      allOrders = combinedOrders.filter(o => String(o[7]).trim() === username);
 
-      // If orders exist, update display
       if (allOrders.length > 0) {
         updateStats();
         updateCashSummary();
-        updateUrgentBar();
         document.getElementById('filterTabs').style.display = 'flex';
         renderOrders();
-        showToast('Sifarişlər yükləndi ✓', 'success');
       } else {
         showEmpty('Bugün üçün sifariş tapılmadı');
-        document.getElementById('urgentUpdateBar').classList.add('hidden');
       }
     })
-    .catch(error => {
+    .catch(err => {
       btn.classList.remove('loading');
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Yenilə`;
       showEmpty('Bağlantı xətası. Yenidən cəhd edin.');
@@ -1279,85 +773,37 @@ function loadOrdersByDate(date) {
     });
 }
 
-// ──────────────────────────────────────────────────────────────────
-// STATISTICS & CASH SUMMARY FUNCTIONS
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Update statistics display
- * Calculates total, delivered, and pending order counts
- */
 function updateStats() {
   const total = allOrders.length;
-  const delivered = allOrders.filter(order => order[6] === 'Delivered').length;
-  const pending = allOrders.filter(order => 
-    ['Out for Delivery', 'Preparing', 'New'].includes(order[6])
-  ).length;
-
+  const delivered = allOrders.filter(o => o[6] === 'Delivered').length;
+  const pending = allOrders.filter(o => o[6] === 'Out for Delivery' || o[6] === 'Preparing' || o[6] === 'New').length;
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statDelivered').textContent = delivered;
   document.getElementById('statPending').textContent = pending;
 }
 
-/**
- * Update cash summary display
- * Calculates total cash collected, deductions, and return amount
- * Deduction: 5 ₼ per delivered order
- */
 function updateCashSummary() {
   let totalCash = 0;
   let deliveredCount = 0;
-
-  // Calculate totals for delivered cash orders
-  allOrders.forEach(order => {
-    if (order[6] === 'Delivered') {
+  allOrders.forEach(o => {
+    if (o[6] === 'Delivered') {
       deliveredCount++;
-      if (String(order[9]).toLowerCase() === 'cash') {
-        totalCash += parseFloat(order[10]) || 0;
+      if (String(o[9]).toLowerCase() === 'cash') {
+        totalCash += parseFloat(o[10]) || 0;
       }
     }
   });
-
-  // Calculate deduction and return amount
   const deduction = deliveredCount * 5;
-  const returnAmount = totalCash - deduction;
+  const returnAmt = totalCash - deduction;
 
-  // Update display
   document.getElementById('cashTotal').textContent = totalCash.toFixed(2) + ' ₼';
   document.getElementById('cashDeduction').textContent = deduction.toFixed(2) + ' ₼';
-  document.getElementById('cashReturn').textContent = returnAmount.toFixed(2) + ' ₼';
-
-  // Show/hide cash summary
+  document.getElementById('cashReturn').textContent = returnAmt.toFixed(2) + ' ₼';
   document.getElementById('cashSummary').style.display = allOrders.length > 0 ? 'flex' : 'none';
 }
 
-/**
- * Update urgent update bar visibility
- * Shows bar if there are any delivered orders
- */
-function updateUrgentBar() {
-  const hasDelivered = allOrders.some(order => order[6] === 'Delivered');
-  const urgentBar = document.getElementById('urgentUpdateBar');
-  
-  if (hasDelivered) {
-    urgentBar.classList.remove('hidden');
-  } else {
-    urgentBar.classList.add('hidden');
-  }
-}
-
-// ──────────────────────────────────────────────────────────────────
-// ORDER RENDERING FUNCTIONS
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Render orders based on current filter
- * Applies filter and rebuilds the order list UI
- */
 function renderOrders() {
-  let filteredOrders = allOrders;
-
-  // Apply filter
+  let filtered = allOrders;
   if (currentFilter !== 'all') {
     const statusMap = {
       'out-for-delivery': ['Out for Delivery'],
@@ -1365,353 +811,144 @@ function renderOrders() {
       'canceled': ['Canceled', 'Deleted']
     };
     const statuses = statusMap[currentFilter] || [];
-    filteredOrders = allOrders.filter(order => statuses.includes(order[6]));
+    filtered = allOrders.filter(o => statuses.includes(o[6]));
   }
 
-  // Show empty state if no orders match filter
-  if (filteredOrders.length === 0) {
+  if (filtered.length === 0) {
     showEmpty('Bu filtrdə sifariş yoxdur');
     return;
   }
 
-  // Render order cards
   const container = document.getElementById('orderList');
-  container.innerHTML = filteredOrders
-    .map((order, index) => buildOrderCard(order, index))
-    .join('');
+  container.innerHTML = filtered.map((order, idx) => buildCard(order, idx)).join('');
 }
 
-/**
- * Build individual order card HTML
- * Returns complete HTML for a single order card with all functionality
- */
-function buildOrderCard(order, cardIndex) {
-  // Extract order data from array indices
-  const orderId = order[0];
-  const customerName = order[1] || '—';
-  const phoneNumber = order[2] || '';
+function buildCard(order, idx) {
+  const id = order[0];
+  const uniqueId = `${id}_${idx}`;
+  const sourceApi = order.sourceApi;
+  const name = order[1] || '—';
+  const phone = order[2] || '';
   const address = order[3] || '';
   const products = order[4] || '—';
-  const specialNotes = order[5] || '';
+  const notes = order[5] || '';
   const status = order[6] || '';
-  const sourceApi = order.sourceApi;
-  const paymentMethod = order[9] || '';
-  const orderAmount = order[10];
+  const payment = order[9] || '';
+  const price = order[10];
   const mapLink = order[21] || '';
 
-  // Generate unique ID for this card (prevents conflicts with duplicate order IDs)
-  const uniqueId = `${orderId}_${cardIndex}`;
-
-  // Determine status styling
   const statusClass = statusToClass(status);
   const statusLabel = statusToLabel(status);
+  const isCard = String(payment).toLowerCase() === 'card';
+  const priceDisplay = isCard ? '0.00 ₼ (Kart)' : (parseFloat(price) || 0).toFixed(2) + ' ₼';
 
-  // Determine if payment is by card
-  const isCardPayment = String(paymentMethod).toLowerCase() === 'card';
-  const priceDisplay = isCardPayment 
-    ? '0.00 ₼ (Kart)' 
-    : (parseFloat(orderAmount) || 0).toFixed(2) + ' ₼';
+  const hasMap = mapLink && mapLink.trim().length > 5;
+  const delay = idx * 0.04;
 
-  // Check if map link exists
-  const hasValidMap = mapLink && mapLink.trim().length > 5;
-
-  // Calculate staggered animation delay
-  const animationDelay = cardIndex * CARD_STAGGER_DELAY / 1000;
-
-  // Return complete card HTML
   return `
-  <div class="order-card ${statusClass}" id="order-card-${uniqueId}" style="animation-delay:${animationDelay}s">
-    <!-- CARD HEADER (CLICKABLE) -->
+  <div class="order-card ${statusClass}" id="order-card-${uniqueId}" style="animation-delay:${delay}s">
     <div class="card-header" onclick="toggleCard('${uniqueId}')" id="card-header-${uniqueId}">
-      <div class="order-id-badge">#${orderId}</div>
+      <div class="order-id-badge">#${id}</div>
       <div class="card-title-wrap">
-        <div class="customer-name">${escHtml(customerName)}</div>
-        <div class="customer-phone">${escHtml(phoneNumber)}</div>
+        <div class="customer-name">${escHtml(name)}</div>
+        <div class="customer-phone">${escHtml(phone)}</div>
       </div>
       <span class="status-chip ${statusClass}">${statusLabel}</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="6 9 12 15 18 9"/>
-      </svg>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
-
-    <!-- CARD BODY (EXPANDABLE) -->
     <div class="card-body" id="card-body-${uniqueId}">
-      <!-- ORDER INFORMATION GRID -->
       <div class="info-grid">
-        <!-- Address -->
         <div class="info-item full">
           <div class="info-label">📍 Çatdırılma Ünvanı</div>
           <div class="info-value">${escHtml(address) || '—'}</div>
         </div>
-
-        <!-- Amount -->
         <div class="info-item">
           <div class="info-label">💰 Məbləğ</div>
           <div class="info-value accent">${priceDisplay}</div>
         </div>
-
-        <!-- Payment Method -->
         <div class="info-item">
           <div class="info-label">💳 Ödəniş</div>
-          <div class="info-value">
-            <span class="payment-badge ${isCardPayment ? 'card' : 'cash'}">
-              ${escHtml(paymentMethod)}
-            </span>
-          </div>
+          <div class="info-value"><span class="payment-badge ${isCard ? 'card' : 'cash'}">${escHtml(payment)}</span></div>
         </div>
-
-        <!-- Products -->
         <div class="info-item full">
           <div class="info-label">🛍️ Məhsullar</div>
           <div class="info-value">${escHtml(products)}</div>
         </div>
-
-        <!-- Special Notes (if any) -->
-        ${specialNotes ? `
-        <div class="info-item full">
+        ${notes ? `<div class="info-item full">
           <div class="info-label">📝 Xüsusi Təlimatlar</div>
-          <div class="info-value">${escHtml(specialNotes)}</div>
-        </div>
-        ` : ''}
+          <div class="info-value">${escHtml(notes)}</div>
+        </div>` : ''}
       </div>
 
-      <!-- ACTION BUTTONS (CALL & MAP) -->
       <div class="action-bar">
-        ${phoneNumber ? `
-        <a href="tel:${escHtml(phoneNumber)}" class="btn btn-call">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.66A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
-          </svg>
+        ${phone ? `<a href="tel:${escHtml(phone)}" class="btn btn-call">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.66A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
           Zəng et
-        </a>
-        ` : ''}
-
-        ${hasValidMap ? `
-        <button class="btn btn-map" onclick="openMapModal('${escAttr(mapLink)}', '${escAttr(address)}', '${escAttr(customerName)}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          Xəritə
-        </button>
-        ` : `
-        <button class="btn btn-maps-disabled" disabled title="Xəritə linki yoxdur">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          Xəritəsiz
-        </button>
-        `}
+        </a>` : ''}
+        ${hasMap
+          ? `<button class="btn btn-map" onclick="openMapModal('${escAttr(mapLink)}', '${escAttr(address)}', '${escAttr(name)}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Xəritə
+             </button>`
+          : `<button class="btn btn-maps-disabled" disabled title="Xəritə linki yoxdur">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Xəritəsiz
+             </button>`
+        }
       </div>
 
-      <!-- STATUS CHANGE SECTION -->
       <div class="status-section">
         <label>Sifariş Statusunu Dəyiş:</label>
         <select class="status-select" id="statusSelect-${uniqueId}">
-          <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>
-            Çatdırılır
-          </option>
-          <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>
-            Çatdırıldı ✓
-          </option>
-          <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>
-            Ləğv edildi ✗
-          </option>
+          <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+          <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırıldı ✓</option>
+          <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edildi ✗</option>
         </select>
       </div>
-
-      <!-- UPDATE BUTTON -->
       <div class="action-bar" style="margin-top:10px">
-        <button class="btn btn-primary" id="updateBtn-${uniqueId}" onclick="updateOrder('${orderId}', '${sourceApi}', '${uniqueId}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Statusu Yenilə
+        <button class="btn btn-primary" onclick="updateOrder('${id}', '${sourceApi}', '${uniqueId}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Yenilə
         </button>
       </div>
     </div>
   </div>`;
 }
 
-// ──────────────────────────────────────────────────────────────────
-// CARD INTERACTION FUNCTIONS
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Toggle card expansion (open/close)
- */
 function toggleCard(uniqueId) {
-  const bodyElement = document.getElementById(`card-body-${uniqueId}`);
-  const headerElement = document.getElementById(`card-header-${uniqueId}`);
-  const isCurrentlyOpen = bodyElement.classList.contains('open');
-
-  // Toggle classes
-  bodyElement.classList.toggle('open', !isCurrentlyOpen);
-  headerElement.classList.toggle('open', !isCurrentlyOpen);
+  const body = document.getElementById(`card-body-${uniqueId}`);
+  const header = document.getElementById(`card-header-${uniqueId}`);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
 }
 
-// ──────────────────────────────────────────────────────────────────
-// ORDER UPDATE FUNCTION
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Update single order status
- * Sends status change to API and updates local data
- */
 function updateOrder(orderId, sourceApi, uniqueId) {
-  // Prevent multiple simultaneous updates
-  if (updateInProgress) {
-    showToast('Lütfən gözləyin...', 'error');
-    return;
-  }
+  const select = document.getElementById(`statusSelect-${uniqueId}`);
+  const status = select.value;
 
-  const statusSelect = document.getElementById(`statusSelect-${uniqueId}`);
-  const newStatus = statusSelect.value;
-  const updateButton = document.getElementById(`updateBtn-${uniqueId}`);
-
-  // Set loading state
-  updateInProgress = true;
-  updateButton.innerHTML = `<span class="spinner" style="border-top-color:#000"></span> Göndərilir`;
-  updateButton.disabled = true;
-
-  // Send update to API
   fetch(sourceApi, {
     method: 'POST',
-    body: new URLSearchParams({ 
-      action: 'updateOrderStatusAndPayment', 
-      orderId: orderId, 
-      status: newStatus 
-    })
+    body: new URLSearchParams({ action: 'updateOrderStatusAndPayment', orderId, status })
   })
-  .then(response => response.json())
+  .then(r => r.json())
   .then(data => {
-    updateInProgress = false;
-
     if (data.success) {
-      // Find and update the order in local data
-      const orderIndex = allOrders.findIndex(order => 
-        String(order[0]) === String(orderId) && order.sourceApi === sourceApi
-      );
-
-      if (orderIndex !== -1) {
-        allOrders[orderIndex][6] = newStatus;
-      }
-
-      // Update display
+      const idx = allOrders.findIndex(o => String(o[0]) === String(orderId) && o.sourceApi === sourceApi);
+      if (idx !== -1) allOrders[idx][6] = status;
       updateStats();
       updateCashSummary();
-      updateUrgentBar();
       renderOrders();
-
-      // Show success message
       showToast('Status yeniləndi ✓', 'success');
     } else {
-      // Handle API error
       showToast('Xəta baş verdi', 'error');
-      updateButton.innerHTML = '⚠ Yenidən cəhd';
-      updateButton.disabled = false;
     }
   })
-  .catch(error => {
-    updateInProgress = false;
-    console.error('Update error:', error);
+  .catch(() => {
     showToast('Şəbəkə xətası', 'error');
-    updateButton.innerHTML = 'Statusu Yenilə';
-    updateButton.disabled = false;
   });
 }
 
-// ──────────────────────────────────────────────────────────────────
-// QUICK UPDATE ALL FUNCTION (URGENT)
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Quick update all delivered orders at once
- * Provides fast bulk update for courier to submit all deliveries
- */
-function quickUpdateAll() {
-  // Find all orders marked as delivered
-  const deliveredOrders = allOrders.filter(order => order[6] === 'Delivered');
-
-  if (deliveredOrders.length === 0) {
-    showToast('Çatdırılan sifariş yoxdur', 'error');
-    return;
-  }
-
-  // Request confirmation
-  const confirmMessage = `${deliveredOrders.length} sifarişi bir dəfəyə qeyd etmək istəyirsiniz?\n\nBu əməliyyat geri alına bilməz!`;
-  if (!confirm(confirmMessage)) {
-    showToast('Əməliyyat ləğv edildi', 'error');
-    return;
-  }
-
-  // Disable button during update
-  const quickBtn = document.getElementById('quickUpdateAllBtn');
-  const originalContent = quickBtn.innerHTML;
-  quickBtn.disabled = true;
-  quickBtn.innerHTML = '<span class="spinner"></span> Prosesləşdirilir...';
-
-  // Update each order with staggered timing
-  let updatedCount = 0;
-  const totalCount = deliveredOrders.length;
-
-  deliveredOrders.forEach((order, index) => {
-    setTimeout(() => {
-      const orderId = order[0];
-      const sourceApi = order.sourceApi;
-      const uniqueId = `${orderId}_${index}`;
-
-      // Send update to API
-      fetch(sourceApi, {
-        method: 'POST',
-        body: new URLSearchParams({
-          action: 'updateOrderStatusAndPayment',
-          orderId: orderId,
-          status: 'Delivered'
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        updatedCount++;
-
-        if (data.success) {
-          showToast(`Sifariş #${orderId} yükləndi`, 'success');
-        } else {
-          showToast(`Sifariş #${orderId} xəta: ${data.message}`, 'error');
-        }
-
-        // If all updates complete, refresh and restore button
-        if (updatedCount === totalCount) {
-          setTimeout(() => {
-            loadOrdersByDate(new Date().toISOString().split('T')[0]);
-            quickBtn.disabled = false;
-            quickBtn.innerHTML = originalContent;
-            showToast('Hamısı tamamlandı! ✓', 'success');
-          }, 500);
-        }
-      })
-      .catch(error => {
-        updatedCount++;
-        console.error('Quick update error:', error);
-        showToast(`Şəbəkə xətası (Sifariş #${orderId})`, 'error');
-
-        if (updatedCount === totalCount) {
-          quickBtn.disabled = false;
-          quickBtn.innerHTML = originalContent;
-        }
-      });
-    }, index * 300); // 300ms stagger between requests
-  });
-}
-
-// ──────────────────────────────────────────────────────────────────
-// MAP MODAL FUNCTIONS
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Open map modal with address and navigation options
- */
 function openMapModal(mapLink, address, customerName) {
   document.getElementById('modalAddress').textContent = address || 'Ünvan məlumatı yoxdur';
 
@@ -1719,209 +956,130 @@ function openMapModal(mapLink, address, customerName) {
   const linksGrid = document.getElementById('mapLinksGrid');
 
   if (mapLink) {
-    // Try to extract coordinates from map link
     const coordsMatch = mapLink.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    let embedSrc = '';
 
     if (coordsMatch) {
-      const latitude = coordsMatch[1];
-      const longitude = coordsMatch[2];
-
-      // Embed Google Map
-      const mapSrc = `https://maps.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`;
-      embedContainer.innerHTML = `<iframe src="${mapSrc}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-
-      // Generate navigation links
-      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-      const wazeUrl = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
-      const yandexUrl = `https://yandex.com/maps/?rtext=~${latitude},${longitude}&rtt=auto`;
-      const appleUrl = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
-
-      linksGrid.innerHTML = `
-        <a href="${googleMapsUrl}" target="_blank" rel="noopener" class="map-app-btn gmaps">
-          <div class="map-icon">🗺️</div>
-          Google Maps
-        </a>
-        <a href="${wazeUrl}" target="_blank" rel="noopener" class="map-app-btn waze">
-          <div class="map-icon">🚗</div>
-          Waze
-        </a>
-        <a href="${yandexUrl}" target="_blank" rel="noopener" class="map-app-btn yandex">
-          <div class="map-icon">🔴</div>
-          Yandex Maps
-        </a>
-        <a href="${appleUrl}" target="_blank" rel="noopener" class="map-app-btn apple">
-          <div class="map-icon">🍎</div>
-          Apple Maps
-        </a>`;
+      const lat = coordsMatch[1], lng = coordsMatch[2];
+      embedSrc = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
     } else {
-      // Fall back to address search if no coordinates found
-      const searchQuery = encodeURIComponent(address || customerName);
-      embedContainer.innerHTML = `
-        <div class="map-embed-placeholder">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          <p>Ünvana görə xəritə axtarılır...</p>
-        </div>`;
-
-      linksGrid.innerHTML = `
-        <a href="https://www.google.com/maps/search/${searchQuery}" target="_blank" rel="noopener" class="map-app-btn gmaps">
-          <div class="map-icon">🗺️</div>
-          Google Maps
-        </a>
-        <a href="https://waze.com/ul?q=${searchQuery}&navigate=yes" target="_blank" rel="noopener" class="map-app-btn waze">
-          <div class="map-icon">🚗</div>
-          Waze
-        </a>
-        <a href="https://yandex.com/maps/?text=${searchQuery}" target="_blank" rel="noopener" class="map-app-btn yandex">
-          <div class="map-icon">🔴</div>
-          Yandex Maps
-        </a>
-        <a href="http://maps.apple.com/?q=${searchQuery}" target="_blank" rel="noopener" class="map-app-btn apple">
-          <div class="map-icon">🍎</div>
-          Apple Maps
-        </a>`;
+      const query = encodeURIComponent(address || customerName);
+      embedSrc = `https://maps.google.com/maps?q=${query}&output=embed`;
     }
-  } else {
-    // No map link provided - search by address
-    const searchQuery = encodeURIComponent(address || customerName);
-    embedContainer.innerHTML = `
-      <div class="map-embed-placeholder">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-        <p>Xəritə linki yoxdur. Ünvana görə axtarış...</p>
-      </div>`;
+
+    embedContainer.innerHTML = `<iframe src="${embedSrc}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+
+    let gMapsNav = mapLink;
+    let wazeLink = '';
+    let yandexLink = '';
+    let appleLink = '';
+
+    if (coordsMatch) {
+      const lat = coordsMatch[1], lng = coordsMatch[2];
+      gMapsNav = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+      wazeLink = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+      yandexLink = `https://yandex.com/maps/?rtext=~${lat},${lng}&rtt=auto`;
+      appleLink = `http://maps.apple.com/?daddr=${lat},${lng}`;
+    } else {
+      const enc = encodeURIComponent(address || '');
+      gMapsNav = `https://www.google.com/maps/dir/?api=1&destination=${enc}`;
+      wazeLink = `https://waze.com/ul?q=${enc}&navigate=yes`;
+      yandexLink = `https://yandex.com/maps/?text=${enc}&rtt=auto`;
+      appleLink = `http://maps.apple.com/?daddr=${enc}`;
+    }
 
     linksGrid.innerHTML = `
-      <a href="https://www.google.com/maps/search/${searchQuery}" target="_blank" rel="noopener" class="map-app-btn gmaps">
+      <a href="${gMapsNav}" target="_blank" rel="noopener" class="map-app-btn gmaps">
         <div class="map-icon">🗺️</div>
         Google Maps
       </a>
-      <a href="https://waze.com/ul?q=${searchQuery}&navigate=yes" target="_blank" rel="noopener" class="map-app-btn waze">
+      <a href="${wazeLink}" target="_blank" rel="noopener" class="map-app-btn waze">
         <div class="map-icon">🚗</div>
         Waze
       </a>
-      <a href="https://yandex.com/maps/?text=${searchQuery}" target="_blank" rel="noopener" class="map-app-btn yandex">
+      <a href="${yandexLink}" target="_blank" rel="noopener" class="map-app-btn yandex">
         <div class="map-icon">🔴</div>
         Yandex Maps
       </a>
-      <a href="http://maps.apple.com/?q=${searchQuery}" target="_blank" rel="noopener" class="map-app-btn apple">
+      <a href="${appleLink}" target="_blank" rel="noopener" class="map-app-btn apple">
+        <div class="map-icon">🍎</div>
+        Apple Maps
+      </a>`;
+  } else {
+    const q = encodeURIComponent(address || '');
+    embedContainer.innerHTML = `
+      <div class="map-embed-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <p>Xəritə linki yoxdur. Ünvana görə axtarış edilir.</p>
+      </div>`;
+    linksGrid.innerHTML = `
+      <a href="https://www.google.com/maps/search/${q}" target="_blank" rel="noopener" class="map-app-btn gmaps">
+        <div class="map-icon">🗺️</div>
+        Google Maps
+      </a>
+      <a href="https://waze.com/ul?q=${q}&navigate=yes" target="_blank" rel="noopener" class="map-app-btn waze">
+        <div class="map-icon">🚗</div>
+        Waze
+      </a>
+      <a href="https://yandex.com/maps/?text=${q}" target="_blank" rel="noopener" class="map-app-btn yandex">
+        <div class="map-icon">🔴</div>
+        Yandex Maps
+      </a>
+      <a href="http://maps.apple.com/?q=${q}" target="_blank" rel="noopener" class="map-app-btn apple">
         <div class="map-icon">🍎</div>
         Apple Maps
       </a>`;
   }
 
-  // Show modal
   document.getElementById('mapModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-/**
- * Close map modal
- */
 function closeMapModal() {
   document.getElementById('mapModal').classList.remove('open');
   document.body.style.overflow = '';
-  
-  // Reset map embed after animation
   setTimeout(() => {
-    document.getElementById('mapEmbed').innerHTML = `
-      <div class="map-embed-placeholder">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-        <p>Xəritə yüklənir...</p>
-      </div>`;
+    document.getElementById('mapEmbed').innerHTML = `<div class="map-embed-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><p>Xəritə yüklənir...</p></div>`;
   }, 300);
 }
 
-/**
- * Handle map overlay click (close on background click)
- */
-function handleMapOverlayClick(event) {
-  if (event.target === document.getElementById('mapModal')) {
-    closeMapModal();
-  }
+function handleMapOverlayClick(e) {
+  if (e.target === document.getElementById('mapModal')) closeMapModal();
 }
 
-// ──────────────────────────────────────────────────────────────────
-// UTILITY & HELPER FUNCTIONS
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Convert order status to CSS class
- */
 function statusToClass(status) {
   switch (status) {
-    case 'Delivered':
-      return 'delivered';
-    case 'Out for Delivery':
-      return 'out-for-delivery';
-    case 'Canceled':
-    case 'Deleted':
-      return 'canceled';
-    default:
-      return 'preparing';
+    case 'Delivered': return 'delivered';
+    case 'Out for Delivery': return 'out-for-delivery';
+    case 'Canceled': case 'Deleted': return 'canceled';
+    default: return 'preparing';
   }
 }
 
-/**
- * Convert order status to display label
- */
 function statusToLabel(status) {
   switch (status) {
-    case 'Delivered':
-      return 'Çatdırıldı ✓';
-    case 'Out for Delivery':
-      return 'Yolda 🚚';
-    case 'Canceled':
-      return 'Ləğv ✗';
-    case 'Deleted':
-      return 'Silindi';
-    case 'Preparing':
-      return 'Hazırlanır ⏳';
-    case 'New':
-      return 'Yeni 📋';
-    default:
-      return status;
+    case 'Delivered': return 'Çatdırıldı';
+    case 'Out for Delivery': return 'Yolda';
+    case 'Canceled': return 'Ləğv';
+    case 'Deleted': return 'Silindi';
+    case 'Preparing': return 'Hazırlanır';
+    case 'New': return 'Yeni';
+    default: return status;
   }
 }
 
-/**
- * Escape HTML special characters for safe display
- */
 function escHtml(str) {
   if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/**
- * Escape special characters for HTML attributes
- */
 function escAttr(str) {
   if (!str) return '';
-  return String(str)
-    .replace(/'/g, '&#39;')
-    .replace(/"/g, '&quot;');
+  return String(str).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
 }
 
-// ──────────────────────────────────────────────────────────────────
-// UI STATE FUNCTIONS
-// ──────────────────────────────────────────────────────────────────
-
-/**
- * Show skeleton loading state
- */
 function showSkeletons() {
-  const skeletons = Array.from({ length: 3 }, () => `
+  const skels = Array.from({length: 3}, () => `
     <div class="skeleton-card">
       <div class="skeleton skel-circle"></div>
       <div class="skel-lines">
@@ -1929,57 +1087,29 @@ function showSkeletons() {
         <div class="skeleton skel-line" style="width:40%"></div>
       </div>
     </div>`).join('');
-
-  document.getElementById('orderList').innerHTML = skeletons;
+  document.getElementById('orderList').innerHTML = skels;
   document.getElementById('cashSummary').style.display = 'none';
   document.getElementById('filterTabs').style.display = 'none';
-  document.getElementById('urgentUpdateBar').classList.add('hidden');
 }
 
-/**
- * Show empty state message
- */
-function showEmpty(message) {
-  const emptyHtml = `
-    <div class="empty-state">
-      <div class="empty-icon">📭</div>
-      <p>${escHtml(message)}</p>
-    </div>`;
-
-  document.getElementById('orderList').innerHTML = emptyHtml;
+function showEmpty(msg) {
+  document.getElementById('orderList').innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>${msg}</p></div>`;
   document.getElementById('cashSummary').style.display = 'none';
   document.getElementById('filterTabs').style.display = 'none';
-
-  // Reset stats
   document.getElementById('statTotal').textContent = '0';
   document.getElementById('statDelivered').textContent = '0';
   document.getElementById('statPending').textContent = '0';
 }
 
-/**
- * Show toast notification
- */
-function showToast(message, type = '') {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.className = `toast ${type}`;
-
-  // Clear existing timer
-  if (toastTimer) clearTimeout(toastTimer);
-
-  // Show toast
-  setTimeout(() => toast.classList.add('show'), 10);
-
-  // Auto-hide after duration
-  toastTimer = setTimeout(() => {
-    toast.classList.remove('show');
-  }, TOAST_DURATION);
+let toastTimerVar;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  clearTimeout(toastTimerVar);
+  setTimeout(() => t.classList.add('show'), 10);
+  toastTimerVar = setTimeout(() => t.classList.remove('show'), 2800);
 }
-
-// ═════════════════════════════════════════════════════════════════════
-// END OF COMPLETE DELIVERY DASHBOARD SCRIPT
-// ═════════════════════════════════════════════════════════════════════
 </script>
-
 </body>
 </html>
