@@ -1,29 +1,1146 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Çatdırılma Paneli</title>
-  <link href="dashboard.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Brendimo — Çatdırılma Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151821;
+    --surface2: #1c2030;
+    --border: rgba(255,255,255,0.07);
+    --accent: #f0a500;
+    --accent-dim: rgba(240,165,0,0.15);
+    --accent-glow: rgba(240,165,0,0.3);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.12);
+    --yellow: #f59e0b;
+    --yellow-dim: rgba(245,158,11,0.12);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.12);
+    --blue: #3b82f6;
+    --blue-dim: rgba(59,130,246,0.12);
+    --text: #f1f5f9;
+    --text-muted: #64748b;
+    --text-sub: #94a3b8;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,20,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .header-brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .header-brand span { color: var(--text-muted); font-weight: 700; }
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 6px 12px 6px 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .header-user:hover { border-color: var(--accent); }
+  .avatar {
+    width: 28px; height: 28px;
+    background: var(--accent-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    flex-shrink: 0;
+  }
+  .username-text { font-size: 13px; font-weight: 600; color: var(--text-sub); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ── DATE BAR ── */
+  .date-bar {
+    padding: 14px 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-wrap: wrap;
+  }
+  .date-input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 160px;
+  }
+  .date-input-wrap svg {
+    position: absolute;
+    left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+  .date-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 12px 10px 38px;
+    outline: none;
+    transition: border-color 0.2s;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .date-input::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.4); cursor: pointer; }
+  .date-input:focus { border-color: var(--accent); }
+  .btn-load {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .btn-load:hover { background: #ffb700; transform: translateY(-1px); }
+  .btn-load:active { transform: translateY(0); }
+  .btn-load.loading { opacity: 0.7; pointer-events: none; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-item {
+    background: var(--surface);
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-value.green { color: var(--green); }
+  .stat-value.amber { color: var(--accent); }
+  .stat-value.red { color: var(--red); }
+  .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── CASH SUMMARY ── */
+  .cash-summary {
+    margin: 16px 20px;
+    background: linear-gradient(135deg, rgba(240,165,0,0.1), rgba(240,165,0,0.05));
+    border: 1px solid rgba(240,165,0,0.25);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .cash-item { text-align: center; }
+  .cash-value { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--accent); }
+  .cash-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .cash-divider { width: 1px; height: 36px; background: rgba(240,165,0,0.2); }
+
+  /* ── FILTER TABS ── */
+  .filter-tabs {
+    padding: 0 20px 12px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tab-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  /* ── ORDER LIST ── */
+  .orders-wrapper {
+    padding: 0 20px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ── ORDER CARD ── */
+  .order-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.25s;
+    animation: slideIn 0.3s ease both;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .order-card:hover { border-color: rgba(255,255,255,0.15); }
+  .order-card.delivered { border-color: rgba(34,197,94,0.3); background: linear-gradient(135deg, var(--surface), rgba(34,197,94,0.04)); }
+  .order-card.out-for-delivery { border-color: rgba(245,158,11,0.3); background: linear-gradient(135deg, var(--surface), rgba(245,158,11,0.04)); }
+  .order-card.canceled, .order-card.deleted { border-color: rgba(239,68,68,0.2); background: linear-gradient(135deg, var(--surface), rgba(239,68,68,0.03)); opacity: 0.7; }
+
+  /* Card header */
+  .card-header {
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .order-id-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .card-title-wrap { flex: 1; min-width: 0; }
+  .customer-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .customer-phone {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .status-chip {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: 1px solid transparent;
+  }
+  .status-chip.delivered { background: var(--green-dim); color: var(--green); border-color: rgba(34,197,94,0.3); }
+  .status-chip.out-for-delivery { background: var(--yellow-dim); color: var(--yellow); border-color: rgba(245,158,11,0.3); }
+  .status-chip.canceled, .status-chip.deleted { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.3); }
+  .status-chip.preparing, .status-chip.new { background: var(--blue-dim); color: var(--blue); border-color: rgba(59,130,246,0.3); }
+  .chevron {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    transition: transform 0.3s;
+    width: 18px; height: 18px;
+  }
+  .card-header.open .chevron { transform: rotate(180deg); }
+
+  /* Card body */
+  .card-body {
+    display: none;
+    padding: 0 16px 16px;
+    animation: fadeDown 0.2s ease;
+  }
+  .card-body.open { display: block; }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Info rows */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .info-item {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+  .info-item.full { grid-column: 1 / -1; }
+  .info-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .info-value { font-size: 13px; color: var(--text); font-weight: 500; word-break: break-word; }
+  .info-value.accent { color: var(--accent); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; }
+  .info-value.phone-link { color: var(--blue); text-decoration: none; }
+  .info-value.phone-link:hover { text-decoration: underline; }
+
+  /* Action buttons */
+  .action-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .btn {
+    flex: 1;
+    min-width: 100px;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #ffb700; }
+  .btn-secondary { background: var(--surface2); color: var(--text-sub); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-call { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .btn-call:hover { background: rgba(34,197,94,0.2); }
+  .btn-map { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+  .btn-map:hover { background: rgba(59,130,246,0.2); }
+  .btn-maps-disabled { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); cursor: not-allowed; opacity: 0.5; }
+
+  /* Status select */
+  .status-section { margin-top: 12px; }
+  .status-section label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+  .status-select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 12px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.2s;
+  }
+  .status-select:focus { border-color: var(--accent); }
+
+  /* ── MAP MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 999;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .map-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+  .map-modal-header {
+    padding: 20px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--surface); z-index: 1;
+  }
+  .map-modal-header h3 { flex: 1; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; }
+  .close-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; display: flex; }
+  .close-btn:hover { color: var(--text); border-color: var(--red); color: var(--red); }
+  .map-modal-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+  .address-display {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--text);
+    border-left: 3px solid var(--accent);
+    line-height: 1.6;
+  }
+  .map-links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .map-app-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .map-app-btn:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .map-app-btn .map-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .map-app-btn.gmaps .map-icon { background: rgba(59,130,246,0.15); }
+  .map-app-btn.waze .map-icon { background: rgba(90,200,250,0.15); }
+  .map-app-btn.yandex .map-icon { background: rgba(240,60,60,0.15); }
+  .map-app-btn.apple .map-icon { background: rgba(255,255,255,0.08); }
+
+  /* Embedded map iframe */
+  .map-embed {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    height: 220px;
+    background: var(--surface2);
+    position: relative;
+  }
+  .map-embed iframe { width: 100%; height: 100%; border: none; }
+  .map-embed-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    box-shadow: var(--shadow);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .empty-state .empty-icon { font-size: 48px; opacity: 0.5; }
+  .empty-state p { font-size: 15px; max-width: 240px; line-height: 1.5; }
+
+  /* ── SPINNER ── */
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SKELETON ── */
+  .skeleton-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+    border-radius: 6px;
+  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+  .skel-circle { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+  .skel-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .skel-line { height: 12px; }
+
+  /* ── PAYMENT BADGE ── */
+  .payment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .payment-badge.cash { background: var(--green-dim); color: var(--green); }
+  .payment-badge.card { background: var(--blue-dim); color: var(--blue); }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-safe { height: env(safe-area-inset-bottom, 0px); background: var(--surface); }
+
+  @media (max-width: 360px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .map-links-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Çatdırılma Paneli</h2>
 
-        <input type="hidden" id="orderDateFilter" value="">
-    
-    <!-- Button to show orders for the selected date -->
-    <button id="showOrdersButton" class="btn btn-primary mt-3" onclick="loadOrdersByDate()">Sifarişləri Göstər</button>
-
-    <!-- Section to display orders -->
-    <div id="orderList" class="mt-3"></div>
-
-    <!-- Amount that the delivery person has to return after deduction -->
-    
-    <div id="returnAmount" class="mt-3"></div>
-    <div id="totalCashOnHand" class="mt-3"></div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">brendimo <span>deliver</span></div>
+  <div class="header-user" onclick="logout()">
+    <div class="avatar" id="avatarInitial">?</div>
+    <span class="username-text" id="headerUsername">Yüklənir...</span>
   </div>
+</header>
 
-  <script src="delivery-dashboard.js"></script>
+<!-- DATE BAR -->
+<div class="date-bar">
+  <div class="date-input-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <input type="date" class="date-input" id="orderDateFilter">
+  </div>
+  <button class="btn-load" id="loadBtn" onclick="loadOrdersByDate()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Axtar
+  </button>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-item">
+    <div class="stat-value" id="statTotal">—</div>
+    <div class="stat-label">Ümumi</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value green" id="statDelivered">—</div>
+    <div class="stat-label">Çatdırıldı</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value amber" id="statPending">—</div>
+    <div class="stat-label">Gözləyir</div>
+  </div>
+</div>
+
+<!-- CASH SUMMARY -->
+<div class="cash-summary" id="cashSummary" style="display:none">
+  <div class="cash-item">
+    <div class="cash-value" id="cashTotal">0.00</div>
+    <div class="cash-label">Nağd yığıldı</div>
+  </div>
+  <div class="cash-divider"></div>
+  <div class="cash-item">
+    <div class="cash-value" id="cashDeduction">0.00</div>
+    <div class="cash-label">Çıxılır (5×çatd)</div>
+  </div>
+  <div class="cash-divider"></div>
+  <div class="cash-item">
+    <div class="cash-value" id="cashReturn">0.00</div>
+    <div class="cash-label">Qaytarılacaq</div>
+  </div>
+</div>
+
+<!-- FILTER TABS -->
+<div class="filter-tabs" id="filterTabs" style="display:none">
+  <button class="tab-btn active" data-filter="all">Hamısı</button>
+  <button class="tab-btn" data-filter="out-for-delivery">Çatdırılır</button>
+  <button class="tab-btn" data-filter="delivered">Çatdırıldı</button>
+  <button class="tab-btn" data-filter="canceled">Ləğv</button>
+</div>
+
+<!-- ORDERS WRAPPER -->
+<div class="orders-wrapper" id="orderList">
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <p>Sifarişləri görmək üçün tarix seçib axtarın</p>
+  </div>
+</div>
+
+<!-- RETURN AMOUNT (hidden — shown in cash summary now) -->
+<div id="returnAmount" style="display:none"></div>
+<div id="totalCashOnHand" style="display:none"></div>
+
+<!-- MAP MODAL -->
+<div class="modal-overlay" id="mapModal" onclick="handleMapOverlayClick(event)">
+  <div class="map-modal" id="mapModalContent">
+    <div class="map-modal-header">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <h3>Xəritə &amp; Yönlənmə</h3>
+      <button class="close-btn" onclick="closeMapModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="map-modal-body">
+      <div class="address-display" id="modalAddress">—</div>
+      <div class="map-embed" id="mapEmbed">
+        <div class="map-embed-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <p>Xəritə yüklənir...</p>
+        </div>
+      </div>
+      <div class="map-links-grid" id="mapLinksGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// 1. Array of your App Script URLs
+const API_URLS = [
+  'https://script.google.com/macros/s/AKfycbyV5tiuhDyteKE2Ug03l8F3qJeulRIyWkkrepSr_tC_1HffeXKBV_9nxOmqeHFY8VzQ/exec',
+  'https://script.google.com/macros/s/AKfycbxzYNQMOtV5Bk96fhRNTAeb7ZAx92dW-3F4h8jGuFXlemwM_3RfzPSbl1qY6Y3xbqsSjg/exec'
+];
+
+let allOrders = [];
+let currentFilter = 'all';
+
+// ── AUTH ──────────────────────────────────────────────────
+function getUsername() {
+  const u = localStorage.getItem('delivery_username');
+  if (!u) { window.location.href = 'login.html'; return null; }
+  return u;
+}
+function logout() {
+  if (confirm('Çıxmaq istəyirsiniz?')) {
+    localStorage.removeItem('delivery_username');
+    window.location.href = 'login.html';
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const username = getUsername();
+  if (!username) return;
+
+  // Set header user
+  document.getElementById('headerUsername').textContent = username;
+  document.getElementById('avatarInitial').textContent = username.charAt(0).toUpperCase();
+
+  // Today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('orderDateFilter').value = today;
+
+  // Filter tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderOrders();
+    });
+  });
+
+  // Date change auto-load
+  document.getElementById('orderDateFilter').addEventListener('change', () => loadOrdersByDate());
+
+  // Auto-load
+  loadOrdersByDate(today);
+});
+
+// ── LOAD ORDERS (MODIFIED FOR MULTIPLE APIS) ──────────────
+function loadOrdersByDate(date) {
+  const username = getUsername();
+  if (!username) return;
+
+  const selectedDate = date || document.getElementById('orderDateFilter').value;
+  const btn = document.getElementById('loadBtn');
+
+  // Loading state
+  btn.classList.add('loading');
+  btn.innerHTML = `<span class="spinner"></span> Yüklənir`;
+  showSkeletons();
+
+  // 2. Fetch from all URLs at the same time
+  const fetches = API_URLS.map(url => 
+    fetch(`${url}?action=getOrdersByDate&date=${selectedDate}&role=Delivery&username=${username}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          // Attach the source URL so we know where to send updates later
+          return data.orders.map(o => { o.sourceApi = url; return o; });
+        }
+        return [];
+      })
+      .catch(err => {
+        console.error('API Error:', url, err);
+        return []; // Return empty array so the other API can still load if one fails
+      })
+  );
+
+  Promise.all(fetches)
+    .then(results => {
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Axtar`;
+
+      // 3. Combine all results into one big list
+      let combinedOrders = [];
+      results.forEach(orders => {
+        combinedOrders.push(...orders);
+      });
+
+      // Filter by username
+      allOrders = combinedOrders.filter(o => String(o[7]).trim() === username);
+
+      if (allOrders.length > 0) {
+        updateStats();
+        updateCashSummary();
+        document.getElementById('filterTabs').style.display = 'flex';
+        renderOrders();
+      } else {
+        showEmpty('Sifariş tapılmadı');
+      }
+    })
+    .catch(err => {
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Axtar`;
+      showEmpty('Bağlantı xətası. Yenidən cəhd edin.');
+      showToast('Şəbəkə xətası', 'error');
+    });
+}
+
+// ── STATS ─────────────────────────────────────────────────
+function updateStats() {
+  const total = allOrders.length;
+  const delivered = allOrders.filter(o => o[6] === 'Delivered').length;
+  const pending = allOrders.filter(o => o[6] === 'Out for Delivery' || o[6] === 'Preparing' || o[6] === 'New').length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statDelivered').textContent = delivered;
+  document.getElementById('statPending').textContent = pending;
+}
+
+function updateCashSummary() {
+  let totalCash = 0;
+  let deliveredCount = 0;
+  allOrders.forEach(o => {
+    if (o[6] === 'Delivered') {
+      deliveredCount++;
+      if (String(o[9]).toLowerCase() === 'cash') {
+        totalCash += parseFloat(o[10]) || 0;
+      }
+    }
+  });
+  const deduction = deliveredCount * 5;
+  const returnAmt = totalCash - deduction;
+
+  document.getElementById('cashTotal').textContent = totalCash.toFixed(2) + ' ₼';
+  document.getElementById('cashDeduction').textContent = deduction.toFixed(2) + ' ₼';
+  document.getElementById('cashReturn').textContent = returnAmt.toFixed(2) + ' ₼';
+  document.getElementById('cashSummary').style.display = allOrders.length > 0 ? 'flex' : 'none';
+}
+
+// ── RENDER ORDERS ─────────────────────────────────────────
+function renderOrders() {
+  let filtered = allOrders;
+  if (currentFilter !== 'all') {
+    const statusMap = {
+      'out-for-delivery': ['Out for Delivery'],
+      'delivered': ['Delivered'],
+      'canceled': ['Canceled', 'Deleted']
+    };
+    const statuses = statusMap[currentFilter] || [];
+    filtered = allOrders.filter(o => statuses.includes(o[6]));
+  }
+
+  if (filtered.length === 0) {
+    showEmpty('Bu filtrdə sifariş yoxdur');
+    return;
+  }
+
+  const container = document.getElementById('orderList');
+  container.innerHTML = filtered.map((order, idx) => buildCard(order, idx)).join('');
+}
+
+// MODIFIED: Uses uniqueId to prevent HTML conflicts if both lists have order #1
+function buildCard(order, idx) {
+  const id = order[0];
+  const uniqueId = `${id}_${idx}`; 
+  const sourceApi = order.sourceApi;
+  const name = order[1] || '—';
+  const phone = order[2] || '';
+  const address = order[3] || '';
+  const products = order[4] || '—';
+  const notes = order[5] || '';
+  const status = order[6] || '';
+  const payment = order[9] || '';
+  const price = order[10];
+  const mapLink = order[21] || ''; 
+
+  const statusClass = statusToClass(status);
+  const statusLabel = statusToLabel(status);
+  const isCard = String(payment).toLowerCase() === 'card';
+  const priceDisplay = isCard ? '0.00 ₼ (Kart)' : (parseFloat(price) || 0).toFixed(2) + ' ₼';
+
+  const hasMap = mapLink && mapLink.trim().length > 5;
+  const delay = idx * 0.04;
+
+  return `
+  <div class="order-card ${statusClass}" id="order-card-${uniqueId}" style="animation-delay:${delay}s">
+    <div class="card-header" onclick="toggleCard('${uniqueId}')" id="card-header-${uniqueId}">
+      <div class="order-id-badge">#${id}</div>
+      <div class="card-title-wrap">
+        <div class="customer-name">${escHtml(name)}</div>
+        <div class="customer-phone">${escHtml(phone)}</div>
+      </div>
+      <span class="status-chip ${statusClass}">${statusLabel}</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="card-body" id="card-body-${uniqueId}">
+      <div class="info-grid">
+        <div class="info-item full">
+          <div class="info-label">📍 Çatdırılma Ünvanı</div>
+          <div class="info-value">${escHtml(address) || '—'}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">💰 Məbləğ</div>
+          <div class="info-value accent">${priceDisplay}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">💳 Ödəniş</div>
+          <div class="info-value"><span class="payment-badge ${isCard ? 'card' : 'cash'}">${escHtml(payment)}</span></div>
+        </div>
+        <div class="info-item full">
+          <div class="info-label">🛍️ Məhsullar</div>
+          <div class="info-value">${escHtml(products)}</div>
+        </div>
+        ${notes ? `<div class="info-item full">
+          <div class="info-label">📝 Xüsusi Təlimatlar</div>
+          <div class="info-value">${escHtml(notes)}</div>
+        </div>` : ''}
+      </div>
+
+      <div class="action-bar">
+        ${phone ? `<a href="tel:${escHtml(phone)}" class="btn btn-call">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.66A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+          Zəng et
+        </a>` : ''}
+        ${hasMap
+          ? `<button class="btn btn-map" onclick="openMapModal('${escAttr(mapLink)}', '${escAttr(address)}', '${escAttr(name)}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Xəritə
+             </button>`
+          : `<button class="btn btn-maps-disabled" disabled title="Xəritə linki yoxdur">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Xəritəsiz
+             </button>`
+        }
+      </div>
+
+      <div class="status-section">
+        <label>Sifariş Statusunu Dəyiş:</label>
+        <select class="status-select" id="statusSelect-${uniqueId}">
+          <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>Çatdırılır</option>
+          <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''}>Çatdırılıb ✓</option>
+          <option value="Canceled" ${status === 'Canceled' ? 'selected' : ''}>Ləğv edildi ✗</option>
+        </select>
+      </div>
+      <div class="action-bar" style="margin-top:10px">
+        <button class="btn btn-primary" onclick="updateOrder('${id}', '${sourceApi}', '${uniqueId}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Yenilə
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── TOGGLE CARD ───────────────────────────────────────────
+function toggleCard(uniqueId) {
+  const body = document.getElementById(`card-body-${uniqueId}`);
+  const header = document.getElementById(`card-header-${uniqueId}`);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+// ── UPDATE ORDER (MODIFIED TO PING CORRECT API) ───────────
+function updateOrder(orderId, sourceApi, uniqueId) {
+  const select = document.getElementById(`statusSelect-${uniqueId}`);
+  const status = select.value;
+  const btnRow = select.parentElement.nextElementSibling;
+  const btn = btnRow ? btnRow.querySelector('.btn-primary') : null;
+
+  if (btn) {
+    btn.innerHTML = `<span class="spinner" style="border-top-color:#000"></span> Göndərilir`;
+    btn.disabled = true;
+  }
+
+  fetch(sourceApi, {
+    method: 'POST',
+    body: new URLSearchParams({ action: 'updateOrderStatusAndPayment', orderId, status })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      // Find the specific order that matches BOTH the ID and the correct API source
+      const idx = allOrders.findIndex(o => String(o[0]) === String(orderId) && o.sourceApi === sourceApi);
+      if (idx !== -1) allOrders[idx][6] = status;
+      updateStats();
+      updateCashSummary();
+      renderOrders();
+      showToast('Status yeniləndi ✓', 'success');
+    } else {
+      showToast('Xəta baş verdi', 'error');
+      if (btn) { btn.innerHTML = '⚠ Yenidən cəhd'; btn.disabled = false; }
+    }
+  })
+  .catch(() => {
+    showToast('Şəbəkə xətası', 'error');
+    if (btn) { btn.innerHTML = 'Yenilə'; btn.disabled = false; }
+  });
+}
+
+// ── MAP MODAL ─────────────────────────────────────────────
+function openMapModal(mapLink, address, customerName) {
+  document.getElementById('modalAddress').textContent = address || 'Ünvan məlumatı yoxdur';
+
+  const embedContainer = document.getElementById('mapEmbed');
+  const linksGrid = document.getElementById('mapLinksGrid');
+
+  if (mapLink) {
+    const coordsMatch = mapLink.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    let embedSrc = '';
+
+    if (coordsMatch) {
+      const lat = coordsMatch[1], lng = coordsMatch[2];
+      embedSrc = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+    } else {
+      const query = encodeURIComponent(address || customerName);
+      embedSrc = `https://maps.google.com/maps?q=${query}&output=embed`;
+    }
+
+    embedContainer.innerHTML = `<iframe src="${embedSrc}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+
+    let gMapsNav = mapLink;
+    let wazeLink = '';
+    let yandexLink = '';
+    let appleLink = '';
+
+    if (coordsMatch) {
+      const lat = coordsMatch[1], lng = coordsMatch[2];
+      gMapsNav = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+      wazeLink = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+      yandexLink = `https://yandex.com/maps/?rtext=~${lat},${lng}&rtt=auto`;
+      appleLink = `http://maps.apple.com/?daddr=${lat},${lng}`;
+    } else {
+      const enc = encodeURIComponent(address || '');
+      gMapsNav = `https://www.google.com/maps/dir/?api=1&destination=${enc}`;
+      wazeLink = `https://waze.com/ul?q=${enc}&navigate=yes`;
+      yandexLink = `https://yandex.com/maps/?text=${enc}&rtt=auto`;
+      appleLink = `http://maps.apple.com/?daddr=${enc}`;
+    }
+
+    linksGrid.innerHTML = `
+      <a href="${gMapsNav}" target="_blank" rel="noopener" class="map-app-btn gmaps">
+        <div class="map-icon">🗺️</div>
+        Google Maps
+      </a>
+      <a href="${wazeLink}" target="_blank" rel="noopener" class="map-app-btn waze">
+        <div class="map-icon">🚗</div>
+        Waze
+      </a>
+      <a href="${yandexLink}" target="_blank" rel="noopener" class="map-app-btn yandex">
+        <div class="map-icon">🔴</div>
+        Yandex Maps
+      </a>
+      <a href="${appleLink}" target="_blank" rel="noopener" class="map-app-btn apple">
+        <div class="map-icon">🍎</div>
+        Apple Maps
+      </a>`;
+  } else {
+    const q = encodeURIComponent(address || '');
+    embedContainer.innerHTML = `
+      <div class="map-embed-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <p>Xəritə linki yoxdur. Ünvana görə axtarış edilir.</p>
+      </div>`;
+    linksGrid.innerHTML = `
+      <a href="https://www.google.com/maps/search/${q}" target="_blank" rel="noopener" class="map-app-btn gmaps">
+        <div class="map-icon">🗺️</div>
+        Google Maps
+      </a>
+      <a href="https://waze.com/ul?q=${q}&navigate=yes" target="_blank" rel="noopener" class="map-app-btn waze">
+        <div class="map-icon">🚗</div>
+        Waze
+      </a>
+      <a href="https://yandex.com/maps/?text=${q}" target="_blank" rel="noopener" class="map-app-btn yandex">
+        <div class="map-icon">🔴</div>
+        Yandex Maps
+      </a>
+      <a href="http://maps.apple.com/?q=${q}" target="_blank" rel="noopener" class="map-app-btn apple">
+        <div class="map-icon">🍎</div>
+        Apple Maps
+      </a>`;
+  }
+
+  document.getElementById('mapModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMapModal() {
+  document.getElementById('mapModal').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => {
+    document.getElementById('mapEmbed').innerHTML = `<div class="map-embed-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><p>Xəritə yüklənir...</p></div>`;
+  }, 300);
+}
+
+function handleMapOverlayClick(e) {
+  if (e.target === document.getElementById('mapModal')) closeMapModal();
+}
+
+// ── HELPERS ───────────────────────────────────────────────
+function statusToClass(status) {
+  switch (status) {
+    case 'Delivered': return 'delivered';
+    case 'Out for Delivery': return 'out-for-delivery';
+    case 'Canceled': case 'Deleted': return 'canceled';
+    default: return 'preparing';
+  }
+}
+function statusToLabel(status) {
+  switch (status) {
+    case 'Delivered': return 'Çatdırıldı';
+    case 'Out for Delivery': return 'Yolda';
+    case 'Canceled': return 'Ləğv';
+    case 'Deleted': return 'Silindi';
+    case 'Preparing': return 'Hazırlanır';
+    case 'New': return 'Yeni';
+    default: return status;
+  }
+}
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"');
+}
+function escAttr(str) {
+  if (!str) return '';
+  return String(str).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+}
+
+function showSkeletons() {
+  const skels = Array.from({length: 3}, () => `
+    <div class="skeleton-card">
+      <div class="skeleton skel-circle"></div>
+      <div class="skel-lines">
+        <div class="skeleton skel-line" style="width:60%"></div>
+        <div class="skeleton skel-line" style="width:40%"></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('orderList').innerHTML = skels;
+  document.getElementById('cashSummary').style.display = 'none';
+  document.getElementById('filterTabs').style.display = 'none';
+}
+
+function showEmpty(msg) {
+  document.getElementById('orderList').innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>${msg}</p></div>`;
+  document.getElementById('cashSummary').style.display = 'none';
+  document.getElementById('filterTabs').style.display = 'none';
+  document.getElementById('statTotal').textContent = '0';
+  document.getElementById('statDelivered').textContent = '0';
+  document.getElementById('statPending').textContent = '0';
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  clearTimeout(toastTimer);
+  setTimeout(() => t.classList.add('show'), 10);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
 </body>
 </html>
