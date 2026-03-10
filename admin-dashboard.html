@@ -351,6 +351,64 @@
             line-height: 1.5;
         }
 
+        /* ── PRODUCT TAGS ── */
+        .product-tags {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .product-tag {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .prod-thumb {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .prod-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .prod-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .prod-info strong {
+            font-size: 0.82rem;
+            color: var(--text);
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .prod-code {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: var(--slate-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+        }
+
         .bonus-tag {
             display: inline-flex;
             align-items: center;
@@ -366,7 +424,7 @@
 
         .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
 
-        /* ── LOADING ── */
+        /* ── LOADING & OVERLAY ── */
         .loading-overlay {
             position: absolute;
             inset: 0;
@@ -379,12 +437,42 @@
             backdrop-filter: blur(3px);
         }
 
+        .global-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(240,244,248,0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s;
+        }
+        
+        .global-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .spinner {
-            width: 28px; height: 28px;
+            width: 32px; height: 32px;
             border: 3px solid var(--border);
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
+        }
+
+        .global-overlay .spinner {
+            width: 48px; height: 48px;
+            border-width: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .global-overlay-text {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 1.1rem;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -463,6 +551,8 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
         }
 
         .img-modal-toolbar {
@@ -471,6 +561,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
         }
 
         .img-modal-title { color: #f8fafc; font-size: 0.85rem; font-weight: 600; }
@@ -491,8 +582,23 @@
             width: 100%;
             height: 78vh;
             border: none;
-            display: block;
+            display: none;
             background: #f1f5f9;
+        }
+
+        #modalImgContainer {
+            width: 100%;
+            height: 78vh;
+            display: none; /* Changed via JS */
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+        }
+
+        #modalImgContainer img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -519,6 +625,12 @@
     </style>
 </head>
 <body>
+
+<!-- GLOBAL LOADING OVERLAY -->
+<div id="globalLoading" class="global-overlay">
+    <div class="spinner"></div>
+    <div class="global-overlay-text" id="globalLoadingText">Sistem yüklənir...</div>
+</div>
 
 <!-- TOP NAV -->
 <nav class="top-nav">
@@ -629,10 +741,15 @@
 <div id="imageModal" class="img-modal" onclick="handleModalBgClick(event)">
     <div class="img-modal-inner">
         <div class="img-modal-toolbar">
-            <span class="img-modal-title"><i class="fas fa-image"></i> Sifariş Fotosu</span>
+            <span class="img-modal-title"><i class="fas fa-image"></i> Şəkil / Qəbz</span>
             <button class="img-modal-close" onclick="closeImageModal()"><i class="fas fa-times"></i></button>
         </div>
+        <!-- For Google Drive Document Previews -->
         <iframe id="modalFrame" src="about:blank" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        <!-- For direct image rendering (Github / Text links) -->
+        <div id="modalImgContainer">
+            <img id="modalImg" src="" alt="Sifariş Şəkli">
+        </div>
     </div>
 </div>
 
@@ -644,7 +761,7 @@
 
 <script>
 // ═══════════════════════════════════════════════
-//  CONFIGURATION
+//  CONFIGURATION & GLOBAL STATE
 // ═══════════════════════════════════════════════
 const CONFIG = {
     own: {
@@ -667,12 +784,64 @@ const CONFIG = {
     }
 };
 
-// ═══════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════
 let activePanel = 'own';
-let cachedUsers = { own: null, partner: null };
-let requestCache = {}; // Simple cache for GET requests
+
+// The Global Cache Data replacing redundant API requests
+const AppData = {
+    products: [],   // Cached from getProductList
+    couriers: []    // Cached from getDeliveryUsers
+};
+
+// ═══════════════════════════════════════════════
+//  APP INITIALIZATION
+// ═══════════════════════════════════════════════
+window.onload = async function () {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('ownDateFilter').value = today;
+    document.getElementById('partnerDateFilter').value = today;
+    
+    // Initial parallel fetching of Couriers and Products (Solves both Bug 1 & Bug 2)
+    try {
+        const [prodRes, courRes] = await Promise.all([
+            fetchWithTimeout(`${CONFIG.own.API_URL}?action=getProductList`),
+            fetchWithTimeout(`${CONFIG.own.API_URL}?action=getDeliveryUsers`)
+        ]);
+
+        const prodData = await prodRes.json();
+        const courData = await courRes.json();
+
+        if (prodData.success) {
+            // Sort by longest name first to avoid partial string matching bugs in getMatchedProducts
+            AppData.products = prodData.products.sort((a, b) => b.name.length - a.name.length);
+        }
+        if (courData.success) {
+            AppData.couriers = courData.users;
+        }
+
+        hideGlobalLoading();
+        loadOrders('own'); // Load orders automatically on success
+    } catch (err) {
+        console.error('Initialization error:', err);
+        document.getElementById('globalLoadingText').innerHTML = 'Giriş xətası. İnternet əlaqəsini yoxlayıb səhifəni yeniləyin.<br><button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;border-radius:6px;border:none;background:#2563eb;color:#fff;cursor:pointer;">Yenilə</button>';
+        document.querySelector('.global-overlay .spinner').style.display = 'none';
+    }
+};
+
+function hideGlobalLoading() {
+    const el = document.getElementById('globalLoading');
+    el.classList.add('hidden');
+    setTimeout(() => el.style.display = 'none', 300);
+}
+
+// ═══════════════════════════════════════════════
+//  FETCH WITH TIMEOUT (Increased to 30s to prevent early failures)
+// ═══════════════════════════════════════════════
+function fetchWithTimeout(url, options = {}, timeout = 30000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    return fetch(url, { ...options, signal: controller.signal })
+        .finally(() => clearTimeout(id));
+}
 
 // ═══════════════════════════════════════════════
 //  PANEL SWITCHING
@@ -687,29 +856,8 @@ function switchPanel(panel) {
     ownBtn.className = 'tab-btn' + (panel === 'own' ? ' active-own' : '');
     partnerBtn.className = 'tab-btn' + (panel === 'partner' ? ' active-partner' : '');
 
-    // Update PDF button accent
     const pdfBtn = document.getElementById('generatePdfBtn');
     pdfBtn.style.background = panel === 'partner' ? 'var(--partner)' : '#059669';
-}
-
-// ═══════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════
-window.onload = function () {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('ownDateFilter').value = today;
-    document.getElementById('partnerDateFilter').value = today;
-    loadOrders('own');
-};
-
-// ═══════════════════════════════════════════════
-//  FETCH WITH TIMEOUT & CACHE
-// ═══════════════════════════════════════════════
-function fetchWithTimeout(url, options = {}, timeout = 15000) {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-    return fetch(url, { ...options, signal: controller.signal })
-        .finally(() => clearTimeout(id));
 }
 
 // ═══════════════════════════════════════════════
@@ -738,16 +886,39 @@ function loadOrders(panel) {
         .catch(err => {
             console.error(err);
             listEl.innerHTML = `<div class="empty-state" style="color:var(--red)"><i class="fas fa-wifi"></i>Xəta baş verdi. İnternet əlaqəsini yoxlayın.</div>`;
+            resetStats(panel);
         });
 }
 
 // ═══════════════════════════════════════════════
-//  RENDER ORDERS
+//  URL EXTRACTOR (For parsing Formula vs Text links in Sheets)
+// ═══════════════════════════════════════════════
+function extractUrl(text) {
+    if (!text) return '';
+    // Look for =IMAGE("url")
+    const imgMatch = String(text).match(/=IMAGE\(\s*"([^"]+)"\s*\)/i);
+    if (imgMatch) return imgMatch[1];
+    
+    // Look for raw HTTP link inside text
+    const rawMatch = String(text).match(/(https?:\/\/[^\s"]+)/i);
+    if (rawMatch) return rawMatch[1];
+    
+    return String(text); // Fallback to raw text
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER ORDERS (Optimized & Fast)
 // ═══════════════════════════════════════════════
 function renderOrders(panel, orders) {
     const cfg = CONFIG[panel];
     const listEl = document.getElementById(cfg.listId);
     const p = cfg.prefix;
+    
+    // Pre-build courier options
+    const courierOptions = AppData.couriers.map(user => 
+        `<option value="${escAttr(user.username)}">${escHtml(user.username)}</option>`
+    ).join('');
+
     let html = '';
 
     orders.forEach(order => {
@@ -763,21 +934,62 @@ function renderOrders(panel, orders) {
         const payMethod     = (order[9] || 'cash').toLowerCase();
         const seller        = escHtml(order[16] || 'Digər');
         const additionalPay = parseFloat(order[19]) || 0;
-        const imageLink     = order[20] || '';
-
+        const imageLink     = order[20] || ''; 
+        
         const statusClass = getStatusClass(status, courier);
 
-        // Build Google Drive preview URL
+        // -- Process Order Receipt/Image Link --
         let imgBtn = '';
         if (imageLink && imageLink.length > 5) {
-            // Escape for HTML attribute; actual URL processing done in JS
             const safeLink = escAttr(imageLink);
-            imgBtn = `<button class="btn btn-img" onclick="openImageModal('${safeLink}')"><i class="fas fa-camera"></i> Sifariş Fotosu</button>`;
+            const isRaw = !!safeLink.match(/\.(jpeg|jpg|gif|png|webp)$/i) || safeLink.includes('raw.githubusercontent.com');
+            imgBtn = `<button class="btn btn-img" onclick="openImageModal('${safeLink}', ${isRaw})"><i class="fas fa-camera"></i> Sifariş Fotosu / Qəbz</button>`;
+        }
+
+        // -- Product Matcher (Displays Code and Product Image from Products Sheet) --
+        let productCardsHtml = '';
+        if (details && details !== '—') {
+            const lowerDetails = details.toLowerCase();
+            const matchedProducts = [];
+            
+            // Because AppData.products is sorted by longest name, we avoid false matches like "Box" matching inside "Gift Box"
+            AppData.products.forEach(prod => {
+                if (prod.name && lowerDetails.includes(prod.name.toLowerCase())) {
+                    matchedProducts.push(prod);
+                }
+            });
+
+            if (matchedProducts.length > 0) {
+                productCardsHtml += `<div class="product-tags">`;
+                matchedProducts.forEach(prod => {
+                    const extractedImg = extractUrl(prod.image);
+                    const isRaw = !!extractedImg.match(/\.(jpeg|jpg|gif|png|webp)$/i) || extractedImg.includes('raw.githubusercontent.com');
+                    
+                    productCardsHtml += `
+                        <div class="product-tag">
+                            ${extractedImg ? `<img src="${extractedImg}" onclick="openImageModal('${escAttr(extractedImg)}', ${isRaw})" class="prod-thumb" alt="${escAttr(prod.name)}">` : ''}
+                            <div class="prod-info">
+                                <strong>${escHtml(prod.name)}</strong>
+                                <span class="prod-code">Kod: ${escHtml(prod.code || 'Yoxdur')}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                productCardsHtml += `</div>`;
+            }
         }
 
         const bonusHtml = additionalPay > 0
             ? `<div class="bonus-tag"><i class="fas fa-plus-circle"></i> Kuryer Bonusu: ${additionalPay.toFixed(2)} AZN</div>`
             : '';
+
+        // Inject the pre-built courier options, and set the selected attribute dynamically
+        const finalCourierSelect = `
+            <select id="${p}-courierSel-${id}" class="form-control" onchange="assignCourier('${panel}',${id})">
+                <option value="">Kuryer seçin...</option>
+                ${courierOptions.replace(`value="${escAttr(courier)}"`, `value="${escAttr(courier)}" selected`)}
+            </select>
+        `;
 
         html += `
         <div class="order-card ${statusClass}" id="${p}-order-${id}"
@@ -822,7 +1034,10 @@ function renderOrders(panel, orders) {
 
                 ${bonusHtml}
 
-                <div class="order-detail-box"><strong>Sifariş:</strong> ${details}</div>
+                <div class="order-detail-box">
+                    <strong>Sifariş:</strong> ${details}
+                    ${productCardsHtml}
+                </div>
 
                 ${imgBtn}
 
@@ -836,9 +1051,7 @@ function renderOrders(panel, orders) {
                 </select>
 
                 <span class="field-label">Kuryer Təyin Et</span>
-                <select id="${p}-courierSel-${id}" class="form-control" onchange="assignCourier('${panel}',${id})">
-                    <option value="">Kuryer seçin...</option>
-                </select>
+                ${finalCourierSelect}
 
                 <button class="btn btn-delete" onclick="deleteOrder('${panel}',${id})">
                     <i class="fas fa-trash-alt"></i> Sifarişi Sil
@@ -848,13 +1061,6 @@ function renderOrders(panel, orders) {
     });
 
     listEl.innerHTML = html;
-
-    // Stagger load courier dropdowns
-    orders.forEach((order, idx) => {
-        const id = order[0];
-        setTimeout(() => fetchDeliveryUsers(panel, id), idx * 30);
-    });
-
     recalcStats(panel);
 }
 
@@ -872,7 +1078,7 @@ function getStatusClass(status, courier) {
 }
 
 // ═══════════════════════════════════════════════
-//  RECALCULATE STATS (LOCAL – fast, no extra req)
+//  RECALCULATE STATS (LOCAL)
 // ═══════════════════════════════════════════════
 function recalcStats(panel) {
     const cfg = CONFIG[panel];
@@ -907,7 +1113,7 @@ function recalcStats(panel) {
             totalCount++;
             totalAmt += amount;
             if (payment === 'cash') { cashAmt += amount; cashCount++; } 
-            else                   { cardAmt += amount; cardCount++; }
+            else                    { cardAmt += amount; cardCount++; }
             
             if (!courierCount[courier]) courierCount[courier] = 0;
             courierCount[courier]++;
@@ -928,7 +1134,6 @@ function recalcStats(panel) {
         }
     });
 
-    // Update stat cards
     const el = id => document.getElementById(id);
 
     if (el(`${p}TotalCount`))  el(`${p}TotalCount`).textContent = totalCount;
@@ -939,7 +1144,6 @@ function recalcStats(panel) {
             `<i class="fas fa-credit-card"></i> Kart: <b>${cardAmt.toFixed(2)} ₼</b> (${cardCount})`;
     }
 
-    // Courier mini table
     if (el(`${p}CourierStat`)) {
         let h = '';
         const cSorted = Object.entries(courierCount).sort((a,b) => b[1]-a[1]);
@@ -952,7 +1156,6 @@ function recalcStats(panel) {
         el(`${p}CourierStat`).innerHTML = h || 'Məlumat yoxdur';
     }
 
-    // Seller mini table
     if (el(`${p}SellerStat`)) {
         let h = '';
         const sSorted = Object.entries(sellerCount).sort((a,b) => b[1]-a[1]);
@@ -1087,57 +1290,6 @@ function assignCourier(panel, orderId) {
 }
 
 // ═══════════════════════════════════════════════
-//  FETCH DELIVERY USERS (cached per panel)
-// ═══════════════════════════════════════════════
-function fetchDeliveryUsers(panel, orderId) {
-    const cfg = CONFIG[panel];
-    const p = cfg.prefix;
-    const sel = document.getElementById(`${p}-courierSel-${orderId}`);
-    if (!sel) return;
-    if (sel.options.length > 1) return;
-
-    if (cachedUsers[panel]) {
-        populateCourierSelect(panel, sel, orderId, cachedUsers[panel]);
-        return;
-    }
-
-    fetchWithTimeout(`${cfg.API_URL}?action=getDeliveryUsers&_t=${Date.now()}`)
-        .then(r => r.json())
-        .then(data => {
-            if (data.success && data.users) {
-                cachedUsers[panel] = data.users;
-                // Populate all empty selects on this panel
-                document.querySelectorAll(`select[id^="${p}-courierSel-"]`).forEach(s => {
-                    const oid = s.id.replace(`${p}-courierSel-`, '');
-                    if (s.options.length <= 1) populateCourierSelect(panel, s, oid, cachedUsers[panel]);
-                });
-            }
-        })
-        .catch(err => console.warn('Could not load couriers:', err));
-}
-
-function populateCourierSelect(panel, selectEl, orderId, users) {
-    const p = CONFIG[panel].prefix;
-    const existing = new Set([...selectEl.options].map(o => o.value));
-
-    users.forEach(user => {
-        if (!existing.has(user.username)) {
-            const opt = new Option(user.username, user.username);
-            selectEl.appendChild(opt);
-        }
-    });
-
-    // Set current value
-    const dispEl = document.getElementById(`${p}-courierDisp-${orderId}`);
-    if (dispEl) {
-        const current = dispEl.innerText.trim();
-        if (current && current !== 'Təyin edilməyib') {
-            selectEl.value = current;
-        }
-    }
-}
-
-// ═══════════════════════════════════════════════
 //  DELETE ORDER
 // ═══════════════════════════════════════════════
 function deleteOrder(panel, orderId) {
@@ -1174,53 +1326,47 @@ function deleteOrder(panel, orderId) {
 }
 
 // ═══════════════════════════════════════════════
-//  IMAGE MODAL — robust Google Drive handler
+//  IMAGE MODAL (Dual Support: Raw Image & Drive Frame)
 // ═══════════════════════════════════════════════
 function buildDrivePreviewUrl(raw) {
     if (!raw || raw.trim() === '') return null;
     let url = raw.trim();
 
-    // Pattern 1: https://drive.google.com/file/d/FILE_ID/view?...
     const match1 = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (match1) {
-        return `https://drive.google.com/file/d/${match1[1]}/preview`;
-    }
+    if (match1) return `https://drive.google.com/file/d/${match1[1]}/preview`;
 
-    // Pattern 2: https://drive.google.com/open?id=FILE_ID
     const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (match2 && url.includes('drive.google.com')) {
-        return `https://drive.google.com/file/d/${match2[1]}/preview`;
-    }
+    if (match2 && url.includes('drive.google.com')) return `https://drive.google.com/file/d/${match2[1]}/preview`;
 
-    // Pattern 3: https://drive.google.com/uc?export=view&id=FILE_ID
-    const match3 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (match3) {
-        return `https://drive.google.com/file/d/${match3[1]}/preview`;
-    }
-
-    // Pattern 4: already a preview link
     if (url.includes('/preview')) return url;
+    if (url.includes('drive.google.com')) return url.replace(/\/view(\?.*)?$/, '/preview');
 
-    // Pattern 5: /view → /preview
-    if (url.includes('drive.google.com')) {
-        return url.replace(/\/view(\?.*)?$/, '/preview');
-    }
-
-    // Fallback: return as-is (might be a direct image URL)
     return url;
 }
 
-function openImageModal(rawUrl) {
-    const previewUrl = buildDrivePreviewUrl(rawUrl);
-    if (!previewUrl) {
-        showToast('Şəkil linki tapılmadı', 'error');
-        return;
-    }
-
+function openImageModal(rawUrl, isRawImage = false) {
     const modal = document.getElementById('imageModal');
     const frame = document.getElementById('modalFrame');
+    const imgCont = document.getElementById('modalImgContainer');
+    const img = document.getElementById('modalImg');
 
-    frame.src = previewUrl;
+    if (isRawImage || rawUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) || rawUrl.includes('raw.githubusercontent.com')) {
+        // Render as raw image
+        frame.style.display = 'none';
+        imgCont.style.display = 'flex';
+        img.src = rawUrl;
+    } else {
+        // Render as Drive iframe preview
+        const previewUrl = buildDrivePreviewUrl(rawUrl);
+        if (!previewUrl) {
+            showToast('Şəkil linki tapılmadı', 'error');
+            return;
+        }
+        imgCont.style.display = 'none';
+        frame.style.display = 'block';
+        frame.src = previewUrl;
+    }
+
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -1228,8 +1374,11 @@ function openImageModal(rawUrl) {
 function closeImageModal() {
     const modal = document.getElementById('imageModal');
     const frame = document.getElementById('modalFrame');
+    const img = document.getElementById('modalImg');
+    
     modal.classList.remove('open');
     frame.src = 'about:blank';
+    img.src = '';
     document.body.style.overflow = '';
 }
 
@@ -1237,7 +1386,6 @@ function handleModalBgClick(e) {
     if (e.target === document.getElementById('imageModal')) closeImageModal();
 }
 
-// ESC key closes modal
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImageModal(); });
 
 // ═══════════════════════════════════════════════
@@ -1257,7 +1405,7 @@ function setCardLoading(card, show) {
 }
 
 // ═══════════════════════════════════════════════
-//  TOAST
+//  TOAST & ESCAPE
 // ═══════════════════════════════════════════════
 function showToast(msg, type = 'success') {
     const container = document.getElementById('toast-container');
@@ -1274,16 +1422,8 @@ function showToast(msg, type = 'success') {
     }, 3000);
 }
 
-// ═══════════════════════════════════════════════
-//  HTML ESCAPE HELPERS
-// ═══════════════════════════════════════════════
 function escHtml(str) {
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 function escAttr(str) {
