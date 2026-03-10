@@ -858,9 +858,9 @@
   <!-- ═══════════════ BOTTOM NAV ═══════════════ -->
   <nav class="bottom-nav">
   <button class="nav-item" onclick="window.location.href='www.sehrbaz.com/catalogue.html'">
-      <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>
-      <span>Mağaza</span>
-    </button>
+      <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>
+      <span>Mağaza</span>
+    </button>
     <button class="nav-item active" onclick="switchTab('tab-add', this)">
       <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       <span>Yeni</span>
@@ -889,7 +889,7 @@
   /* ═══════════════════════════════════════════════════
      API ENDPOINTS
   ═══════════════════════════════════════════════════ */
-  const ORDERS_API  = 'https://script.google.com/macros/s/AKfycbyV5tiuhDyteKE2Ug03l8F3qJeulRIyWkkrepSr_tC_1HffeXKBV_9nxOmqeHFY8VzQ/exec';
+  const ORDERS_API  = 'https://script.google.com/macros/s/AKfycbxREKSrNS4qItSEzPPilKgQY39cPZFwQYZHn3u3qftB94S7XcIMOqTvkwqnWTDxXMsS/exec';
   const CATALOG_API = 'https://script.google.com/macros/s/AKfycbzgGiOg7Rp3Y7bDmNNhlbK2PZDl-qwlU8oecz0lGrVouKigoLzlfWleg02H83chkXt53g/exec';
 
   /* ═══════════════════════════════════════════════════
@@ -946,42 +946,42 @@
   let activeDateFilter = 'today';
 
 /* ═══════════════════════════════════════════════════
-     INIT
-  ═══════════════════════════════════════════════════ */
-  window.addEventListener('DOMContentLoaded', () => {
+     INIT
+  ═══════════════════════════════════════════════════ */
+  window.addEventListener('DOMContentLoaded', () => {
 
-    // ── 1. Detect Username & Phone ──
-    const params = new URLSearchParams(window.location.search);
-    const urlUser = params.get('username') || params.get('user') || params.get('name') || '';
-    const urlPhone = params.get('phone') || '';
+    // ── 1. Detect Username & Phone ──
+    const params = new URLSearchParams(window.location.search);
+    const urlUser = params.get('username') || params.get('user') || params.get('name') || '';
+    const urlPhone = params.get('phone') || '';
 
-    if (urlUser) {
-      currentUser = urlUser;
-      localStorage.setItem('staff_username', currentUser);
-    } else {
-      currentUser = localStorage.getItem('staff_username') || '';
-    }
+    if (urlUser) {
+      currentUser = urlUser;
+      localStorage.setItem('staff_username', currentUser);
+    } else {
+      currentUser = localStorage.getItem('staff_username') || '';
+    }
 
-    if (urlPhone) {
-      currentUserPhone = urlPhone;
-      localStorage.setItem('staff_userphone', currentUserPhone);
-    } else {
-      currentUserPhone = localStorage.getItem('staff_userphone') || '';
-    }
+    if (urlPhone) {
+      currentUserPhone = urlPhone;
+      localStorage.setItem('staff_userphone', currentUserPhone);
+    } else {
+      currentUserPhone = localStorage.getItem('staff_userphone') || '';
+    }
 
-    // --- NEW MODIFICATION: BLOCK ACCESS IF NO USER ---
-    if (!currentUser) {
-      // Wipe the body and show a warning message
-      document.body.innerHTML = `
-        <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; background:#F2F2F7;">
-          <h2 style="color:#FF3B30; margin-bottom:10px;">Giriş Qadağandır</h2>
-          <p style="color:#1C1C1E; font-size:16px;">Sistemdən istifadə etmək üçün istifadəçi adı mütləqdir.</p>
-          <p style="color:#8E8E93; font-size:14px; margin-top:20px;">Zəhmət olmasa sizə göndərilən <b>xüsusi linkdən</b> istifadə edin.</p>
-        </div>
-      `;
-      return; // STOP EXECUTION HERE (Data will not load)
-    }
-    // -------------------------------------------------
+    // --- NEW MODIFICATION: BLOCK ACCESS IF NO USER ---
+    if (!currentUser) {
+      // Wipe the body and show a warning message
+      document.body.innerHTML = `
+        <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; background:#F2F2F7;">
+          <h2 style="color:#FF3B30; margin-bottom:10px;">Giriş Qadağandır</h2>
+          <p style="color:#1C1C1E; font-size:16px;">Sistemdən istifadə etmək üçün istifadəçi adı mütləqdir.</p>
+          <p style="color:#8E8E93; font-size:14px; margin-top:20px;">Zəhmət olmasa sizə göndərilən <b>xüsusi linkdən</b> istifadə edin.</p>
+        </div>
+      `;
+      return; // STOP EXECUTION HERE (Data will not load)
+    }
+    // -------------------------------------------------
 
     // ── 2. Update UI ──
     const initials = currentUser.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -1037,38 +1037,38 @@
      DATA FETCH
   ═══════════════════════════════════════════════════ */
 async function fetchAllData() {
-    toggleLoader(true);
-    try {
-      const res  = await fetch(`${ORDERS_API}?action=getGlobalStats`);
-      const json = await res.json();
+    toggleLoader(true);
+    try {
+      const res  = await fetch(`${ORDERS_API}?action=getGlobalStats`);
+      const json = await res.json();
 
-      if (json.success) {
-        globalOrdersData = json.data || [];
+      if (json.success) {
+        globalOrdersData = json.data || [];
 
-        // Filter by sales rep phone or username safely by converting everything to strings and trimming spaces
-        if (currentUserPhone) {
-          const safePhone = String(currentUserPhone).trim();
-          const safeUser  = String(currentUser).trim();
+        // Filter by sales rep phone or username safely by converting everything to strings and trimming spaces
+        if (currentUserPhone) {
+          const safePhone = String(currentUserPhone).trim();
+          const safeUser  = String(currentUser).trim();
 
-          globalOrdersData = globalOrdersData.filter(o =>
-            String(o.staff || '').trim() === safePhone ||
-            String(o.salesRepPhone || '').trim() === safePhone ||
-            String(o.staff || '').trim() === safeUser
-          );
-        } else if (currentUser && currentUser !== 'Satış Nümayəndəsi') {
-          const safeUser = String(currentUser).trim();
-          globalOrdersData = globalOrdersData.filter(o => String(o.staff || '').trim() === safeUser);
-        }
+          globalOrdersData = globalOrdersData.filter(o =>
+            String(o.staff || '').trim() === safePhone ||
+            String(o.salesRepPhone || '').trim() === safePhone ||
+            String(o.staff || '').trim() === safeUser
+          );
+        } else if (currentUser && currentUser !== 'Satış Nümayəndəsi') {
+          const safeUser = String(currentUser).trim();
+          globalOrdersData = globalOrdersData.filter(o => String(o.staff || '').trim() === safeUser);
+        }
 
-        renderOrderList();
-        renderStats();
-      }
-    } catch (err) {
-      console.error('fetchAllData:', err);
-    } finally {
-      toggleLoader(false);
-    }
-  }
+        renderOrderList();
+        renderStats();
+      }
+    } catch (err) {
+      console.error('fetchAllData:', err);
+    } finally {
+      toggleLoader(false);
+    }
+  }
 
   /* ═══════════════════════════════════════════════════
      DATE FILTER (List)
@@ -1685,7 +1685,10 @@ filtered.forEach(o => {
     const productCode  = coCart.map(p => p.code).join(', ');
     const productPrice = coCart.reduce((s, p) => s + p.price, 0);
     const customImage  = coCart.find(p => p.isCustom && p.image)?.image || '';
-    const productImages = coCart.map(p => p.image).filter(img => img !== '').join(', ');
+    
+    // CHANGED: Using \n separator instead of commas to protect the Base64 format and look cleaner in the Sheet
+    const productImages = coCart.map(p => p.image).filter(img => img !== '').join('\n');
+    
     const discountApplied = (payMethod === 'cash' && coDepositChecked) ? 4  : 0;
     const depositPaid     = (payMethod === 'cash' && coDepositChecked) ? 10 : 0;
 
@@ -1710,10 +1713,10 @@ filtered.forEach(o => {
         productName,
         productCode,
         productPrice,
-        productImages,       // NEW: Added the image links to the payload
+        productImages,       
         discountApplied,
         depositPaid,
-        receiptImage:       coReceiptImageB64,
+        receiptImage:        coReceiptImageB64,
         customProductImage: customImage
       };
 
@@ -1846,7 +1849,7 @@ filtered.forEach(o => {
         let w = img.width, h = img.height;
         if (w > MAX || h > MAX) {
           if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-          else        { w = Math.round(w * MAX / h); h = MAX; }
+          else       { w = Math.round(w * MAX / h); h = MAX; }
         }
         const cvs = document.createElement('canvas');
         cvs.width = w; cvs.height = h;
