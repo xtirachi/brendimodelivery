@@ -35,6 +35,10 @@
             --purple: #7c3aed; --purple-bg: #f5f3ff;
             --orange: #ea580c; --orange-bg: #fff7ed;
             --slate: #475569; --slate-bg: #f8fafc;
+            
+            /* AI Gradient */
+            --ai-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+            --ai-hover: linear-gradient(135deg, #4f46e5, #9333ea);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -123,8 +127,6 @@
             box-shadow: 0 2px 8px rgba(124,58,237,0.3);
         }
 
-        .nav-actions { display: flex; gap: 10px; align-items: center; }
-
         /* ── CONTAINER ── */
         .container {
             max-width: 1300px;
@@ -155,7 +157,10 @@
             border: 1px solid var(--border);
         }
 
-        .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.search-group { flex: 1; min-width: 220px; }
+        .form-group:not(.search-group) { min-width: 160px; }
+        
         .form-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
 
         .form-control {
@@ -207,8 +212,8 @@
         .btn-partner { background: var(--partner); color: white; }
         .btn-partner:hover { background: var(--partner-hover); box-shadow: 0 3px 10px rgba(124,58,237,0.3); }
 
-        .btn-pdf { background: #059669; color: white; }
-        .btn-pdf:hover { background: #047857; }
+        .btn-ai { background: var(--ai-gradient); color: white; border: none; }
+        .btn-ai:hover { background: var(--ai-hover); box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); }
 
         .btn-img { background: #0ea5e9; color: white; width: 100%; margin-top: 8px; }
         .btn-img:hover { background: #0284c7; }
@@ -261,7 +266,7 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
             overflow: hidden;
-            transition: transform 0.18s, box-shadow 0.18s;
+            transition: transform 0.18s, box-shadow 0.18s, opacity 0.3s;
             position: relative;
         }
 
@@ -273,6 +278,7 @@
             font-weight: 700;
             letter-spacing: 0.5px;
             color: white;
+            transition: background-color 0.3s ease;
         }
 
         .order-card-body { padding: 16px 18px 18px; }
@@ -327,6 +333,21 @@
         .info-val { color: var(--text); }
         .info-val a { color: var(--primary); text-decoration: none; font-weight: 600; }
         .info-val a:hover { text-decoration: underline; }
+
+        .btn-ai-small {
+            background: var(--ai-gradient);
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
 
         .field-label {
             font-size: 0.72rem;
@@ -473,6 +494,7 @@
             font-weight: 600;
             color: var(--text-muted);
             font-size: 1.1rem;
+            text-align: center;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -564,6 +586,25 @@
             flex-shrink: 0;
         }
 
+        .ai-modal-content {
+            padding: 20px;
+            background: var(--card);
+            color: var(--text);
+            max-height: 70vh;
+            overflow-y: auto;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+        .ai-modal-actions {
+            padding: 16px 20px;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+        }
+
         .img-modal-title { color: #f8fafc; font-size: 0.85rem; font-weight: 600; }
 
         .img-modal-close {
@@ -589,7 +630,7 @@
         #modalImgContainer {
             width: 100%;
             height: 78vh;
-            display: none; /* Changed via JS */
+            display: none;
             align-items: center;
             justify-content: center;
             background: #0f172a;
@@ -605,7 +646,8 @@
 
         /* ── RESPONSIVE ── */
         @media (max-width: 640px) {
-            .filter-bar { flex-direction: column; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .form-group.search-group { min-width: 100%; }
             .btn { width: 100%; }
             .tab-btn span { display: none; }
             .nav-brand .label { display: none; }
@@ -650,10 +692,10 @@
                 <span>Tərəfdaş</span>
             </button>
         </div>
-
+        
         <div class="nav-actions">
-            <button class="btn btn-pdf" id="generatePdfBtn">
-                <i class="fas fa-file-pdf"></i> PDF
+            <button class="btn btn-ai" onclick="generateAIReport()">
+                ✨ AI Təhlil
             </button>
         </div>
     </div>
@@ -668,14 +710,19 @@
                 <label class="form-label" for="ownDateFilter">Tarix</label>
                 <input type="date" id="ownDateFilter" class="form-control">
             </div>
+            <!-- CANLI AXTARIŞ (LIVE SEARCH) -->
+            <div class="form-group search-group">
+                <label class="form-label" for="ownSearchFilter">Axtarış</label>
+                <input type="text" id="ownSearchFilter" class="form-control" placeholder="Ad, nömrə, ID, məhsul və s..." oninput="filterLiveSearch('own')">
+            </div>
             <button class="btn btn-primary" onclick="loadOrders('own')">
-                <i class="fas fa-search"></i> Göstər
+                <i class="fas fa-sync-alt"></i> Yüklə
             </button>
         </div>
 
         <div class="stats-row" id="ownStats">
             <div class="stat-card">
-                <div class="stat-label">Ümumi Sifariş</div>
+                <div class="stat-label">Görünən Sifariş</div>
                 <div class="stat-value" id="ownTotalCount">—</div>
             </div>
             <div class="stat-card">
@@ -705,14 +752,19 @@
                 <label class="form-label" for="partnerDateFilter">Tarix</label>
                 <input type="date" id="partnerDateFilter" class="form-control">
             </div>
+            <!-- CANLI AXTARIŞ (LIVE SEARCH) -->
+            <div class="form-group search-group">
+                <label class="form-label" for="partnerSearchFilter">Axtarış</label>
+                <input type="text" id="partnerSearchFilter" class="form-control" placeholder="Ad, nömrə, ID, məhsul və s..." oninput="filterLiveSearch('partner')">
+            </div>
             <button class="btn btn-partner" onclick="loadOrders('partner')">
-                <i class="fas fa-search"></i> Göstər
+                <i class="fas fa-sync-alt"></i> Yüklə
             </button>
         </div>
 
         <div class="stats-row" id="partnerStats">
             <div class="stat-card" style="border-left-color:var(--partner)">
-                <div class="stat-label">Ümumi Sifariş</div>
+                <div class="stat-label">Görünən Sifariş</div>
                 <div class="stat-value" id="partnerTotalCount">—</div>
             </div>
             <div class="stat-card" style="border-left-color:var(--partner)">
@@ -753,13 +805,158 @@
     </div>
 </div>
 
+<!-- AI MODAL -->
+<div id="aiModal" class="img-modal" onclick="handleAIModalBgClick(event)">
+    <div class="img-modal-inner" style="max-width: 600px;">
+        <div class="img-modal-toolbar" style="background: var(--ai-gradient);">
+            <span class="img-modal-title" id="aiModalTitle">✨ Süni İntellekt</span>
+            <button class="img-modal-close" onclick="closeAIModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="aiModalContent" class="ai-modal-content">
+            Süni intellekt məlumatları emal edir... <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <div class="ai-modal-actions">
+            <button class="btn btn-primary" onclick="copyAIText()"><i class="fas fa-copy"></i> Kopyala</button>
+        </div>
+    </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast-container"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-
 <script>
+const apiKey = "";
+
+async function callGeminiAPI(prompt, systemInstruction) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+    const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] }
+    };
+
+    const delays = [1000, 2000, 4000, 8000, 16000];
+    
+    for (let i = 0; i < 5; i++) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "Məlumat tapılmadı.";
+        } catch (error) {
+            if (i === 4) throw error;
+            await new Promise(res => setTimeout(res, delays[i]));
+        }
+    }
+}
+
+function openAIModal(title) {
+    document.getElementById('aiModalTitle').innerText = title;
+    document.getElementById('aiModalContent').innerHTML = 'Süni intellekt fikirləşir... <i class="fas fa-spinner fa-spin" style="margin-left:8px;"></i>';
+    document.getElementById('aiModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAIModal() {
+    document.getElementById('aiModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function handleAIModalBgClick(e) {
+    if (e.target === document.getElementById('aiModal')) closeAIModal();
+}
+
+function copyAIText() {
+    const content = document.getElementById('aiModalContent').innerText;
+    document.execCommand('copy');
+    
+    // Fallback if possible
+    if(navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(content);
+    } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = content;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+    }
+    showToast("Mətn kopyalandı!", "success");
+}
+
+async function generateAIMessage(orderId, panel) {
+    openAIModal('✨ Ağıllı Mesaj Yarat');
+    const p = CONFIG[panel].prefix;
+    const card = document.getElementById(`${p}-order-${orderId}`);
+    
+    if(!card) {
+        document.getElementById('aiModalContent').innerText = "Sifariş tapılmadı.";
+        return;
+    }
+
+    // GATHER DATA
+    const customer = card.querySelector('.info-row:nth-child(3) .info-val').innerText;
+    const address = document.getElementById(`${p}-addr-${orderId}`).value;
+    const status = document.getElementById(`${p}-status-${orderId}`).value;
+    const courier = document.getElementById(`${p}-courierDisp-${orderId}`).innerText;
+    const price = document.getElementById(`${p}-price-${orderId}`).value;
+    const details = card.querySelector('.order-detail-box').innerText.replace('Sifariş:', '').trim();
+    
+    const prompt = `
+    Müştərinin adı: ${customer}
+    Sifarişi: ${details}
+    Ünvan: ${address}
+    Hazırkı Statusu: ${status} ("Out for Delivery" çatdırılır deməkdir, "Delivered" çatdırıldı, "Canceled" isə ləğv edildi deməkdir)
+    Kuryer: ${courier}
+    Ödəniş məbləği: ${price} AZN
+
+    Təlimat: Bu məlumatlara əsasən müştəriyə WhatsApp vasitəsilə göndərmək üçün mehriban və peşəkar bir məlumat mesajı yaz. Mesaj Azərbaycan dilində olsun, qısa və aydın olsun. Gülücük (emoji) istifadə et.
+    Məsələn, əgər status "Out for Delivery" isə kuryerin gəldiyini və məbləği xatırlat. Əgər "Delivered" isə təşəkkür et.
+    `;
+
+    try {
+        const response = await callGeminiAPI(prompt, "Sən şirkətin ən yaxşı müştəri xidmətləri asisstantsan.");
+        document.getElementById('aiModalContent').innerText = response;
+    } catch (err) {
+        document.getElementById('aiModalContent').innerText = "Təəssüf ki, mesajı yaradarkən xəta baş verdi. Zəhmət olmasa yenidən yoxlayın.";
+    }
+}
+
+async function generateAIReport() {
+    openAIModal('✨ Günlük Biznes Təhlili');
+    const panel = activePanel;
+    const p = CONFIG[panel].prefix;
+
+    const count = document.getElementById(`${p}TotalCount`).innerText;
+    const amount = document.getElementById(`${p}TotalAmount`).innerText;
+    const payBreakdown = document.getElementById(`${p}PayBreakdown`).innerText;
+    const courierStat = document.getElementById(`${p}CourierStat`).innerText.replace(/\n/g, ', ');
+    const sellerStat = document.getElementById(`${p}SellerStat`).innerText.replace(/\n/g, ', ');
+
+    const prompt = `
+    Bu günkü (və ya ekranda olan) sifarişlərin ümumi xülasəsi:
+    Toplam Sifariş Sayı: ${count}
+    Toplam Dövriyyə: ${amount}
+    Ödəniş Növləri (Nağd/Kart): ${payBreakdown}
+    Kuryerlərin Statistikası və Borcları: ${courierStat}
+    Satış Rəhbərlərinin Performansı: ${sellerStat}
+
+    Təlimat: Bu rəqəmlərə baxaraq, mağaza rəhbərinə qısa, motivasiyaedici və eyni zamanda analitik bir xülasə ver. Hansı kuryerin daha çox yük daşıdığını, ödənişlərdə nağd pulun yoxsa kartın çox olduğunu analiz et. Satış rəhbərlərindən kimin fərqləndiyini vurğula. Gündəlik gəlir haqqında ümumi fikir bildir. Azərbaycan dilində, 2-3 paraqraf şəklində yaz və mətnin içinə uyğun emojilər qoy.
+    `;
+
+    try {
+        const response = await callGeminiAPI(prompt, "Sən təcrübəli bir biznes analitiki və rəhbər asisstantsan.");
+        document.getElementById('aiModalContent').innerText = response;
+    } catch (err) {
+        document.getElementById('aiModalContent').innerText = "Təəssüf ki, təhlil apararkən xəta baş verdi.";
+    }
+}
+
 // ═══════════════════════════════════════════════
 //  CONFIGURATION & GLOBAL STATE
 // ═══════════════════════════════════════════════
@@ -788,19 +985,34 @@ let activePanel = 'own';
 
 // The Global Cache Data replacing redundant API requests
 const AppData = {
-    products: [],   // Cached from getProductList
-    couriers: []    // Cached from getDeliveryUsers
+    products: [],   
+    couriers: []    
 };
 
 // ═══════════════════════════════════════════════
-//  APP INITIALIZATION
+//  APP INITIALIZATION & CACHING (Sürət Optimizasiyası)
 // ═══════════════════════════════════════════════
 window.onload = async function () {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('ownDateFilter').value = today;
     document.getElementById('partnerDateFilter').value = today;
     
-    // Initial parallel fetching of Couriers and Products (Solves both Bug 1 & Bug 2)
+    // Yaddaşda olan məlumatları yoxla (Sürətli Açılış)
+    const cachedProducts = sessionStorage.getItem('appData_products');
+    const cachedCouriers = sessionStorage.getItem('appData_couriers');
+    let hasCache = false;
+
+    if (cachedProducts && cachedCouriers) {
+        try {
+            AppData.products = JSON.parse(cachedProducts);
+            AppData.couriers = JSON.parse(cachedCouriers);
+            hasCache = true;
+            hideGlobalLoading();
+            loadOrders('own'); // Dərhal Sifarişləri yüklə
+        } catch (e) { console.error("Cache parsing error", e); }
+    }
+
+    // Arxa planda (və ya yaddaş yoxdursa ön planda) məlumatları yenilə
     try {
         const [prodRes, courRes] = await Promise.all([
             fetchWithTimeout(`${CONFIG.own.API_URL}?action=getProductList`),
@@ -811,19 +1023,24 @@ window.onload = async function () {
         const courData = await courRes.json();
 
         if (prodData.success) {
-            // Sort by longest name first to avoid partial string matching bugs in getMatchedProducts
             AppData.products = prodData.products.sort((a, b) => b.name.length - a.name.length);
+            sessionStorage.setItem('appData_products', JSON.stringify(AppData.products));
         }
         if (courData.success) {
             AppData.couriers = courData.users;
+            sessionStorage.setItem('appData_couriers', JSON.stringify(AppData.couriers));
         }
 
-        hideGlobalLoading();
-        loadOrders('own'); // Load orders automatically on success
+        if (!hasCache) {
+            hideGlobalLoading();
+            loadOrders('own'); // Əgər keşdə yox idisə, indi yüklə
+        }
     } catch (err) {
         console.error('Initialization error:', err);
-        document.getElementById('globalLoadingText').innerHTML = 'Giriş xətası. İnternet əlaqəsini yoxlayıb səhifəni yeniləyin.<br><button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;border-radius:6px;border:none;background:#2563eb;color:#fff;cursor:pointer;">Yenilə</button>';
-        document.querySelector('.global-overlay .spinner').style.display = 'none';
+        if (!hasCache) {
+            document.getElementById('globalLoadingText').innerHTML = 'Giriş xətası. İnternet əlaqəsini yoxlayıb səhifəni yeniləyin.<br><button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;border-radius:6px;border:none;background:#2563eb;color:#fff;cursor:pointer;">Yenilə</button>';
+            document.querySelector('.global-overlay .spinner').style.display = 'none';
+        }
     }
 };
 
@@ -834,7 +1051,7 @@ function hideGlobalLoading() {
 }
 
 // ═══════════════════════════════════════════════
-//  FETCH WITH TIMEOUT (Increased to 30s to prevent early failures)
+//  FETCH WITH TIMEOUT
 // ═══════════════════════════════════════════════
 function fetchWithTimeout(url, options = {}, timeout = 30000) {
     const controller = new AbortController();
@@ -855,9 +1072,6 @@ function switchPanel(panel) {
     const partnerBtn = document.getElementById('tabPartner');
     ownBtn.className = 'tab-btn' + (panel === 'own' ? ' active-own' : '');
     partnerBtn.className = 'tab-btn' + (panel === 'partner' ? ' active-partner' : '');
-
-    const pdfBtn = document.getElementById('generatePdfBtn');
-    pdfBtn.style.background = panel === 'partner' ? 'var(--partner)' : '#059669';
 }
 
 // ═══════════════════════════════════════════════
@@ -867,6 +1081,9 @@ function loadOrders(panel) {
     const cfg = CONFIG[panel];
     const date = document.getElementById(cfg.dateInput).value;
     if (!date) { showToast('Tarix seçin', 'error'); return; }
+
+    // Clear search input on fresh load
+    document.getElementById(`${cfg.prefix}SearchFilter`).value = '';
 
     const listEl = document.getElementById(cfg.listId);
     listEl.innerHTML = `<div class="empty-state"><div class="spinner" style="margin:0 auto 14px"></div>Sifarişlər yüklənir...</div>`;
@@ -891,23 +1108,41 @@ function loadOrders(panel) {
 }
 
 // ═══════════════════════════════════════════════
-//  URL EXTRACTOR (For parsing Formula vs Text links in Sheets)
+//  URL EXTRACTOR
 // ═══════════════════════════════════════════════
 function extractUrl(text) {
     if (!text) return '';
-    // Look for =IMAGE("url")
     const imgMatch = String(text).match(/=IMAGE\(\s*"([^"]+)"\s*\)/i);
     if (imgMatch) return imgMatch[1];
-    
-    // Look for raw HTTP link inside text
     const rawMatch = String(text).match(/(https?:\/\/[^\s"]+)/i);
     if (rawMatch) return rawMatch[1];
-    
-    return String(text); // Fallback to raw text
+    return String(text);
 }
 
 // ═══════════════════════════════════════════════
-//  RENDER ORDERS (Optimized & Fast)
+//  LIVE SEARCH FILTER (Canlı Axtarış)
+// ═══════════════════════════════════════════════
+function filterLiveSearch(panel) {
+    const cfg = CONFIG[panel];
+    const searchInput = document.getElementById(`${cfg.prefix}SearchFilter`).value.toLowerCase().trim();
+    const cards = document.querySelectorAll(`[id^="${cfg.prefix}-order-"]`);
+
+    cards.forEach(card => {
+        // Kartın daxilindəki bütün mətni (müştəri adı, ID, status və s.) yoxlayır
+        const textContent = card.innerText.toLowerCase();
+        if (textContent.includes(searchInput)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // Statistikaları sadəcə ekranda qalanlara görə yenidən hesabla
+    recalcStats(panel);
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER ORDERS (With Lazy Loading Images)
 // ═══════════════════════════════════════════════
 function renderOrders(panel, orders) {
     const cfg = CONFIG[panel];
@@ -946,13 +1181,12 @@ function renderOrders(panel, orders) {
             imgBtn = `<button class="btn btn-img" onclick="openImageModal('${safeLink}', ${isRaw})"><i class="fas fa-camera"></i> Sifariş Fotosu / Qəbz</button>`;
         }
 
-        // -- Product Matcher (Displays Code and Product Image from Products Sheet) --
+        // -- Product Matcher --
         let productCardsHtml = '';
         if (details && details !== '—') {
             const lowerDetails = details.toLowerCase();
             const matchedProducts = [];
             
-            // Because AppData.products is sorted by longest name, we avoid false matches like "Box" matching inside "Gift Box"
             AppData.products.forEach(prod => {
                 if (prod.name && lowerDetails.includes(prod.name.toLowerCase())) {
                     matchedProducts.push(prod);
@@ -967,7 +1201,7 @@ function renderOrders(panel, orders) {
                     
                     productCardsHtml += `
                         <div class="product-tag">
-                            ${extractedImg ? `<img src="${extractedImg}" onclick="openImageModal('${escAttr(extractedImg)}', ${isRaw})" class="prod-thumb" alt="${escAttr(prod.name)}">` : ''}
+                            ${extractedImg ? `<img src="${extractedImg}" loading="lazy" onclick="openImageModal('${escAttr(extractedImg)}', ${isRaw})" class="prod-thumb" alt="${escAttr(prod.name)}">` : ''}
                             <div class="prod-info">
                                 <strong>${escHtml(prod.name)}</strong>
                                 <span class="prod-code">Kod: ${escHtml(prod.code || 'Yoxdur')}</span>
@@ -983,7 +1217,6 @@ function renderOrders(panel, orders) {
             ? `<div class="bonus-tag"><i class="fas fa-plus-circle"></i> Kuryer Bonusu: ${additionalPay.toFixed(2)} AZN</div>`
             : '';
 
-        // Inject the pre-built courier options, and set the selected attribute dynamically
         const finalCourierSelect = `
             <select id="${p}-courierSel-${id}" class="form-control" onchange="assignCourier('${panel}',${id})">
                 <option value="">Kuryer seçin...</option>
@@ -995,10 +1228,10 @@ function renderOrders(panel, orders) {
         <div class="order-card ${statusClass}" id="${p}-order-${id}"
              data-amount="${amount}" data-status="${status}"
              data-courier="${escAttr(courier)}" data-payment="${payMethod}"
-             data-additional="${additionalPay}" data-seller="${escAttr(seller)}" data-panel="${panel}">
+             data-additional="${additionalPay}" data-seller="${escAttr(seller)}" data-panel="${panel}" style="display:block;">
 
             <div class="order-card-top" style="padding:6px 18px; font-size:0.7rem; letter-spacing:0.4px;">
-                ${statusClass.replace('s-','')} ${courier ? '· ' + courier : ''}
+                ${statusClass.replace('s-','')} <span id="${p}-cardTopCour-${id}">${courier ? '· ' + courier : ''}</span>
             </div>
 
             <div class="order-card-body">
@@ -1009,7 +1242,13 @@ function renderOrders(panel, orders) {
 
                 <div class="info-row"><span class="info-key"><i class="fas fa-store"></i> Satıcı</span><span class="info-val">${seller}</span></div>
                 <div class="info-row"><span class="info-key"><i class="fas fa-user"></i> Müştəri</span><span class="info-val">${customerName}</span></div>
-                <div class="info-row"><span class="info-key"><i class="fas fa-phone"></i> Tel</span><span class="info-val"><a href="tel:${phone}">${phone}</a></span></div>
+                <div class="info-row">
+                    <span class="info-key"><i class="fas fa-phone"></i> Tel</span>
+                    <span class="info-val">
+                        <a href="tel:${phone}">${phone}</a>
+                        <button class="btn-ai-small" onclick="generateAIMessage(${id}, '${panel}')" title="Süni İntellekt ilə mesaj yarat">✨ Mesaj Yarat</button>
+                    </span>
+                </div>
                 <div class="info-row"><span class="info-key"><i class="fas fa-truck"></i> Kuryer</span><span class="info-val" id="${p}-courierDisp-${id}">${courier || 'Təyin edilməyib'}</span></div>
 
                 <span class="field-label">Çatdırılma Ünvanı</span>
@@ -1078,7 +1317,7 @@ function getStatusClass(status, courier) {
 }
 
 // ═══════════════════════════════════════════════
-//  RECALCULATE STATS (LOCAL)
+//  RECALCULATE STATS (Live based on VISIBLE CARDS)
 // ═══════════════════════════════════════════════
 function recalcStats(panel) {
     const cfg = CONFIG[panel];
@@ -1086,11 +1325,14 @@ function recalcStats(panel) {
 
     let totalCount = 0, totalAmt = 0, cashAmt = 0, cardAmt = 0;
     let cashCount = 0, cardCount = 0;
-    let courierDebt = {};   // name → { net, card }
+    let courierDebt = {};
     let courierCount = {};
     let sellerCount = {};
 
     document.querySelectorAll(`[id^="${p}-order-"]`).forEach(card => {
+        // Canlı axtarış zamanı gizlədilmiş sifarişləri hesablama
+        if (card.style.display === 'none') return;
+
         const id       = card.id.replace(`${p}-order-`, '');
         const priceEl  = document.getElementById(`${p}-price-${id}`);
         const statusEl = document.getElementById(`${p}-status-${id}`);
@@ -1105,6 +1347,7 @@ function recalcStats(panel) {
         const additional= parseFloat(card.dataset.additional) || 0;
         const seller    = card.dataset.seller || 'Digər';
         let   courier   = courierDisp ? courierDisp.innerText.trim() : '';
+        
         if (!courier || courier === 'Təyin edilməyib' || courier === 'Kuryer seçin...') courier = 'Təyin edilməyib';
 
         const isCanceled = status === 'Canceled' || status === 'Deleted';
@@ -1122,7 +1365,6 @@ function recalcStats(panel) {
             sellerCount[seller]++;
         }
 
-        // Courier debt (Delivered or Canceled)
         if (courier !== 'Təyin edilməyib' && (status === 'Delivered' || status === 'Canceled')) {
             if (!courierDebt[courier]) courierDebt[courier] = { net: 0, card: 0 };
             courierDebt[courier].net -= 5.8;
@@ -1179,7 +1421,7 @@ function resetStats(panel) {
 }
 
 // ═══════════════════════════════════════════════
-//  UPDATE ORDER DETAILS
+//  UPDATE ORDER DETAILS (Optimistic)
 // ═══════════════════════════════════════════════
 function updateDetails(panel, orderId) {
     const cfg = CONFIG[panel];
@@ -1190,7 +1432,10 @@ function updateDetails(panel, orderId) {
     const pay   = document.getElementById(`${p}-pay-${orderId}`).value;
 
     const card = document.getElementById(`${p}-order-${orderId}`);
-    card.style.opacity = '0.8';
+    
+    // Dərhal görünüşü yenilə və hesablamanı apar
+    card.dataset.payment = pay;
+    recalcStats(panel);
 
     fetchWithTimeout(cfg.UPDATE_URL, {
         method: 'POST',
@@ -1205,30 +1450,38 @@ function updateDetails(panel, orderId) {
     })
     .then(r => r.json())
     .then(data => {
-        card.style.opacity = '1';
         if (data.success) {
             showToast('Dəyişikliklər saxlanıldı ✓');
-            recalcStats(panel);
         } else {
             showToast('Xəta: ' + (data.message || 'Bilinmir'), 'error');
         }
     })
     .catch(() => {
-        card.style.opacity = '1';
-        showToast('İnternet xətası', 'error');
+        showToast('İnternet xətası. Saxlanılmadı.', 'error');
     });
 }
 
 // ═══════════════════════════════════════════════
-//  CHANGE STATUS
+//  CHANGE STATUS (Optimistic UI)
 // ═══════════════════════════════════════════════
 function changeStatus(panel, orderId) {
     const cfg = CONFIG[panel];
     const p = cfg.prefix;
-    const newStatus = document.getElementById(`${p}-status-${orderId}`).value;
+    
+    const statusEl = document.getElementById(`${p}-status-${orderId}`);
+    const newStatus = statusEl.value;
     const card = document.getElementById(`${p}-order-${orderId}`);
+    const badge = document.getElementById(`${p}-statusBadge-${orderId}`);
+    const courierDisp = document.getElementById(`${p}-courierDisp-${orderId}`).innerText;
 
-    setCardLoading(card, true);
+    // Əvvəlki dəyəri yadda saxla ki, xəta olanda geri qaytaraq
+    const oldStatus = badge.textContent;
+
+    // Dərhal UI yeniləməsi (Gözləmə yoxdur)
+    badge.textContent = newStatus;
+    card.className = `order-card ${getStatusClass(newStatus, courierDisp)}`;
+    card.dataset.status = newStatus;
+    recalcStats(panel);
 
     fetchWithTimeout(cfg.API_URL, {
         method: 'POST',
@@ -1236,25 +1489,25 @@ function changeStatus(panel, orderId) {
     })
     .then(r => r.json())
     .then(data => {
-        setCardLoading(card, false);
         if (data.success) {
-            document.getElementById(`${p}-statusBadge-${orderId}`).textContent = newStatus;
-            const courierDisp = document.getElementById(`${p}-courierDisp-${orderId}`).innerText;
-            card.className = `order-card ${getStatusClass(newStatus, courierDisp)}`;
-            recalcStats(panel);
             showToast(`Status: ${newStatus}`, 'success');
         } else {
-            showToast('Status dəyişdirilmədi', 'error');
+            throw new Error('Server imtina etdi');
         }
     })
     .catch(() => {
-        setCardLoading(card, false);
-        showToast('İnternet xətası', 'error');
+        // Uğursuz olduqda geri qaytarmaq
+        statusEl.value = oldStatus;
+        badge.textContent = oldStatus;
+        card.className = `order-card ${getStatusClass(oldStatus, courierDisp)}`;
+        card.dataset.status = oldStatus;
+        recalcStats(panel);
+        showToast('Status dəyişdirilmədi. İnternet xətası.', 'error');
     });
 }
 
 // ═══════════════════════════════════════════════
-//  ASSIGN COURIER
+//  ASSIGN COURIER (Optimistic UI)
 // ═══════════════════════════════════════════════
 function assignCourier(panel, orderId) {
     const cfg = CONFIG[panel];
@@ -1264,7 +1517,19 @@ function assignCourier(panel, orderId) {
     if (!courierName) return;
 
     const card = document.getElementById(`${p}-order-${orderId}`);
-    setCardLoading(card, true);
+    const disp = document.getElementById(`${p}-courierDisp-${orderId}`);
+    const topDisp = document.getElementById(`${p}-cardTopCour-${orderId}`);
+    const statusVal = document.getElementById(`${p}-status-${orderId}`).value;
+
+    // Əvvəlki dəyər (Rollback üçün)
+    const oldCourier = disp.innerText;
+
+    // Dərhal UI yeniləməsi
+    disp.innerText = courierName;
+    topDisp.innerText = '· ' + courierName;
+    card.dataset.courier = courierName;
+    card.className = `order-card ${getStatusClass(statusVal, courierName)}`;
+    recalcStats(panel);
 
     fetchWithTimeout(cfg.API_URL, {
         method: 'POST',
@@ -1272,25 +1537,26 @@ function assignCourier(panel, orderId) {
     })
     .then(r => r.json())
     .then(data => {
-        setCardLoading(card, false);
         if (data.success) {
-            document.getElementById(`${p}-courierDisp-${orderId}`).innerText = courierName;
-            const statusVal = document.getElementById(`${p}-status-${orderId}`).value;
-            card.className = `order-card ${getStatusClass(statusVal, courierName)}`;
-            recalcStats(panel);
-            showToast(`Kuryer: ${courierName}`, 'success');
+            showToast(`Kuryer təyin edildi: ${courierName}`, 'success');
         } else {
-            showToast('Kuryer təyin edilmədi', 'error');
+            throw new Error('Server imtina etdi');
         }
     })
     .catch(() => {
-        setCardLoading(card, false);
-        showToast('İnternet xətası', 'error');
+        // Uğursuz olduqda geri qaytar
+        sel.value = oldCourier === 'Təyin edilməyib' ? '' : oldCourier;
+        disp.innerText = oldCourier;
+        topDisp.innerText = oldCourier === 'Təyin edilməyib' ? '' : '· ' + oldCourier;
+        card.dataset.courier = oldCourier;
+        card.className = `order-card ${getStatusClass(statusVal, oldCourier)}`;
+        recalcStats(panel);
+        showToast('Kuryer təyin edilmədi (İnternet xətası)', 'error');
     });
 }
 
 // ═══════════════════════════════════════════════
-//  DELETE ORDER
+//  DELETE ORDER (Optimistic UI)
 // ═══════════════════════════════════════════════
 function deleteOrder(panel, orderId) {
     if (!confirm('Bu sifarişi silmək istədiyinizə əminsiniz?')) return;
@@ -1299,9 +1565,9 @@ function deleteOrder(panel, orderId) {
     const p = cfg.prefix;
     const card = document.getElementById(`${p}-order-${orderId}`);
 
-    card.style.transition = 'all 0.4s';
-    card.style.opacity = '0';
-    card.style.transform = 'scale(0.88)';
+    // Dərhal kartı gizlət və statiskanı yenilə
+    card.style.display = 'none';
+    recalcStats(panel);
 
     fetchWithTimeout(cfg.UPDATE_URL, {
         method: 'POST',
@@ -1310,37 +1576,32 @@ function deleteOrder(panel, orderId) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            setTimeout(() => { card.remove(); recalcStats(panel); }, 400);
+            card.remove();
             showToast('Sifariş silindi', 'success');
         } else {
-            card.style.opacity = '1';
-            card.style.transform = 'scale(1)';
-            showToast('Silinmə xətası: ' + (data.message || ''), 'error');
+            throw new Error(data.message || 'Server Xətası');
         }
     })
-    .catch(() => {
-        card.style.opacity = '1';
-        card.style.transform = 'scale(1)';
-        showToast('İnternet xətası', 'error');
+    .catch(err => {
+        // Uğursuz olduqda kartı geri qaytar
+        card.style.display = 'block';
+        recalcStats(panel);
+        showToast('Silinmə xətası: ' + err.message, 'error');
     });
 }
 
 // ═══════════════════════════════════════════════
-//  IMAGE MODAL (Dual Support: Raw Image & Drive Frame)
+//  IMAGE MODAL (Dual Support)
 // ═══════════════════════════════════════════════
 function buildDrivePreviewUrl(raw) {
     if (!raw || raw.trim() === '') return null;
     let url = raw.trim();
-
     const match1 = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (match1) return `https://drive.google.com/file/d/${match1[1]}/preview`;
-
     const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
     if (match2 && url.includes('drive.google.com')) return `https://drive.google.com/file/d/${match2[1]}/preview`;
-
     if (url.includes('/preview')) return url;
     if (url.includes('drive.google.com')) return url.replace(/\/view(\?.*)?$/, '/preview');
-
     return url;
 }
 
@@ -1351,12 +1612,10 @@ function openImageModal(rawUrl, isRawImage = false) {
     const img = document.getElementById('modalImg');
 
     if (isRawImage || rawUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) || rawUrl.includes('raw.githubusercontent.com')) {
-        // Render as raw image
         frame.style.display = 'none';
         imgCont.style.display = 'flex';
         img.src = rawUrl;
     } else {
-        // Render as Drive iframe preview
         const previewUrl = buildDrivePreviewUrl(rawUrl);
         if (!previewUrl) {
             showToast('Şəkil linki tapılmadı', 'error');
@@ -1389,22 +1648,6 @@ function handleModalBgClick(e) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImageModal(); });
 
 // ═══════════════════════════════════════════════
-//  LOADING OVERLAY ON CARD
-// ═══════════════════════════════════════════════
-function setCardLoading(card, show) {
-    if (!card) return;
-    const existing = card.querySelector('.loading-overlay');
-    if (show && !existing) {
-        const ov = document.createElement('div');
-        ov.className = 'loading-overlay';
-        ov.innerHTML = '<div class="spinner"></div>';
-        card.appendChild(ov);
-    } else if (!show && existing) {
-        existing.remove();
-    }
-}
-
-// ═══════════════════════════════════════════════
 //  TOAST & ESCAPE
 // ═══════════════════════════════════════════════
 function showToast(msg, type = 'success') {
@@ -1429,61 +1672,6 @@ function escHtml(str) {
 function escAttr(str) {
     return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
-
-// ═══════════════════════════════════════════════
-//  PDF GENERATION
-// ═══════════════════════════════════════════════
-document.getElementById('generatePdfBtn').addEventListener('click', function () {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const panel = activePanel;
-    const cfg = CONFIG[panel];
-    const p = cfg.prefix;
-    const date = document.getElementById(cfg.dateInput).value;
-
-    const rows = [];
-    document.querySelectorAll(`[id^="${p}-order-"]`).forEach(card => {
-        const id = card.id.replace(`${p}-order-`, '');
-        const addr    = document.getElementById(`${p}-addr-${id}`)?.value || '';
-        const courier = document.getElementById(`${p}-courierDisp-${id}`)?.innerText || '';
-        const status  = document.getElementById(`${p}-status-${id}`)?.value || '';
-        const price   = document.getElementById(`${p}-price-${id}`)?.value || '0';
-        const pay     = document.getElementById(`${p}-pay-${id}`)?.value || '';
-        rows.push([`#${id}`, addr, courier, status, `${price} AZN`, pay === 'cash' ? 'Nağd' : 'Kart']);
-    });
-
-    if (rows.length === 0) { showToast('Sifariş yoxdur', 'error'); return; }
-
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    const title = panel === 'partner' ? `Tərəfdaş Sifarişlər — ${date}` : `Sifarişlər — ${date}`;
-    doc.text(title, 14, 16);
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Cəmi: ${rows.length} sifariş`, 14, 23);
-
-    doc.autoTable({
-        head: [['ID', 'Ünvan', 'Kuryer', 'Status', 'Məbləğ', 'Ödəniş']],
-        body: rows,
-        startY: 28,
-        theme: 'grid',
-        styles: { fontSize: 8, font: 'helvetica', cellPadding: 3 },
-        headStyles: { fillColor: panel === 'partner' ? [124, 58, 237] : [37, 99, 235], textColor: 255, fontStyle: 'bold' },
-        alternateRowStyles: { fillColor: [248, 250, 252] }
-    });
-
-    const blob = doc.output('blob');
-    const blobUrl = URL.createObjectURL(blob);
-
-    if (window.innerWidth < 768) {
-        doc.save(`sifarisler_${date}.pdf`);
-    } else {
-        window.open(blobUrl, '_blank');
-    }
-
-    showToast('PDF hazırlandı', 'success');
-});
 </script>
 </body>
 </html>
