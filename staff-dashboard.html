@@ -447,7 +447,7 @@
 
   <!-- ═══════════════ TAB: MAĞAZA ═══════════════ -->
 <div id="tab-store" class="view-container">
-    <iframe src="catalogue.html" class="full-frame"></iframe>
+    <iframe src="https://www.sehrbaz.com" class="full-frame"></iframe>
   </div>
 
   <!-- ═══════════════ TAB: YENİ SİFARİŞ ═══════════════ -->
@@ -495,14 +495,16 @@
           </div>
           <div style="flex:1;">
             <label>Saat Aralığı</label>
-            <select id="timeSlot" required>
+            <select id="timeSlot" required onchange="handleTimeSlotChange()">
               <option value="">Seçin...</option>
               <option value="12:00 - 14:00">12:00 - 14:00</option>
               <option value="14:00 - 16:00">14:00 - 16:00</option>
               <option value="16:00 - 18:00">16:00 - 18:00</option>
               <option value="18:00 - 20:00">18:00 - 20:00</option>
               <option value="20:00 - 21:00">20:00 - 21:00</option>
+              <option value="custom">Digər (Əl ilə daxil et)</option>
             </select>
+            <input type="text" id="customTimeSlot" placeholder="Məs: 10:00 - 11:30" style="display:none; margin-top:8px;">
           </div>
         </div>
       </div>
@@ -607,11 +609,32 @@
           <label>Metro Stansiyası</label>
           <select id="coMetroSelect" onchange="coUpdateDeliveryCost()">
             <option value="">Stansiyanı seçin...</option>
-            <option>28 May</option><option>Gənclik</option><option>Nəriman Nərimanov</option>
-            <option>Elmlər Akademiyası</option><option>Nizami</option><option>İçərişəhər</option>
-            <option>Sahil</option><option>Koroğlu</option><option>Neftçilər</option>
-            <option>Xalqlar Dostluğu</option><option>Əhmədli</option><option>Həzi Aslanov</option>
-            <option>Memar Əcəmi</option><option>Avtovağzal</option><option>8 Noyabr</option><option>20 Yanvar</option><option>İnşaatçılar</option>
+            <option>20 Yanvar</option>
+            <option>28 May</option>
+            <option>8 Noyabr</option>
+            <option>Avtovağzal</option>
+            <option>Azadlıq prospekti</option>
+            <option>Bakmil</option>
+            <option>Cəfər Cabbarlı</option>
+            <option>Dərnəgül</option>
+            <option>Elmlər Akademiyası</option>
+            <option>Əhmədli</option>
+            <option>Gənclik</option>
+            <option>Həzi Aslanov</option>
+            <option>İçərişəhər</option>
+            <option>İnşaatçılar</option>
+            <option>Koroğlu</option>
+            <option>Qara Qarayev</option>
+            <option>Memar Əcəmi</option>
+            <option>Nəriman Nərimanov</option>
+            <option>Nəsimi</option>
+            <option>Neftçilər</option>
+            <option>Nizami</option>
+            <option>Sahil</option>
+            <option>Şah İsmayıl Xətai</option>
+            <option>Ulduz</option>
+            <option>Xalqlar Dostluğu</option>
+            <option>Xocəsən</option>
           </select>
         </div>
 
@@ -857,7 +880,7 @@
 
   <!-- ═══════════════ BOTTOM NAV ═══════════════ -->
   <nav class="bottom-nav">
-  <button class="nav-item" onclick="window.location.href='www.sehrbaz.com/catalogue.html'">
+  <button class="nav-item" onclick="window.location.href='https://www.sehrbaz.com'">
       <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>
       <span>Mağaza</span>
     </button>
@@ -1031,6 +1054,20 @@
 
     if (tabId === 'tab-list')  renderOrderList();
     if (tabId === 'tab-stats') renderStats();
+  }
+
+  /* ═══════════════════════════════════════════════════
+     CUSTOM TIME SLOT HANDLER
+  ═══════════════════════════════════════════════════ */
+  function handleTimeSlotChange() {
+    const select = document.getElementById('timeSlot');
+    const customInput = document.getElementById('customTimeSlot');
+    if (select.value === 'custom') {
+      customInput.style.display = 'block';
+    } else {
+      customInput.style.display = 'none';
+      customInput.value = '';
+    }
   }
 
   /* ═══════════════════════════════════════════════════
@@ -1636,8 +1673,16 @@ filtered.forEach(o => {
       return Swal.fire('Diqqət', 'Ad və Soyadı daxil edin.', 'warning');
     if (!document.getElementById('custPhone').value.trim())
       return Swal.fire('Diqqət', 'Əlaqə nömrəsini daxil edin.', 'warning');
-    if (!document.getElementById('timeSlot').value)
+      
+    // Custom Time Slot Validation
+    let finalTimeSlot = document.getElementById('timeSlot').value;
+    if (finalTimeSlot === 'custom') {
+      finalTimeSlot = document.getElementById('customTimeSlot').value.trim();
+      if (!finalTimeSlot) return Swal.fire('Diqqət', 'Çatdırılma saatını daxil edin.', 'warning');
+    } else if (!finalTimeSlot) {
       return Swal.fire('Diqqət', 'Çatdırılma saat aralığını seçin.', 'warning');
+    }
+
     if (coCart.length === 0)
       return Swal.fire('Diqqət', 'Səbətə ən azı bir məhsul əlavə edin.', 'warning');
 
@@ -1701,7 +1746,7 @@ filtered.forEach(o => {
         contactInfo:         document.getElementById('custPhone').value.trim(),
         instagramHandle:     document.getElementById('instagramHandle').value.trim(),
         deliveryDate:        document.getElementById('deliveryDate').value,
-        timeSlot:            document.getElementById('timeSlot').value,
+        timeSlot:            finalTimeSlot,
         address:             finalAddress,
         specialInstructions: document.getElementById('coSpecialInstructions').value.trim(),
         courieradditional:   deliveryCost,
@@ -1764,6 +1809,10 @@ filtered.forEach(o => {
 
     coRenderCart();
     coCancelCustomProduct();
+
+    // Reset custom time slot
+    document.getElementById('customTimeSlot').style.display = 'none';
+    document.getElementById('customTimeSlot').value = '';
 
     // Reset loc to metro
     const metroTab = document.querySelector('.loc-tab');
