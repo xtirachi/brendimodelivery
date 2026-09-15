@@ -1,33 +1,409 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Delivery Management Login</title>
-  <link href="login.css" rel="stylesheet"> <!-- Link to external CSS file -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Giriş — Delivery Management</title>
+
+<!--
+  Preconnect to both domains involved in an Apps Script Web App call.
+  script.google.com receives the POST, but it replies with a redirect to
+  script.googleusercontent.com which actually serves the JSON. Opening the
+  TLS connection to both ahead of time (instead of only after the user
+  submits) is what removes most of the "opens very late" delay on the
+  first request of a session.
+-->
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="dns-prefetch" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="dns-prefetch" href="https://script.googleusercontent.com">
+
+<style>
+  :root{
+    --bg:#0E141B;
+    --bg-glow:#132630;
+    --surface:#1A2530;
+    --surface-border:#29343F;
+    --text:#EDF1F5;
+    --text-muted:#8FA0AF;
+    --accent:#33C2A0;
+    --accent-hover:#2AA689;
+    --accent-ink:#08211B;
+    --danger:#E8607A;
+    --danger-bg:rgba(232,96,122,0.1);
+    --danger-border:rgba(232,96,122,0.35);
+    --focus-ring:rgba(51,194,160,0.35);
+    --radius-card:20px;
+    --radius-field:10px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    height:100%;
+    margin:0;
+  }
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:
+      radial-gradient(560px 360px at 50% -8%, var(--bg-glow), transparent 70%),
+      var(--bg);
+    color:var(--text);
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    padding-top:max(24px, env(safe-area-inset-top));
+    padding-bottom:max(24px, env(safe-area-inset-bottom));
+  }
+
+  .card{
+    width:100%;
+    max-width:380px;
+    background:var(--surface);
+    border:1px solid var(--surface-border);
+    border-radius:var(--radius-card);
+    padding:2.25rem 2rem 2rem;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.55);
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:0.55rem;
+    margin-bottom:1.75rem;
+  }
+
+  .brand-mark{
+    flex:none;
+    width:26px;
+    height:26px;
+  }
+
+  .brand-name{
+    font-size:0.9rem;
+    font-weight:600;
+    letter-spacing:0.01em;
+    color:var(--text-muted);
+  }
+
+  h1{
+    margin:0 0 0.35rem;
+    font-size:1.6rem;
+    font-weight:650;
+    letter-spacing:-0.01em;
+  }
+
+  .subtitle{
+    margin:0 0 1.75rem;
+    font-size:0.9rem;
+    color:var(--text-muted);
+    line-height:1.4;
+  }
+
+  .field{
+    margin-bottom:1.1rem;
+  }
+
+  label{
+    display:block;
+    font-size:0.83rem;
+    font-weight:500;
+    color:var(--text-muted);
+    margin-bottom:0.4rem;
+  }
+
+  input{
+    width:100%;
+    font-size:1rem;
+    font-family:inherit;
+    color:var(--text);
+    background:var(--bg);
+    border:1px solid var(--surface-border);
+    border-radius:var(--radius-field);
+    padding:0.72rem 0.85rem;
+    transition:border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  input::placeholder{ color:#5A6A78; }
+
+  input:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--focus-ring);
+  }
+
+  input:disabled{ opacity:0.6; }
+
+  .password-wrap{
+    position:relative;
+  }
+
+  .password-wrap input{
+    padding-right:2.6rem;
+  }
+
+  .toggle-pw{
+    position:absolute;
+    right:0.35rem;
+    top:50%;
+    transform:translateY(-50%);
+    width:2rem;
+    height:2rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:none;
+    border:none;
+    border-radius:8px;
+    color:var(--text-muted);
+    cursor:pointer;
+  }
+
+  .toggle-pw:hover{ color:var(--text); }
+  .toggle-pw:focus-visible{
+    outline:none;
+    box-shadow:0 0 0 3px var(--focus-ring);
+  }
+
+  .toggle-pw svg{ width:18px; height:18px; }
+  .toggle-pw .eye-off{ display:none; }
+  .toggle-pw.is-visible .eye-on{ display:none; }
+  .toggle-pw.is-visible .eye-off{ display:block; }
+
+  .submit-btn{
+    width:100%;
+    margin-top:0.4rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.55rem;
+    padding:0.8rem;
+    font-size:0.95rem;
+    font-family:inherit;
+    font-weight:650;
+    color:var(--accent-ink);
+    background:var(--accent);
+    border:none;
+    border-radius:var(--radius-field);
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.05s ease, opacity 0.15s ease;
+  }
+
+  .submit-btn:hover{ background:var(--accent-hover); }
+  .submit-btn:active{ transform:scale(0.98); }
+  .submit-btn:focus-visible{
+    outline:none;
+    box-shadow:0 0 0 3px var(--focus-ring);
+  }
+  .submit-btn:disabled{
+    opacity:0.7;
+    cursor:not-allowed;
+  }
+
+  .spinner{
+    display:none;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    border:2px solid rgba(8,33,27,0.35);
+    border-top-color:var(--accent-ink);
+    animation:spin 0.7s linear infinite;
+  }
+
+  .submit-btn.loading .spinner{ display:inline-block; }
+
+  @keyframes spin{
+    to{ transform:rotate(360deg); }
+  }
+
+  .error{
+    display:none;
+    margin-top:1rem;
+    padding:0.65rem 0.8rem;
+    font-size:0.85rem;
+    line-height:1.4;
+    color:var(--danger);
+    background:var(--danger-bg);
+    border:1px solid var(--danger-border);
+    border-radius:var(--radius-field);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .spinner{ animation:none; }
+    .submit-btn{ transition:none; }
+  }
+
+  @media (max-width:420px){
+    .card{ padding:1.9rem 1.5rem 1.75rem; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-4">
-        <h2>Giriş</h2>
-        <form id="loginForm">
-          <div class="mb-3">
-            <label for="username" class="form-label">İstifadəçi adı</label>
-            <input type="text" class="form-control" id="username" required>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Şifrə</label>
-            <input type="password" class="form-control" id="password" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Giriş</button>
-        </form>
-        <div id="loginError" class="text-danger mt-3" style="display: none;"></div>
-      </div>
+  <main class="card">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <circle cx="13" cy="13" r="11.5" stroke="#33C2A0" stroke-width="1.6"/>
+        <path d="M13 6.5v6.2l4.2 2.5" stroke="#33C2A0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Delivery Management</span>
     </div>
-  </div>
 
-  
-  <script src="login.js"></script> <!-- Link to external JavaScript file -->
+    <h1>Giriş</h1>
+    <p class="subtitle">Davam etmək üçün hesabınıza daxil olun</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="username">İstifadəçi adı</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          autocomplete="username"
+          enterkeyhint="next"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck="false"
+          autofocus
+          required>
+      </div>
+
+      <div class="field">
+        <label for="password">Şifrə</label>
+        <div class="password-wrap">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="current-password"
+            enterkeyhint="go"
+            required>
+          <button type="button" class="toggle-pw" id="togglePw" aria-label="Şifrəni göstər">
+            <svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1C11 5.05 11.5 5 12 5c7 0 10.5 7 10.5 7-.6 1.2-1.6 2.7-3 4M6.6 6.6C3.6 8.4 1.5 12 1.5 12S5 19 12 19c1.4 0 2.7-.28 3.8-.75"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-label">Daxil ol</span>
+        <span class="spinner" aria-hidden="true"></span>
+      </button>
+
+      <div id="loginError" class="error" role="alert" aria-live="polite"></div>
+    </form>
+  </main>
+
+<script>
+(function () {
+  'use strict';
+
+  var APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqjSSQ-BDRTLY9rkdSwyQ6ZWR9-iTTvWcERyTDF0gNFrJ6d6JJ79wVYasgNlJAsJsJ/exec';
+  var REQUEST_TIMEOUT_MS = 15000;
+
+  var ROLE_REDIRECTS = {
+    Admin:        { page: 'admin-dashboard.html' },
+    Staff:        { page: 'staff-dashboard.html',        storageKey: 'staff_username' },
+    Delivery:     { page: 'delivery-dashboard.html',      storageKey: 'delivery_username' },
+    Deliveryhead: { page: 'deliveryhead-dashboard.html',  storageKey: 'deliveryhead_username' }
+  };
+
+  var form = document.getElementById('loginForm');
+  var usernameInput = document.getElementById('username');
+  var passwordInput = document.getElementById('password');
+  var submitBtn = document.getElementById('submitBtn');
+  var btnLabel = submitBtn.querySelector('.btn-label');
+  var errorBox = document.getElementById('loginError');
+  var togglePwBtn = document.getElementById('togglePw');
+
+  togglePwBtn.addEventListener('click', function () {
+    var showing = passwordInput.type === 'text';
+    passwordInput.type = showing ? 'password' : 'text';
+    togglePwBtn.classList.toggle('is-visible', !showing);
+    togglePwBtn.setAttribute('aria-label', showing ? 'Şifrəni göstər' : 'Şifrəni gizlət');
+  });
+
+  function setLoading(isLoading) {
+    submitBtn.disabled = isLoading;
+    usernameInput.disabled = isLoading;
+    passwordInput.disabled = isLoading;
+    submitBtn.classList.toggle('loading', isLoading);
+    btnLabel.textContent = isLoading ? 'Yoxlanılır…' : 'Daxil ol';
+    form.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+  }
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+  }
+
+  function hideError() {
+    errorBox.style.display = 'none';
+    errorBox.textContent = '';
+  }
+
+  function safeSetItem(key, value) {
+    try { localStorage.setItem(key, value); } catch (_e) { /* storage unavailable, ignore */ }
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    hideError();
+
+    var username = usernameInput.value.trim();
+    var password = passwordInput.value;
+
+    if (!username || !password) {
+      showError('Zəhmət olmasa bütün xanaları doldurun');
+      return;
+    }
+
+    setLoading(true);
+
+    var controller = ('AbortController' in window) ? new AbortController() : null;
+    var timeoutId = controller
+      ? setTimeout(function () { controller.abort(); }, REQUEST_TIMEOUT_MS)
+      : null;
+
+    fetch(APPSCRIPT_URL, {
+      method: 'POST',
+      body: new URLSearchParams({ action: 'login', username: username, password: password }),
+      signal: controller ? controller.signal : undefined
+    })
+      .then(function (response) {
+        if (!response.ok) { throw new Error('http_' + response.status); }
+        return response.json();
+      })
+      .then(function (data) {
+        if (data && data.success && ROLE_REDIRECTS[data.role]) {
+          var target = ROLE_REDIRECTS[data.role];
+          if (target.storageKey) { safeSetItem(target.storageKey, username); }
+          // Leave the button in its loading state — the page is navigating away.
+          window.location.href = target.page;
+          return;
+        }
+        if (data && data.success) {
+          showError('Naməlum istifadəçi rolu. İdarəçi ilə əlaqə saxlayın.');
+        } else {
+          showError('Yanlış giriş məlumatları');
+        }
+        setLoading(false);
+      })
+      .catch(function (err) {
+        if (err && err.name === 'AbortError') {
+          showError('Server cavab vermir. Bir daha cəhd edin.');
+        } else {
+          showError('Şəbəkə xətası baş verdi. İnternet bağlantınızı yoxlayın.');
+        }
+        setLoading(false);
+      })
+      .finally(function () {
+        if (timeoutId) { clearTimeout(timeoutId); }
+      });
+  });
+})();
+</script>
 </body>
 </html>
