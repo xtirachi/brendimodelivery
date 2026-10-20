@@ -630,7 +630,7 @@ function computeStats(orders) {
     }
     if (order.courier && (order.status === "Delivered" || order.status === "Canceled")) {
       const row = stats.debt.get(order.courier) || { net: 0, card: 0 };
-      row.net -= 5.8 + order.bonus;
+      row.net -= 5.5 + order.bonus;
       if (order.status === "Delivered") {
         if (order.pay === "cash") row.net += order.amount;
         else row.card += order.amount;
@@ -655,7 +655,7 @@ function renderStats() {
   $("stats").innerHTML =
     stat("Aktiv sifariş", stats.active, stats.canceled + " ləğv sayılmır") +
     stat("Satış", money(stats.total) + " ₼", "Nağd " + money(stats.cash) + " · Kart " + money(stats.card)) +
-    '<article class="stat detail"><h2>Kuryer borcu</h2><p>Nağd − 5.80 ₼ − bonus</p><div class="scroll">' + courierHtml + "</div></article>" +
+    '<article class="stat detail"><h2>Kuryer borcu</h2><p>Nağd − 5.50 ₼ − bonus</p><div class="scroll">' + courierHtml + "</div></article>" +
     '<article class="stat detail"><h2>Satıcılar</h2><div class="scroll">' + sellerHtml + "</div></article>";
   const all = state.orders.length;
   $("countLine").textContent = all === 0 ? "Bu tarixdə sifariş yoxdur" : shown.length === all ? all + " sifariş" : shown.length + " / " + all + " göstərilir";
@@ -896,7 +896,7 @@ function buildReport() {
   add("Kuryerlər", [...stats.couriers.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => {
     const debt = stats.debt.get(name);
     return [name, count + " aktiv" + (debt ? " · borc " + money(debt.net) + " AZN" + (debt.card ? " · kart " + money(debt.card) + " AZN" : "") : "")];
-  }), "Borc = çatdırılmış nağd − 5.80 ₼ − bonus. Ləğv olunanda da 5.80 çıxılır. Kart məbləği borca yazılmır.");
+  }), "Borc = çatdırılmış nağd − 5.50 ₼ − bonus. Ləğv olunanda da 5.50 çıxılır. Kart məbləği borca yazılmır.");
   add("Satıcılar", [...stats.sellers.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => [name, count + " sifariş"]));
   if (windows.size) add("Saat pəncərəsi", [...windows.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => [name, count + " sifariş"]));
   const top = [...active].sort((a, b) => b.amount - a.amount).slice(0, 3).filter((order) => order.amount > 0);
