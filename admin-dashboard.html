@@ -1,1554 +1,716 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://script.google.com">
-    <link rel="dns-prefetch" href="https://script.google.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Non-blocking Font Awesome load: preload then swap to stylesheet so it never delays first paint -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --primary-light: #eff6ff;
-            --accent: #f59e0b;
-            --bg: #f0f4f8;
-            --card: #ffffff;
-            --text: #0d1b2a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 14px;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);
-
-            /* Status */
-            --green: #16a34a; --green-bg: #f0fdf4;
-            --yellow: #d97706; --yellow-bg: #fffbeb;
-            --red: #dc2626; --red-bg: #fef2f2;
-            --purple: #7c3aed; --purple-bg: #f5f3ff;
-            --orange: #ea580c; --orange-bg: #fff7ed;
-            --slate: #475569; --slate-bg: #f8fafc;
-            
-            /* AI Gradient */
-            --ai-gradient: linear-gradient(135deg, #6366f1, #a855f7);
-            --ai-hover: linear-gradient(135deg, #4f46e5, #9333ea);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding-bottom: 60px;
-        }
-
-        /* ── TOP NAV ── */
-        .top-nav {
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            padding: 0 20px;
-            position: sticky;
-            top: 0;
-            z-index: 200;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .nav-inner {
-            max-width: 1300px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 62px;
-            gap: 16px;
-        }
-
-        .nav-brand {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            white-space: nowrap;
-        }
-
-        .nav-brand .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--accent);
-        }
-
-        /* ── CONTAINER ── */
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 20px 16px;
-        }
-
-        /* ── PANELS ── */
-        .panel { display: none; }
-        .panel.active { display: block; animation: panelIn 0.28s ease; }
-
-        @keyframes panelIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── FILTER BAR ── */
-        .filter-bar {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 14px 18px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-            border: 1px solid var(--border);
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        .form-group.search-group { flex: 1; min-width: 220px; }
-        .form-group:not(.search-group) { min-width: 160px; }
-        
-        .form-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
-
-        .form-control {
-            padding: 10px 13px;
-            border: 1.5px solid var(--border);
-            border-radius: 9px;
-            font-size: 0.92rem;
-            font-family: 'DM Sans', sans-serif;
-            width: 100%;
-            background: #fff;
-            color: var(--text);
-            transition: border-color 0.18s, box-shadow 0.18s;
-            appearance: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-            outline: none;
-        }
-
-        /* ── BUTTONS ── */
-        .btn {
-            padding: 10px 18px;
-            border-radius: 9px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.88rem;
-            font-family: 'DM Sans', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            transition: all 0.18s;
-            white-space: nowrap;
-        }
-
-        .btn:active { transform: scale(0.97); }
-
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 3px 10px rgba(37,99,235,0.3); }
-
-        .btn-ai { background: var(--ai-gradient); color: white; border: none; }
-        .btn-ai:hover { background: var(--ai-hover); box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); }
-
-        .btn-img { background: #0ea5e9; color: white; width: 100%; margin-top: 8px; }
-        .btn-img:hover { background: #0284c7; }
-
-        .btn-delete {
-            background: var(--red-bg);
-            color: var(--red);
-            margin-top: 14px;
-            width: 100%;
-            border: 1px solid #fecaca;
-        }
-        .btn-delete:hover { background: var(--red); color: white; }
-
-        /* ── STATS ROW ── */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 14px;
-            margin-bottom: 22px;
-        }
-
-        .stat-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 16px 18px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--primary);
-            transition: box-shadow 0.18s;
-        }
-
-        .stat-card:hover { box-shadow: var(--shadow-md); }
-        .stat-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 6px; }
-        .stat-value { font-size: 1.55rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
-        .stat-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
-
-        /* ── ORDER GRID ── */
-        .order-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 18px;
-        }
-
-        /* ── ORDER CARD ── */
-        .order-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-            transition: transform 0.18s, box-shadow 0.18s, opacity 0.3s;
-            position: relative;
-        }
-
-        .order-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-
-        .order-card-top {
-            padding: 5px 18px 0;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: white;
-            transition: background-color 0.3s ease;
-        }
-
-        .order-card-body { padding: 16px 18px 18px; }
-
-        /* Status colors */
-        .s-delivered .order-card-top { background: var(--green); }
-        .s-out .order-card-top { background: var(--yellow); }
-        .s-canceled .order-card-top { background: var(--red); }
-        .s-emil .order-card-top { background: var(--purple); }
-        .s-nicat .order-card-top { background: var(--orange); }
-        .s-default .order-card-top { background: var(--slate); }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .card-id {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-        }
-
-        .status-badge {
-            font-size: 0.72rem;
-            padding: 3px 10px;
-            border-radius: 20px;
-            background: rgba(0,0,0,0.06);
-            font-weight: 600;
-        }
-
-        .info-row {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-            margin: 6px 0;
-            font-size: 0.88rem;
-        }
-
-        .info-key {
-            font-weight: 600;
-            color: var(--text-muted);
-            font-size: 0.78rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-            min-width: 68px;
-        }
-
-        .info-val { color: var(--text); }
-        .info-val a { color: var(--primary); text-decoration: none; font-weight: 600; }
-        .info-val a:hover { text-decoration: underline; }
-
-        .btn-ai-small {
-            background: var(--ai-gradient);
-            color: white;
-            border: none;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            margin-left: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 600;
-        }
-
-        .field-label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 12px 0 4px;
-            display: block;
-        }
-
-        .price-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-        .order-detail-box {
-            background: var(--slate-bg);
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-top: 12px;
-            font-size: 0.85rem;
-            color: #475569;
-            line-height: 1.5;
-        }
-
-        /* ── PRODUCT TAGS ── */
-        .product-tags {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        
-        .product-tag {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-        }
-
-        .prod-thumb {
-            width: 44px;
-            height: 44px;
-            object-fit: cover;
-            border-radius: 6px;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .prod-thumb:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .prod-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .prod-info strong {
-            font-size: 0.82rem;
-            color: var(--text);
-            line-height: 1.2;
-            margin-bottom: 2px;
-        }
-
-        .prod-code {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            background: var(--slate-bg);
-            padding: 2px 6px;
-            border-radius: 4px;
-            display: inline-block;
-            width: fit-content;
-        }
-
-        .bonus-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--green-bg);
-            color: var(--green);
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 20px;
-            margin-top: 8px;
-        }
-
-        .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-
-        /* ── LOADING & OVERLAY ── */
-        .loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.75);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            border-radius: var(--radius);
-            backdrop-filter: blur(3px);
-        }
-
-        .global-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(240,244,248,0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            backdrop-filter: blur(5px);
-            transition: opacity 0.3s;
-        }
-        
-        .global-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .spinner {
-            width: 32px; height: 32px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-
-        .global-overlay .spinner {
-            width: 48px; height: 48px;
-            border-width: 4px;
-            margin-bottom: 16px;
-        }
-        
-        .global-overlay-text {
-            font-weight: 600;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            text-align: center;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            background: var(--card);
-            border-radius: var(--radius);
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-        }
-
-        .empty-state i { font-size: 2rem; margin-bottom: 12px; opacity: 0.4; display: block; }
-
-        /* ── TOAST ── */
-        #toast-container {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            pointer-events: none;
-            width: 90%;
-            max-width: 380px;
-        }
-
-        .toast {
-            background: #1e293b;
-            color: #f8fafc;
-            padding: 11px 20px;
-            border-radius: 50px;
-            font-size: 0.88rem;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(14px);
-            animation: toastIn 0.25s forwards;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .toast.success { background: #059669; }
-        .toast.error   { background: #dc2626; }
-        .toast.info    { background: #2563eb; }
-
-        @keyframes toastIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── IMAGE MODAL ── */
-        .img-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.88);
-            z-index: 3000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.25s;
-        }
-
-        .img-modal.open { display: flex; }
-
-        .img-modal-inner {
-            position: relative;
-            width: 92%;
-            max-width: 900px;
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .img-modal-toolbar {
-            background: #1e293b;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-
-        .ai-modal-content {
-            padding: 20px;
-            background: var(--card);
-            color: var(--text);
-            max-height: 70vh;
-            overflow-y: auto;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            white-space: pre-wrap;
-        }
-
-        .ai-modal-actions {
-            padding: 16px 20px;
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .img-modal-title { color: #f8fafc; font-size: 0.85rem; font-weight: 600; }
-
-        .img-modal-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.3rem;
-            cursor: pointer;
-            padding: 4px;
-            transition: color 0.15s;
-        }
-
-        .img-modal-close:hover { color: #fff; }
-
-        #modalFrame {
-            width: 100%;
-            height: 78vh;
-            border: none;
-            display: none;
-            background: #f1f5f9;
-        }
-
-        #modalImgContainer {
-            width: 100%;
-            height: 78vh;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: #0f172a;
-        }
-
-        #modalImgContainer img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 640px) {
-            .filter-bar { flex-direction: column; align-items: stretch; }
-            .form-group.search-group { min-width: 100%; }
-            .btn { width: 100%; }
-            .nav-brand .label { display: none; }
-            .order-grid { grid-template-columns: 1fr; }
-            .stats-row { grid-template-columns: 1fr 1fr; }
-        }
-
-        /* ── SELECT STYLING ── */
-        select.form-control {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 36px;
-        }
-
-        textarea.form-control { resize: vertical; min-height: 60px; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sifariş Paneli</title>
+<style>
+  :root {
+    --bg: #f3f1ec;
+    --surface: #fffcf8;
+    --fg: #1c1917;
+    --muted: #57534e;
+    --subtle: #8a8378;
+    --border: #e4ddd2;
+    --accent: #1c3d4e;
+    --accent-fg: #f6f3ee;
+    --ok: #17693f;
+    --ok-bg: #e5f4ec;
+    --warn: #8a5a00;
+    --warn-bg: #f8f0dc;
+    --danger: #a3261d;
+    --danger-bg: #fdeceb;
+    --shadow: 0 16px 40px rgba(28, 25, 23, 0.16);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--bg); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0 0; }
+  h1 { margin: 0; font-size: 1.15rem; letter-spacing: -0.02em; }
+  .sub { margin: 2px 0 0; color: var(--muted); font-size: 0.92rem; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0; }
+  .btn, .field, .chip {
+    height: 44px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 8px;
+  }
+  .btn { padding: 0 14px; font-weight: 600; }
+  .btn.icon { width: 44px; padding: 0; }
+  .btn.solid { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .field { padding: 0 12px; min-width: 0; }
+  .grow { flex: 1; }
+  .search { position: relative; width: 100%; padding-bottom: 12px; }
+  .search input { width: 100%; padding-left: 36px; }
+  .search svg { position: absolute; left: 12px; top: 14px; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .chip { border-radius: 999px; padding: 0 14px; white-space: nowrap; font-weight: 600; font-size: 0.92rem; }
+  .chip.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .card, .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .stat { padding: 14px; }
+  .stat h2, .block h3 { margin: 0; font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+  .stat strong { display: block; margin-top: 6px; font-variant-numeric: tabular-nums; font-size: 1.25rem; }
+  .stat p, .note { margin: 4px 0 0; color: var(--subtle); font-size: 0.75rem; }
+  .scroll { max-height: 96px; overflow: auto; margin-top: 8px; }
+  .line { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--border); padding: 4px 0; font-size: 0.85rem; }
+  .list { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 16px 0 48px; }
+  .order {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 520px;
+    padding: 16px;
+    border-left: 4px solid var(--warn);
+  }
+  .order.ok { border-left-color: var(--ok); }
+  .order.danger { border-left-color: var(--danger); }
+  .head { display: flex; justify-content: space-between; gap: 8px; }
+  .id { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.85rem; }
+  .meta { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+  .badge { border-radius: 999px; padding: 4px 8px; font-size: 0.75rem; font-weight: 700; background: var(--warn-bg); color: var(--warn); }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); }
+  .badge.danger { background: var(--danger-bg); color: var(--danger); }
+  .name { margin: 10px 0 0; font-size: 1.15rem; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; font-size: 0.92rem; }
+  .links a { color: var(--accent); font-weight: 650; }
+  .warn { color: var(--warn); font-weight: 650; }
+  .details { margin: 10px 0; font-weight: 650; }
+  label { display: block; margin-top: 10px; }
+  label span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 0.75rem; font-weight: 600; }
+  .field.full, textarea.field, select.field { width: 100%; }
+  textarea.field { height: auto; min-height: 88px; padding: 8px 12px; resize: vertical; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .ghost { height: 44px; }
+  .save { margin-left: auto; color: var(--subtle); font-size: 0.75rem; }
+  .danger-btn { background: none; border: 0; color: var(--danger); height: 44px; padding: 0 4px; font-weight: 650; }
+  .count { color: var(--muted); font-size: 0.92rem; margin-top: 14px; }
+  .empty, .error {
+    padding: 24px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 12px;
+    background: rgba(28, 25, 23, 0.4);
+  }
+  .modal.open { display: flex; }
+  .sheet {
+    width: min(640px, 100%);
+    max-height: 88vh;
+    overflow: auto;
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+  .sheet header { position: static; border: 0; display: flex; justify-content: space-between; align-items: center; background: transparent; }
+  .sheet h2 { margin: 0; font-size: 1rem; }
+  .sheet img { width: 100%; max-height: 70vh; object-fit: contain; background: #efebe3; border-radius: 8px; }
+  .block { margin-top: 14px; }
+  .summary { margin: 8px 0 0; line-height: 1.45; }
+  #toasts { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: grid; gap: 8px; }
+  .toast { background: var(--fg); color: var(--accent-fg); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; }
+  .toast.bad { background: var(--danger); }
+  @media (min-width: 800px) {
+    .stats { grid-template-columns: repeat(4, 1fr); }
+    .list { grid-template-columns: 1fr 1fr; }
+    .modal { align-items: center; }
+  }
+  @media (min-width: 1200px) {
+    .list { grid-template-columns: 1fr 1fr 1fr; }
+  }
+</style>
 </head>
 <body>
-
-<!-- GLOBAL LOADING OVERLAY -->
-<div id="globalLoading" class="global-overlay">
-    <div class="spinner"></div>
-    <div class="global-overlay-text" id="globalLoadingText">Sistem yüklənir...</div>
-</div>
-
-<!-- TOP NAV -->
-<nav class="top-nav">
-    <div class="nav-inner">
-        <div class="nav-brand">
-            <div class="dot"></div>
-            <span class="label">Admin Paneli</span>
-        </div>
-
-        <div class="nav-actions">
-            <button class="btn btn-ai" onclick="generateAIReport()">
-                ✨ AI Təhlil
-            </button>
-        </div>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Sifariş Paneli</h1>
+        <p class="sub" id="dateLabel">Tarix hazırlanır</p>
+      </div>
+      <div class="row" style="padding:0">
+        <button class="btn solid" id="analyzeBtn" type="button">Təhlil</button>
+        <button class="btn icon" id="reloadBtn" type="button" aria-label="Yenilə">↻</button>
+      </div>
     </div>
-</nav>
-
-<div class="container">
-
-    <!-- ══════════ ORDERS PANEL ══════════ -->
-    <div class="panel active" id="panel-own">
-        <div class="filter-bar">
-            <div class="form-group">
-                <label class="form-label" for="ownDateFilter">Tarix</label>
-                <input type="date" id="ownDateFilter" class="form-control">
-            </div>
-            <!-- CANLI AXTARIŞ (LIVE SEARCH) -->
-            <div class="form-group search-group">
-                <label class="form-label" for="ownSearchFilter">Axtarış</label>
-                <input type="text" id="ownSearchFilter" class="form-control" placeholder="Ad, nömrə, ID, məhsul və s..." oninput="filterLiveSearch('own')">
-            </div>
-            <button class="btn btn-primary" onclick="loadOrders('own')">
-                <i class="fas fa-sync-alt"></i> Yüklə
-            </button>
-        </div>
-
-        <div class="stats-row" id="ownStats">
-            <div class="stat-card">
-                <div class="stat-label">Görünən Sifariş</div>
-                <div class="stat-value" id="ownTotalCount">—</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Satış Məbləği</div>
-                <div class="stat-value" id="ownTotalAmount" style="color:var(--green)">—</div>
-                <div class="stat-sub" id="ownPayBreakdown"></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Kuryer Hesabatı</div>
-                <div id="ownCourierStat" class="stat-sub">Seçim gözlənilir...</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Satış Rəhbərləri</div>
-                <div id="ownSellerStat" class="stat-sub">Seçim gözlənilir...</div>
-            </div>
-        </div>
-
-        <div class="order-grid" id="ownOrderList">
-            <div class="empty-state"><i class="fas fa-box-open"></i>Tarix seçin və sifarişləri yükləyin</div>
-        </div>
+    <div class="row">
+      <button class="btn icon" id="prevDay" type="button" aria-label="Əvvəlki gün">‹</button>
+      <input class="field grow" id="date" type="date">
+      <button class="btn icon" id="nextDay" type="button" aria-label="Növbəti gün">›</button>
+      <button class="btn" id="todayBtn" type="button">Bu gün</button>
     </div>
-
-</div>
-
-<!-- IMAGE MODAL -->
-<div id="imageModal" class="img-modal" onclick="handleModalBgClick(event)">
-    <div class="img-modal-inner">
-        <div class="img-modal-toolbar">
-            <span class="img-modal-title"><i class="fas fa-image"></i> Şəkil / Qəbz</span>
-            <button class="img-modal-close" onclick="closeImageModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <!-- For Google Drive Document Previews -->
-        <iframe id="modalFrame" src="about:blank" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
-        <!-- For direct image rendering (Github / Text links) -->
-        <div id="modalImgContainer">
-            <img id="modalImg" src="" alt="Sifariş Şəkli">
-        </div>
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="#8a8378" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="#8a8378" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input class="field" id="search" type="search" placeholder="Ad, nömrə, ID, məhsul" autocomplete="off">
     </div>
+  </div>
+</header>
+<main class="wrap">
+  <div class="chips" id="chips"></div>
+  <section class="stats" id="stats"></section>
+  <p class="count" id="countLine"></p>
+  <div class="list" id="list"></div>
+</main>
+<div class="modal" id="modal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <header>
+      <h2 id="modalTitle"></h2>
+      <button class="btn icon" id="modalClose" type="button" aria-label="Bağla">×</button>
+    </header>
+    <div id="modalBody"></div>
+  </div>
 </div>
-
-<!-- AI MODAL -->
-<div id="aiModal" class="img-modal" onclick="handleAIModalBgClick(event)">
-    <div class="img-modal-inner" style="max-width: 600px;">
-        <div class="img-modal-toolbar" style="background: var(--ai-gradient);">
-            <span class="img-modal-title" id="aiModalTitle">✨ Süni İntellekt</span>
-            <button class="img-modal-close" onclick="closeAIModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="aiModalContent" class="ai-modal-content">
-            Süni intellekt məlumatları emal edir... <i class="fas fa-spinner fa-spin"></i>
-        </div>
-        <div class="ai-modal-actions">
-            <button class="btn btn-primary" onclick="copyAIText()"><i class="fas fa-copy"></i> Kopyala</button>
-        </div>
-    </div>
-</div>
-
-<!-- TOAST -->
-<div id="toast-container"></div>
-
+<div id="toasts"></div>
 <script>
-const apiKey = "";
+const API = "https://script.google.com/macros/s/AKfycbyV5tiuhDyteKE2Ug03l8F3qJeulRIyWkkrepSr_tC_1HffeXKBV_9nxOmqeHFY8VzQ/exec";
+const WEEKDAYS = ["Bazar", "Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə"];
+const MONTHS = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"];
+const photos = new Map();
+const state = { date: "", orders: [], couriers: [], query: "", status: "all", courier: "", seq: 0 };
 
-async function callGeminiAPI(prompt, systemInstruction) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-    const payload = {
-        contents: [{ parts: [{ text: prompt }] }],
-        systemInstruction: { parts: [{ text: systemInstruction }] }
-    };
+const $ = (id) => document.getElementById(id);
 
-    const delays = [1000, 2000, 4000, 8000, 16000];
-    
-    for (let i = 0; i < 5; i++) {
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const data = await response.json();
-            return data.candidates?.[0]?.content?.parts?.[0]?.text || "Məlumat tapılmadı.";
-        } catch (error) {
-            if (i === 4) throw error;
-            await new Promise(res => setTimeout(res, delays[i]));
-        }
+function money(n) { return (Number(n) || 0).toFixed(2); }
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function shiftDate(iso, days) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + days);
+  return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
+}
+function longDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  return WEEKDAYS[dt.getDay()] + ", " + d + " " + MONTHS[m - 1];
+}
+function canceled(status) { return status === "Canceled" || status === "Deleted"; }
+function statusLabel(status) {
+  if (status === "Delivered") return "Çatdırılıb";
+  if (canceled(status)) return "Ləğv edilib";
+  return "Çatdırılır";
+}
+function rail(status) {
+  if (status === "Delivered") return "ok";
+  if (canceled(status)) return "danger";
+  return "warn";
+}
+function waLink(phone) {
+  let d = String(phone || "").replace(/\D/g, "");
+  if (!d) return "";
+  if (d.startsWith("0")) d = "994" + d.slice(1);
+  else if (!d.startsWith("994")) d = "994" + d;
+  return "https://wa.me/" + d;
+}
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (ch) => {
+    const map = { "&": "amp", "<": "lt", ">": "gt", '"': "quot", "'": "#39" };
+    return "&" + map[ch] + ";";
+  });
+}
+function toast(message, bad) {
+  const node = document.createElement("div");
+  node.className = "toast" + (bad ? " bad" : "");
+  node.textContent = message;
+  $("toasts").appendChild(node);
+  setTimeout(() => node.remove(), 2800);
+}
+function num(value) {
+  const n = parseFloat(String(value ?? "").replace(",", "."));
+  return Number.isFinite(n) ? n : 0;
+}
+function clock(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Asia/Baku" }).format(d);
+}
+function cleanPhoto(raw) {
+  const text = String(raw || "").trim();
+  const data = text.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=]+)/);
+  if (data) return "data:" + data[1] + ";base64," + data[2];
+  const drive = text.match(/https?:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (drive) return "https://drive.google.com/file/d/" + drive[1] + "/preview";
+  const url = text.match(/https?:\/\/[^\s"]+/);
+  return url ? url[0] : "";
+}
+function searchBlob(order) {
+  const digits = order.phone.replace(/\D/g, "");
+  return [order.id, order.customer, order.phone, digits, order.address, order.details, order.notes, order.courier, order.seller, order.status, statusLabel(order.status), order.pay === "card" ? "kart card" : "nağd nagd cash", order.window].join("\n").toLowerCase();
+}
+function parseOrder(row) {
+  if (!Array.isArray(row) || row[0] == null || row[0] === "") return null;
+  const id = String(row[0]).trim();
+  const photo = cleanPhoto(row[20]);
+  if (photo) photos.set(id, photo);
+  const order = {
+    id,
+    customer: String(row[1] || "").trim(),
+    phone: String(row[2] || "").trim(),
+    address: String(row[3] || "").trim(),
+    details: String(row[4] || "").trim(),
+    notes: String(row[5] || "").trim(),
+    status: String(row[6] || "").trim() || "Out for Delivery",
+    courier: String(row[7] || "").trim(),
+    amount: num(row[10]),
+    pay: String(row[9] || "").trim().toLowerCase() === "card" ? "card" : "cash",
+    seller: String(row[16] || "").trim() || "Digər",
+    bonus: num(row[19]),
+    hasPhoto: photo.length > 5,
+    receipt: cleanPhoto(row[23]),
+    window: String(row[22] || "").trim(),
+    created: String(row[8] || "").trim(),
+  };
+  order.search = searchBlob(order);
+  return order;
+}
+
+async function apiGet(params) {
+  const url = API + "?" + params + "&_t=" + Date.now();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Cədvəl açılmadı");
+  return res.json();
+}
+async function apiPost(fields) {
+  const res = await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body: new URLSearchParams(fields),
+  });
+  const data = await res.json();
+  if (!data || data.success === false) throw new Error(data && data.message ? data.message : "Saxlanmadı");
+  return data;
+}
+
+function visibleOrders() {
+  const q = state.query.trim().toLowerCase();
+  return state.orders.filter((order) => {
+    if (state.status === "canceled" && !canceled(order.status)) return false;
+    if (state.status !== "all" && state.status !== "canceled" && order.status !== state.status) return false;
+    if (state.courier && order.courier !== state.courier) return false;
+    if (q && !order.search.includes(q)) return false;
+    return true;
+  });
+}
+function computeStats(orders) {
+  const stats = { active: 0, canceled: 0, total: 0, cash: 0, card: 0, cashN: 0, cardN: 0, couriers: new Map(), debt: new Map(), sellers: new Map() };
+  for (const order of orders) {
+    const name = order.courier || "Təyin edilməyib";
+    if (canceled(order.status)) stats.canceled += 1;
+    else {
+      stats.active += 1;
+      stats.total += order.amount;
+      if (order.pay === "cash") { stats.cash += order.amount; stats.cashN += 1; }
+      else { stats.card += order.amount; stats.cardN += 1; }
+      stats.couriers.set(name, (stats.couriers.get(name) || 0) + 1);
+      stats.sellers.set(order.seller, (stats.sellers.get(order.seller) || 0) + 1);
     }
-}
-
-function openAIModal(title) {
-    document.getElementById('aiModalTitle').innerText = title;
-    document.getElementById('aiModalContent').innerHTML = 'Süni intellekt fikirləşir... <i class="fas fa-spinner fa-spin" style="margin-left:8px;"></i>';
-    document.getElementById('aiModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeAIModal() {
-    document.getElementById('aiModal').classList.remove('open');
-    document.body.style.overflow = '';
-}
-
-function handleAIModalBgClick(e) {
-    if (e.target === document.getElementById('aiModal')) closeAIModal();
-}
-
-function copyAIText() {
-    const content = document.getElementById('aiModalContent').innerText;
-    document.execCommand('copy');
-    
-    // Fallback if possible
-    if(navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(content);
-    } else {
-        const textarea = document.createElement("textarea");
-        textarea.value = content;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
+    if (order.courier && (order.status === "Delivered" || order.status === "Canceled")) {
+      const row = stats.debt.get(order.courier) || { net: 0, card: 0 };
+      row.net -= 5.8 + order.bonus;
+      if (order.status === "Delivered") {
+        if (order.pay === "cash") row.net += order.amount;
+        else row.card += order.amount;
+      }
+      stats.debt.set(order.courier, row);
     }
-    showToast("Mətn kopyalandı!", "success");
+  }
+  return stats;
 }
 
-async function generateAIMessage(orderId, panel) {
-    openAIModal('✨ Ağıllı Mesaj Yarat');
-    const p = CONFIG[panel].prefix;
-    const card = document.getElementById(`${p}-order-${orderId}`);
-    
-    if(!card) {
-        document.getElementById('aiModalContent').innerText = "Sifariş tapılmadı.";
-        return;
+function renderStats() {
+  const shown = visibleOrders();
+  const stats = computeStats(shown);
+  const courierRows = [...stats.couriers.entries()].sort((a, b) => b[1] - a[1]);
+  const sellerRows = [...stats.sellers.entries()].sort((a, b) => b[1] - a[1]);
+  const courierHtml = courierRows.map(([name, count]) => {
+    const debt = stats.debt.get(name);
+    const extra = debt ? "Borc " + money(debt.net) + (debt.card ? " · kart " + money(debt.card) : "") : "";
+    return '<div class="line"><span>' + esc(name) + '</span><b>' + count + "</b></div>" + (extra ? '<div class="note">' + extra + "</div>" : "");
+  }).join("") || '<p class="note">Məlumat yoxdur</p>';
+  const sellerHtml = sellerRows.map(([name, count]) => '<div class="line"><span>' + esc(name) + "</span><b>" + count + "</b></div>").join("") || '<p class="note">Məlumat yoxdur</p>';
+  $("stats").innerHTML =
+    stat("Aktiv sifariş", stats.active, stats.canceled + " ləğv sayılmır") +
+    stat("Satış", money(stats.total), "Nağd " + money(stats.cash) + " · Kart " + money(stats.card)) +
+    '<article class="stat"><h2>Kuryer borcu</h2><p>Nağd − 5.80 ₼ − bonus</p><div class="scroll">' + courierHtml + "</div></article>" +
+    '<article class="stat"><h2>Satıcılar</h2><div class="scroll">' + sellerHtml + "</div></article>";
+  const all = state.orders.length;
+  $("countLine").textContent = all === 0 ? "Bu tarixdə sifariş yoxdur" : shown.length === all ? all + " sifariş" : shown.length + " / " + all + " göstərilir";
+  renderChips();
+}
+function stat(label, value, note) {
+  return '<article class="stat"><h2>' + label + "</h2><strong>" + value + '</strong><p>' + note + "</p></article>";
+}
+function counts() {
+  let out = 0, done = 0, cancel = 0;
+  for (const order of state.orders) {
+    if (canceled(order.status)) cancel += 1;
+    else if (order.status === "Delivered") done += 1;
+    else out += 1;
+  }
+  return { all: state.orders.length, out, done, cancel };
+}
+function renderChips() {
+  const c = counts();
+  const items = [["all", "Hamısı", c.all], ["Out for Delivery", "Çatdırılır", c.out], ["Delivered", "Çatdırılıb", c.done], ["canceled", "Ləğv", c.cancel]];
+  const names = [...new Set([...state.couriers, ...state.orders.map((order) => order.courier).filter(Boolean)])].sort((a, b) => a.localeCompare(b, "az"));
+  $("chips").innerHTML = items.map(([value, label, count]) =>
+    '<button class="chip' + (state.status === value ? " on" : "") + '" data-status="' + value + '" type="button">' + label + " " + count + "</button>"
+  ).join("") + '<select class="chip" id="courierFilter" aria-label="Kuryerə görə süz"><option value="">Bütün kuryerlər</option>' +
+    names.map((name) => '<option value="' + esc(name) + '"' + (state.courier === name ? " selected" : "") + ">" + esc(name) + "</option>").join("") + "</select>";
+}
+
+function cardHtml(order) {
+  const phone = order.phone.replace(/[^\d+]/g, "");
+  const wa = waLink(order.phone);
+  const options = courierOptions(order.courier);
+  return '<article class="card order ' + rail(order.status) + '" id="order-' + esc(order.id) + '" data-id="' + esc(order.id) + '">' +
+    '<div class="head"><div><div class="id">#' + esc(order.id) + '</div><div class="meta">' + esc([clock(order.created), order.seller].filter(Boolean).join(" · ")) + "</div></div>" +
+    '<span class="badge ' + rail(order.status) + '" data-badge>' + statusLabel(order.status) + "</span></div>" +
+    '<h2 class="name">' + esc(order.customer || "Adsız müştəri") + "</h2>" +
+    '<div class="links">' +
+      (order.phone ? '<a href="tel:' + esc(phone) + '">' + esc(order.phone) + "</a>" : "<span>Nömrə yoxdur</span>") +
+      (wa ? '<a href="' + wa + '" target="_blank" rel="noreferrer">WhatsApp</a>' : "") +
+      (order.window ? "<span>" + esc(order.window) + "</span>" : "") +
+      (order.courier ? "" : '<span class="warn">Kuryer təyin edilməyib</span>') +
+    "</div>" +
+    '<p class="details">' + esc(order.details || "Məhsul qeyd olunmayıb") + "</p>" +
+    '<label><span>Status</span><select class="field full" data-field="status">' +
+      option("Out for Delivery", "Çatdırılır", order.status) + option("Delivered", "Çatdırılıb", order.status === "Deleted" ? "Canceled" : order.status) + option("Canceled", "Ləğv edilib", order.status === "Deleted" ? "Canceled" : order.status) +
+    "</select></label>" +
+    '<label><span>Kuryer</span><select class="field full" data-field="courier"><option value="">Kuryer seçin</option>' + options + "</select></label>" +
+    '<label><span>Ünvan</span><input class="field full" data-field="address" value="' + esc(order.address) + '" autocomplete="off"></label>' +
+    '<label><span>Qeyd və tərkib</span><textarea class="field" data-field="notes">' + esc(order.notes) + "</textarea></label>" +
+    '<div class="split"><label><span>Qiymət, AZN</span><input class="field full" data-field="amount" inputmode="decimal" value="' + esc(order.amount) + '"></label>' +
+    '<label><span>Ödəniş</span><select class="field full" data-field="pay">' + option("cash", "Nağd", order.pay) + option("card", "Kart", order.pay) + "</select></label></div>" +
+    (order.bonus > 0 ? '<p class="note">Kuryer bonusu ' + money(order.bonus) + " ₼</p>" : "") +
+    '<div class="actions">' +
+      (order.hasPhoto ? '<button class="btn ghost" type="button" data-act="photo">Şəkil</button>' : "") +
+      (order.receipt ? '<button class="btn ghost" type="button" data-act="receipt">Qəbz</button>' : "") +
+      '<span class="save" data-save></span></div>' +
+    '<button class="danger-btn" type="button" data-act="delete">Sifarişi sil</button>' +
+    "</article>";
+}
+function option(value, label, current) {
+  return '<option value="' + value + '"' + (current === value ? " selected" : "") + ">" + label + "</option>";
+}
+function courierOptions(current) {
+  const names = state.couriers.includes(current) || !current ? state.couriers : [current, ...state.couriers];
+  return names.map((name) => '<option value="' + esc(name) + '"' + (name === current ? " selected" : "") + ">" + esc(name) + "</option>").join("");
+}
+function renderList() {
+  const shown = visibleOrders();
+  if (!state.orders.length) {
+    $("list").innerHTML = '<div class="card empty">Bu tarixdə sifariş yoxdur.</div>';
+  } else if (!shown.length) {
+    $("list").innerHTML = '<div class="card empty">Bu süzgəcə uyğun sifariş yoxdur.</div>';
+  } else {
+    $("list").innerHTML = shown.map(cardHtml).join("");
+  }
+  renderStats();
+}
+function findOrder(id) { return state.orders.find((order) => order.id === id); }
+function mark(card, text) {
+  const node = card.querySelector("[data-save]");
+  if (node) node.textContent = text;
+  if (text === "Saxlanıldı") setTimeout(() => { if (node.textContent === "Saxlanıldı") node.textContent = ""; }, 1400);
+}
+async function commit(order, card, patch, fields) {
+  const previous = { ...order };
+  Object.assign(order, patch);
+  order.search = searchBlob(order);
+  mark(card, "Saxlanılır");
+  refreshCardFace(card, order);
+  renderStats();
+  try {
+    await apiPost(fields);
+    mark(card, "Saxlanıldı");
+  } catch (error) {
+    Object.assign(order, previous);
+    order.search = searchBlob(order);
+    refreshCardFace(card, order);
+    renderStats();
+    mark(card, "");
+    toast(error.message || "Saxlanmadı", true);
+  }
+}
+function refreshCardFace(card, order) {
+  card.className = "card order " + rail(order.status);
+  const badge = card.querySelector("[data-badge]");
+  badge.className = "badge " + rail(order.status);
+  badge.textContent = statusLabel(order.status);
+  const status = card.querySelector('[data-field="status"]');
+  if (status) status.value = order.status === "Deleted" ? "Canceled" : order.status;
+  const courier = card.querySelector('[data-field="courier"]');
+  if (courier) courier.value = order.courier;
+  const pay = card.querySelector('[data-field="pay"]');
+  if (pay) pay.value = order.pay;
+  for (const field of ["address", "notes", "amount"]) {
+    const input = card.querySelector('[data-field="' + field + '"]');
+    if (input && document.activeElement !== input) input.value = field === "amount" ? order.amount : order[field];
+  }
+}
+
+function openModal(title, html) {
+  $("modalTitle").textContent = title;
+  $("modalBody").innerHTML = html;
+  $("modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeModal() {
+  $("modal").classList.remove("open");
+  $("modalBody").innerHTML = "";
+  document.body.style.overflow = "";
+}
+function openPhoto(order) {
+  const src = photos.get(order.id) || order.receipt;
+  if (!src) { toast("Şəkil tapılmadı", true); return; }
+  if (src.includes("drive.google.com")) {
+    openModal("Sifariş #" + order.id, '<iframe title="Şəkil" src="' + esc(src) + '" style="width:100%;height:70vh;border:0;border-radius:8px" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>');
+    return;
+  }
+  openModal("Sifariş #" + order.id, '<img alt="" src="' + src + '">');
+}
+
+function buildReport() {
+  const orders = state.orders;
+  const stats = computeStats(orders);
+  let delivered = 0, onRoad = 0, noPhone = 0, noAddress = 0, withPhoto = 0;
+  const windows = new Map();
+  const pending = [];
+  const canceledOrders = [];
+  const active = [];
+  for (const order of orders) {
+    if (canceled(order.status)) { canceledOrders.push(order); continue; }
+    active.push(order);
+    if (order.status === "Delivered") delivered += 1;
+    else { onRoad += 1; pending.push(order); }
+    if (!order.phone) noPhone += 1;
+    if (!order.address.trim()) noAddress += 1;
+    if (order.hasPhoto) withPhoto += 1;
+    if (order.window) windows.set(order.window, (windows.get(order.window) || 0) + 1);
+  }
+  const avg = stats.active ? stats.total / stats.active : 0;
+  const completion = stats.active ? Math.round((delivered / stats.active) * 100) : 0;
+  const cashShare = stats.total ? Math.round((stats.cash / stats.total) * 100) : 0;
+  const summary = stats.active === 0
+    ? (orders.length ? "Bu gündə yalnız ləğv olunmuş sifarişlər var." : "Bu tarixdə sifariş yoxdur.")
+    : stats.active + " aktiv sifarişdən " + delivered + "-i çatdırılıb, " + onRoad + "-i hələ yoldadır. Dövriyyə " + money(stats.total) + " AZN, orta çek " + money(avg) + " AZN. Nağdın payı " + cashShare + "%-dir.";
+  const blocks = [];
+  const add = (title, rows, note) => blocks.push({ title, rows, note });
+  add("Vəziyyət", [
+    ["Cəmi qeyd", orders.length],
+    ["Aktiv", stats.active],
+    ["Çatdırılıb", delivered + " · " + completion + "%"],
+    ["Yolda", onRoad],
+    ["Ləğv", stats.canceled],
+    ["Şəkli olan", withPhoto + " / " + stats.active],
+  ]);
+  add("Pul", [
+    ["Dövriyyə", money(stats.total) + " AZN"],
+    ["Nağd", money(stats.cash) + " AZN · " + stats.cashN + " sifariş"],
+    ["Kart", money(stats.card) + " AZN · " + stats.cardN + " sifariş"],
+    ["Orta çek", money(avg) + " AZN"],
+  ]);
+  const attention = [];
+  const unassigned = active.filter((order) => !order.courier);
+  if (unassigned.length) attention.push(["Kuryersiz", unassigned.slice(0, 8).map((order) => "#" + order.id + " " + (order.customer || "adsız")).join(", ")]);
+  if (noPhone) attention.push(["Nömrəsi yoxdur", noPhone + " aktiv sifariş"]);
+  if (noAddress) attention.push(["Ünvanı yoxdur", noAddress + " aktiv sifariş"]);
+  if (!attention.length) attention.push(["Açıq boşluq", "Nömrə, ünvan və kuryer doludur"]);
+  add("Diqqət", attention);
+  if (pending.length) {
+    const rows = pending.slice(0, 12).map((order) => ["#" + order.id + " " + (order.customer || "adsız"), money(order.amount) + " AZN · " + (order.courier || "kuryer yox")]);
+    if (pending.length > 12) rows.push(["Qalan", (pending.length - 12) + " sifariş də yoldadır"]);
+    add("Hələ çatdırılmayıb", rows);
+  }
+  add("Kuryerlər", [...stats.couriers.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => {
+    const debt = stats.debt.get(name);
+    return [name, count + " aktiv" + (debt ? " · borc " + money(debt.net) + " AZN" + (debt.card ? " · kart " + money(debt.card) + " AZN" : "") : "")];
+  }), "Borc = çatdırılmış nağd − 5.80 ₼ − bonus. Ləğv olunanda da 5.80 çıxılır. Kart məbləği borca yazılmır.");
+  add("Satıcılar", [...stats.sellers.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => [name, count + " sifariş"]));
+  if (windows.size) add("Saat pəncərəsi", [...windows.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => [name, count + " sifariş"]));
+  const top = [...active].sort((a, b) => b.amount - a.amount).slice(0, 3).filter((order) => order.amount > 0);
+  if (top.length) add("Ən böyük sifarişlər", top.map((order) => ["#" + order.id + " " + (order.customer || "adsız"), money(order.amount) + " AZN · " + (order.pay === "card" ? "kart" : "nağd") + " · " + statusLabel(order.status)]));
+  if (canceledOrders.length) add("Ləğvlər", canceledOrders.slice(0, 8).map((order) => ["#" + order.id + " " + (order.customer || "adsız"), money(order.amount) + " AZN · " + (order.courier || "kuryer yox")]));
+  return { summary, blocks };
+}
+function showReport() {
+  if (!state.orders.length) { toast("Bu tarixdə təhlil üçün sifariş yoxdur", true); return; }
+  const report = buildReport();
+  const html = '<p class="summary">' + esc(report.summary) + "</p>" + report.blocks.map((block) =>
+    '<section class="block"><h3>' + esc(block.title) + "</h3>" +
+    (block.note ? '<p class="note">' + esc(block.note) + "</p>" : "") +
+    block.rows.map((row) => '<div class="line"><span>' + esc(row[0]) + '</span><b style="font-weight:600;text-align:right">' + esc(row[1]) + "</b></div>").join("") +
+    "</section>"
+  ).join("") + '<div class="actions"><button class="btn" type="button" id="copyReport">Kopyala</button></div>';
+  openModal("Günlük təhlil · " + longDate(state.date), html);
+  $("copyReport").onclick = async () => {
+    const text = report.summary + "\n\n" + report.blocks.map((block) => block.title + "\n" + block.rows.map((row) => row[0] + ": " + row[1]).join("\n")).join("\n\n");
+    try { await navigator.clipboard.writeText(text); toast("Kopyalandı"); }
+    catch { toast("Kopyalanmadı", true); }
+  };
+}
+
+async function load(date, force) {
+  const token = ++state.seq;
+  state.date = date;
+  $("date").value = date;
+  $("dateLabel").textContent = longDate(date) + " · yüklənir";
+  sessionStorage.setItem("panel-date", date);
+  if (force) photos.clear();
+  try {
+    const [ordersRes, usersRes] = await Promise.all([
+      apiGet("action=getOrdersByDate&date=" + encodeURIComponent(date)),
+      state.couriers.length && !force ? Promise.resolve(null) : apiGet("action=getDeliveryUsers"),
+    ]);
+    if (token !== state.seq) return;
+    if (!ordersRes || ordersRes.success === false) throw new Error(ordersRes && ordersRes.message ? ordersRes.message : "Sifarişlər gəlmədi");
+    photos.clear();
+    state.orders = (ordersRes.orders || []).map(parseOrder).filter(Boolean);
+    if (usersRes && usersRes.users) {
+      state.couriers = [...new Set(usersRes.users.map((user) => String(user.username || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "az"));
     }
+    $("dateLabel").textContent = longDate(date);
+    renderList();
+  } catch (error) {
+    if (token !== state.seq) return;
+    $("dateLabel").textContent = longDate(date);
+    $("list").innerHTML = '<div class="card error">' + esc(error.message || "Şəbəkə xətası") + '<div><button class="btn solid" id="retry" type="button" style="margin-top:12px">Yenidən yüklə</button></div></div>';
+    $("retry").onclick = () => load(state.date, true);
+  }
+}
 
-    // GATHER DATA
-    const customer = card.querySelector('.info-row:nth-child(3) .info-val').innerText;
-    const address = document.getElementById(`${p}-addr-${orderId}`).value;
-    const status = document.getElementById(`${p}-status-${orderId}`).value;
-    const courier = document.getElementById(`${p}-courierDisp-${orderId}`).innerText;
-    const price = document.getElementById(`${p}-price-${orderId}`).value;
-    const details = card.querySelector('.order-detail-box').innerText.replace('Sifariş:', '').trim();
-    
-    const prompt = `
-    Müştərinin adı: ${customer}
-    Sifarişi: ${details}
-    Ünvan: ${address}
-    Hazırkı Statusu: ${status} ("Out for Delivery" çatdırılır deməkdir, "Delivered" çatdırıldı, "Canceled" isə ləğv edildi deməkdir)
-    Kuryer: ${courier}
-    Ödəniş məbləği: ${price} AZN
-
-    Təlimat: Bu məlumatlara əsasən müştəriyə WhatsApp vasitəsilə göndərmək üçün mehriban və peşəkar bir məlumat mesajı yaz. Mesaj Azərbaycan dilində olsun, qısa və aydın olsun. Gülücük (emoji) istifadə et.
-    Məsələn, əgər status "Out for Delivery" isə kuryerin gəldiyini və məbləği xatırlat. Əgər "Delivered" isə təşəkkür et.
-    `;
-
+$("list").addEventListener("change", (event) => {
+  const target = event.target;
+  const card = target.closest(".order");
+  if (!card) return;
+  const order = findOrder(card.dataset.id);
+  if (!order) return;
+  const field = target.dataset.field;
+  if (field === "status") {
+    const status = target.value;
+    commit(order, card, { status }, { action: "updateOrderStatusAndPayment", orderId: order.id, status });
+  } else if (field === "courier") {
+    if (!target.value) return;
+    commit(order, card, { courier: target.value }, { action: "assignOrder", orderId: order.id, assignedTo: target.value });
+  } else if (field === "pay" || field === "address" || field === "notes" || field === "amount") {
+    saveDetails(order, card);
+  }
+});
+$("list").addEventListener("focusout", (event) => {
+  const target = event.target;
+  if (!target.dataset || !["address", "notes", "amount"].includes(target.dataset.field)) return;
+  const card = target.closest(".order");
+  const order = card && findOrder(card.dataset.id);
+  if (order) saveDetails(order, card);
+});
+function saveDetails(order, card) {
+  const address = card.querySelector('[data-field="address"]').value;
+  const notes = card.querySelector('[data-field="notes"]').value;
+  const amount = num(card.querySelector('[data-field="amount"]').value);
+  const pay = card.querySelector('[data-field="pay"]').value === "card" ? "card" : "cash";
+  if (address === order.address && notes === order.notes && amount === order.amount && pay === order.pay) return;
+  commit(order, card, { address, notes, amount, pay }, {
+    action: "updateOrderDetails",
+    orderId: order.id,
+    deliveryAddress: address,
+    specialNotes: notes,
+    orderPrice: String(amount),
+    paymentMethod: pay,
+  });
+}
+$("list").addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-act]");
+  if (!button) return;
+  const card = button.closest(".order");
+  const order = card && findOrder(card.dataset.id);
+  if (!order) return;
+  if (button.dataset.act === "photo") openPhoto(order);
+  if (button.dataset.act === "receipt") openModal("Qəbz", order.receipt.includes("drive.google.com") ? '<iframe title="Qəbz" src="' + esc(order.receipt) + '" style="width:100%;height:70vh;border:0"></iframe>' : '<img alt="" src="' + order.receipt + '">');
+  if (button.dataset.act === "delete") {
+    if (button.dataset.sure !== "1") {
+      button.dataset.sure = "1";
+      button.textContent = "Bəli, sil";
+      return;
+    }
+    const previous = state.orders.slice();
+    state.orders = state.orders.filter((item) => item.id !== order.id);
+    renderList();
     try {
-        const response = await callGeminiAPI(prompt, "Sən şirkətin ən yaxşı müştəri xidmətləri asisstantsan.");
-        document.getElementById('aiModalContent').innerText = response;
-    } catch (err) {
-        document.getElementById('aiModalContent').innerText = "Təəssüf ki, mesajı yaradarkən xəta baş verdi. Zəhmət olmasa yenidən yoxlayın.";
+      await apiPost({ action: "deleteOrder", orderId: order.id });
+      toast("Sifariş silindi");
+    } catch (error) {
+      state.orders = previous;
+      renderList();
+      toast(error.message || "Silinmədi", true);
     }
-}
-
-async function generateAIReport() {
-    openAIModal('✨ Günlük Biznes Təhlili');
-    const panel = activePanel;
-    const p = CONFIG[panel].prefix;
-
-    const count = document.getElementById(`${p}TotalCount`).innerText;
-    const amount = document.getElementById(`${p}TotalAmount`).innerText;
-    const payBreakdown = document.getElementById(`${p}PayBreakdown`).innerText;
-    const courierStat = document.getElementById(`${p}CourierStat`).innerText.replace(/\n/g, ', ');
-    const sellerStat = document.getElementById(`${p}SellerStat`).innerText.replace(/\n/g, ', ');
-
-    const prompt = `
-    Bu günkü (və ya ekranda olan) sifarişlərin ümumi xülasəsi:
-    Toplam Sifariş Sayı: ${count}
-    Toplam Dövriyyə: ${amount}
-    Ödəniş Növləri (Nağd/Kart): ${payBreakdown}
-    Kuryerlərin Statistikası və Borcları: ${courierStat}
-    Satış Rəhbərlərinin Performansı: ${sellerStat}
-
-    Təlimat: Bu rəqəmlərə baxaraq, mağaza rəhbərinə qısa, motivasiyaedici və eyni zamanda analitik bir xülasə ver. Hansı kuryerin daha çox yük daşıdığını, ödənişlərdə nağd pulun yoxsa kartın çox olduğunu analiz et. Satış rəhbərlərindən kimin fərqləndiyini vurğula. Gündəlik gəlir haqqında ümumi fikir bildir. Azərbaycan dilində, 2-3 paraqraf şəklində yaz və mətnin içinə uyğun emojilər qoy.
-    `;
-
-    try {
-        const response = await callGeminiAPI(prompt, "Sən təcrübəli bir biznes analitiki və rəhbər asisstantsan.");
-        document.getElementById('aiModalContent').innerText = response;
-    } catch (err) {
-        document.getElementById('aiModalContent').innerText = "Təəssüf ki, təhlil apararkən xəta baş verdi.";
-    }
-}
-
-// ═══════════════════════════════════════════════
-//  CONFIGURATION & GLOBAL STATE
-// ═══════════════════════════════════════════════
-const CONFIG = {
-    own: {
-        API_URL:    'https://script.google.com/macros/s/AKfycbyV5tiuhDyteKE2Ug03l8F3qJeulRIyWkkrepSr_tC_1HffeXKBV_9nxOmqeHFY8VzQ/exec',
-        UPDATE_URL: 'https://script.google.com/macros/s/AKfycbyV5tiuhDyteKE2Ug03l8F3qJeulRIyWkkrepSr_tC_1HffeXKBV_9nxOmqeHFY8VzQ/exec',
-        dateInput:  'ownDateFilter',
-        listId:     'ownOrderList',
-        prefix:     'own',
-        accentVar:  '--primary',
-        loadBtn:    'btn-primary'
-    }
-};
-
-let activePanel = 'own';
-
-// The Global Cache Data replacing redundant API requests
-const AppData = {
-    products: [],   
-    couriers: []    
-};
-
-// ═══════════════════════════════════════════════
-//  APP INITIALIZATION & CACHING (Sürət Optimizasiyası)
-//  Uses DOMContentLoaded instead of window.onload so we
-//  don't wait on fonts/icons to finish before fetching data.
-// ═══════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', async function () {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('ownDateFilter').value = today;
-    
-    // Yaddaşda olan məlumatları yoxla (Sürətli Açılış)
-    const cachedProducts = sessionStorage.getItem('appData_products');
-    const cachedCouriers = sessionStorage.getItem('appData_couriers');
-    let hasCache = false;
-
-    if (cachedProducts && cachedCouriers) {
-        try {
-            AppData.products = JSON.parse(cachedProducts);
-            AppData.couriers = JSON.parse(cachedCouriers);
-            hasCache = true;
-            hideGlobalLoading();
-            loadOrders('own'); // Dərhal Sifarişləri yüklə
-        } catch (e) { console.error("Cache parsing error", e); }
-    }
-
-    // Arxa planda (və ya yaddaş yoxdursa ön planda) məlumatları yenilə
-    try {
-        const [prodRes, courRes] = await Promise.all([
-            fetchWithTimeout(`${CONFIG.own.API_URL}?action=getProductList`),
-            fetchWithTimeout(`${CONFIG.own.API_URL}?action=getDeliveryUsers`)
-        ]);
-
-        const prodData = await prodRes.json();
-        const courData = await courRes.json();
-
-        if (prodData.success) {
-            AppData.products = prodData.products.sort((a, b) => b.name.length - a.name.length);
-            sessionStorage.setItem('appData_products', JSON.stringify(AppData.products));
-        }
-        if (courData.success) {
-            AppData.couriers = courData.users;
-            sessionStorage.setItem('appData_couriers', JSON.stringify(AppData.couriers));
-        }
-
-        if (!hasCache) {
-            hideGlobalLoading();
-            loadOrders('own'); // Əgər keşdə yox idisə, indi yüklə
-        }
-    } catch (err) {
-        console.error('Initialization error:', err);
-        if (!hasCache) {
-            document.getElementById('globalLoadingText').innerHTML = 'Giriş xətası. İnternet əlaqəsini yoxlayıb səhifəni yeniləyin.<br><button onclick="location.reload()" style="margin-top:10px;padding:8px 16px;border-radius:6px;border:none;background:#2563eb;color:#fff;cursor:pointer;">Yenilə</button>';
-            document.querySelector('.global-overlay .spinner').style.display = 'none';
-        }
-    }
+  }
 });
 
-function hideGlobalLoading() {
-    const el = document.getElementById('globalLoading');
-    el.classList.add('hidden');
-    setTimeout(() => el.style.display = 'none', 300);
-}
-
-// ═══════════════════════════════════════════════
-//  FETCH WITH TIMEOUT
-// ═══════════════════════════════════════════════
-function fetchWithTimeout(url, options = {}, timeout = 30000) {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-    return fetch(url, { ...options, signal: controller.signal })
-        .finally(() => clearTimeout(id));
-}
-
-// ═══════════════════════════════════════════════
-//  LOAD ORDERS
-// ═══════════════════════════════════════════════
-function loadOrders(panel) {
-    const cfg = CONFIG[panel];
-    const date = document.getElementById(cfg.dateInput).value;
-    if (!date) { showToast('Tarix seçin', 'error'); return; }
-
-    // Clear search input on fresh load
-    document.getElementById(`${cfg.prefix}SearchFilter`).value = '';
-
-    const listEl = document.getElementById(cfg.listId);
-    listEl.innerHTML = `<div class="empty-state"><div class="spinner" style="margin:0 auto 14px"></div>Sifarişlər yüklənir...</div>`;
-
-    const url = `${cfg.API_URL}?action=getOrdersByDate&date=${date}&_t=${Date.now()}`;
-
-    fetchWithTimeout(url)
-        .then(r => r.json())
-        .then(data => {
-            if (data.success && data.orders && data.orders.length > 0) {
-                renderOrders(panel, data.orders);
-            } else {
-                listEl.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i>Bu tarixdə sifariş tapılmadı.</div>`;
-                resetStats(panel);
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            listEl.innerHTML = `<div class="empty-state" style="color:var(--red)"><i class="fas fa-wifi"></i>Xəta baş verdi. İnternet əlaqəsini yoxlayın.</div>`;
-            resetStats(panel);
-        });
-}
-
-// ═══════════════════════════════════════════════
-//  URL EXTRACTOR
-// ═══════════════════════════════════════════════
-function extractUrl(text) {
-    if (!text) return '';
-    const imgMatch = String(text).match(/=IMAGE\(\s*"([^"]+)"\s*\)/i);
-    if (imgMatch) return imgMatch[1];
-    const rawMatch = String(text).match(/(https?:\/\/[^\s"]+)/i);
-    if (rawMatch) return rawMatch[1];
-    return String(text);
-}
-
-// ═══════════════════════════════════════════════
-//  LIVE SEARCH FILTER (Canlı Axtarış)
-// ═══════════════════════════════════════════════
-function filterLiveSearch(panel) {
-    const cfg = CONFIG[panel];
-    const searchInput = document.getElementById(`${cfg.prefix}SearchFilter`).value.toLowerCase().trim();
-    const cards = document.querySelectorAll(`[id^="${cfg.prefix}-order-"]`);
-
-    cards.forEach(card => {
-        // Kartın daxilindəki bütün mətni (müştəri adı, ID, status və s.) yoxlayır
-        const textContent = card.innerText.toLowerCase();
-        if (textContent.includes(searchInput)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    // Statistikaları sadəcə ekranda qalanlara görə yenidən hesabla
-    recalcStats(panel);
-}
-
-// ═══════════════════════════════════════════════
-//  RENDER ORDERS (With Lazy Loading Images)
-// ═══════════════════════════════════════════════
-function renderOrders(panel, orders) {
-    const cfg = CONFIG[panel];
-    const listEl = document.getElementById(cfg.listId);
-    const p = cfg.prefix;
-    
-    // Pre-build courier options
-    const courierOptions = AppData.couriers.map(user => 
-        `<option value="${escAttr(user.username)}">${escHtml(user.username)}</option>`
-    ).join('');
-
-    let html = '';
-
-    orders.forEach(order => {
-        const id            = order[0];
-        const customerName  = escHtml(order[1] || '');
-        const phone         = escHtml(order[2] || '');
-        const address       = escHtml(order[3] || '');
-        const details       = escHtml(order[4] || '—');
-        const notes         = escHtml(order[5] || '');
-        const status        = order[6] || 'Out for Delivery';
-        const courier       = order[7] || '';
-        const amount        = parseFloat(order[10]) || 0;
-        const payMethod     = (order[9] || 'cash').toLowerCase();
-        const seller        = escHtml(order[16] || 'Digər');
-        const additionalPay = parseFloat(order[19]) || 0;
-        const imageLink     = order[20] || ''; 
-        
-        const statusClass = getStatusClass(status, courier);
-
-        // -- Process Order Receipt/Image Link --
-        let imgBtn = '';
-        if (imageLink && imageLink.length > 5) {
-            const safeLink = escAttr(imageLink);
-            const isRaw = !!safeLink.match(/\.(jpeg|jpg|gif|png|webp)$/i) || safeLink.includes('raw.githubusercontent.com');
-            imgBtn = `<button class="btn btn-img" onclick="openImageModal('${safeLink}', ${isRaw})"><i class="fas fa-camera"></i> Sifariş Fotosu / Qəbz</button>`;
-        }
-
-        // -- Product Matcher --
-        let productCardsHtml = '';
-        if (details && details !== '—') {
-            const lowerDetails = details.toLowerCase();
-            const matchedProducts = [];
-            
-            AppData.products.forEach(prod => {
-                if (prod.name && lowerDetails.includes(prod.name.toLowerCase())) {
-                    matchedProducts.push(prod);
-                }
-            });
-
-            if (matchedProducts.length > 0) {
-                productCardsHtml += `<div class="product-tags">`;
-                matchedProducts.forEach(prod => {
-                    const extractedImg = extractUrl(prod.image);
-                    const isRaw = !!extractedImg.match(/\.(jpeg|jpg|gif|png|webp)$/i) || extractedImg.includes('raw.githubusercontent.com');
-                    
-                    productCardsHtml += `
-                        <div class="product-tag">
-                            ${extractedImg ? `<img src="${extractedImg}" loading="lazy" onclick="openImageModal('${escAttr(extractedImg)}', ${isRaw})" class="prod-thumb" alt="${escAttr(prod.name)}">` : ''}
-                            <div class="prod-info">
-                                <strong>${escHtml(prod.name)}</strong>
-                                <span class="prod-code">Kod: ${escHtml(prod.code || 'Yoxdur')}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                productCardsHtml += `</div>`;
-            }
-        }
-
-        const bonusHtml = additionalPay > 0
-            ? `<div class="bonus-tag"><i class="fas fa-plus-circle"></i> Kuryer Bonusu: ${additionalPay.toFixed(2)} AZN</div>`
-            : '';
-
-        const finalCourierSelect = `
-            <select id="${p}-courierSel-${id}" class="form-control" onchange="assignCourier('${panel}',${id})">
-                <option value="">Kuryer seçin...</option>
-                ${courierOptions.replace(`value="${escAttr(courier)}"`, `value="${escAttr(courier)}" selected`)}
-            </select>
-        `;
-
-        html += `
-        <div class="order-card ${statusClass}" id="${p}-order-${id}"
-             data-amount="${amount}" data-status="${status}"
-             data-courier="${escAttr(courier)}" data-payment="${payMethod}"
-             data-additional="${additionalPay}" data-seller="${escAttr(seller)}" data-panel="${panel}" style="display:block;">
-
-            <div class="order-card-top" style="padding:6px 18px; font-size:0.7rem; letter-spacing:0.4px;">
-                ${statusClass.replace('s-','')} <span id="${p}-cardTopCour-${id}">${courier ? '· ' + courier : ''}</span>
-            </div>
-
-            <div class="order-card-body">
-                <div class="card-header">
-                    <span class="card-id">#${id}</span>
-                    <span class="status-badge" id="${p}-statusBadge-${id}">${status}</span>
-                </div>
-
-                <div class="info-row"><span class="info-key"><i class="fas fa-store"></i> Satıcı</span><span class="info-val">${seller}</span></div>
-                <div class="info-row"><span class="info-key"><i class="fas fa-user"></i> Müştəri</span><span class="info-val">${customerName}</span></div>
-                <div class="info-row">
-                    <span class="info-key"><i class="fas fa-phone"></i> Tel</span>
-                    <span class="info-val">
-                        <a href="tel:${phone}">${phone}</a>
-                        <button class="btn-ai-small" onclick="generateAIMessage(${id}, '${panel}')" title="Süni İntellekt ilə mesaj yarat">✨ Mesaj Yarat</button>
-                    </span>
-                </div>
-                <div class="info-row"><span class="info-key"><i class="fas fa-truck"></i> Kuryer</span><span class="info-val" id="${p}-courierDisp-${id}">${courier || 'Təyin edilməyib'}</span></div>
-
-                <span class="field-label">Çatdırılma Ünvanı</span>
-                <input type="text" id="${p}-addr-${id}" value="${address}" class="form-control" onchange="updateDetails('${panel}',${id})">
-
-                <span class="field-label">Xüsusi Qeydlər</span>
-                <textarea id="${p}-notes-${id}" class="form-control" rows="2" onchange="updateDetails('${panel}',${id})">${notes}</textarea>
-
-                <div class="price-pay-grid">
-                    <div>
-                        <span class="field-label">Qiymət (AZN)</span>
-                        <input type="number" id="${p}-price-${id}" value="${amount}" class="form-control" onchange="updateDetails('${panel}',${id})">
-                    </div>
-                    <div>
-                        <span class="field-label">Ödəniş</span>
-                        <select id="${p}-pay-${id}" class="form-control" onchange="updateDetails('${panel}',${id})">
-                            <option value="cash" ${payMethod === 'cash' ? 'selected' : ''}>💵 Nağd</option>
-                            <option value="card" ${payMethod === 'card' ? 'selected' : ''}>💳 Kart</option>
-                        </select>
-                    </div>
-                </div>
-
-                ${bonusHtml}
-
-                <div class="order-detail-box">
-                    <strong>Sifariş:</strong> ${details}
-                    ${productCardsHtml}
-                </div>
-
-                ${imgBtn}
-
-                <hr class="divider">
-
-                <span class="field-label">Status</span>
-                <select id="${p}-status-${id}" class="form-control" onchange="changeStatus('${panel}',${id})" style="margin-bottom:10px">
-                    <option value="Out for Delivery" ${status === 'Out for Delivery' ? 'selected' : ''}>🚚 Çatdırılır</option>
-                    <option value="Delivered"        ${status === 'Delivered'        ? 'selected' : ''}>✅ Çatdırılıb</option>
-                    <option value="Canceled"         ${status === 'Canceled'         ? 'selected' : ''}>❌ Ləğv edilib</option>
-                </select>
-
-                <span class="field-label">Kuryer Təyin Et</span>
-                ${finalCourierSelect}
-
-                <button class="btn btn-delete" onclick="deleteOrder('${panel}',${id})">
-                    <i class="fas fa-trash-alt"></i> Sifarişi Sil
-                </button>
-            </div>
-        </div>`;
-    });
-
-    listEl.innerHTML = html;
-    recalcStats(panel);
-}
-
-// ═══════════════════════════════════════════════
-//  STATUS CLASS HELPER
-// ═══════════════════════════════════════════════
-function getStatusClass(status, courier) {
-    const c = (courier || '').toLowerCase().trim();
-    if (c === 'emil') return 's-emil';
-    if (c === 'nicat') return 's-nicat';
-    if (status === 'Delivered') return 's-delivered';
-    if (status === 'Out for Delivery') return 's-out';
-    if (status === 'Canceled' || status === 'Deleted') return 's-canceled';
-    return 's-default';
-}
-
-// ═══════════════════════════════════════════════
-//  RECALCULATE STATS (Live based on VISIBLE CARDS)
-// ═══════════════════════════════════════════════
-function recalcStats(panel) {
-    const cfg = CONFIG[panel];
-    const p = cfg.prefix;
-
-    let totalCount = 0, totalAmt = 0, cashAmt = 0, cardAmt = 0;
-    let cashCount = 0, cardCount = 0;
-    let courierDebt = {};
-    let courierCount = {};
-    let sellerCount = {};
-
-    document.querySelectorAll(`[id^="${p}-order-"]`).forEach(card => {
-        // Canlı axtarış zamanı gizlədilmiş sifarişləri hesablama
-        if (card.style.display === 'none') return;
-
-        const id       = card.id.replace(`${p}-order-`, '');
-        const priceEl  = document.getElementById(`${p}-price-${id}`);
-        const statusEl = document.getElementById(`${p}-status-${id}`);
-        const payEl    = document.getElementById(`${p}-pay-${id}`);
-        const courierDisp = document.getElementById(`${p}-courierDisp-${id}`);
-
-        if (!priceEl || !statusEl) return;
-
-        const amount    = parseFloat(priceEl.value) || 0;
-        const status    = statusEl.value;
-        const payment   = payEl ? payEl.value : card.dataset.payment;
-        const additional= parseFloat(card.dataset.additional) || 0;
-        const seller    = card.dataset.seller || 'Digər';
-        let   courier   = courierDisp ? courierDisp.innerText.trim() : '';
-        
-        if (!courier || courier === 'Təyin edilməyib' || courier === 'Kuryer seçin...') courier = 'Təyin edilməyib';
-
-        const isCanceled = status === 'Canceled' || status === 'Deleted';
-
-        if (!isCanceled) {
-            totalCount++;
-            totalAmt += amount;
-            if (payment === 'cash') { cashAmt += amount; cashCount++; } 
-            else                    { cardAmt += amount; cardCount++; }
-            
-            if (!courierCount[courier]) courierCount[courier] = 0;
-            courierCount[courier]++;
-
-            if (!sellerCount[seller]) sellerCount[seller] = 0;
-            sellerCount[seller]++;
-        }
-
-        if (courier !== 'Təyin edilməyib' && (status === 'Delivered' || status === 'Canceled')) {
-            if (!courierDebt[courier]) courierDebt[courier] = { net: 0, card: 0 };
-            courierDebt[courier].net -= 5.8;
-            courierDebt[courier].net -= additional;
-            if (status === 'Delivered') {
-                if (payment === 'cash') courierDebt[courier].net += amount;
-                else courierDebt[courier].card += amount;
-            }
-        }
-    });
-
-    const el = id => document.getElementById(id);
-
-    if (el(`${p}TotalCount`))  el(`${p}TotalCount`).textContent = totalCount;
-    if (el(`${p}TotalAmount`)) el(`${p}TotalAmount`).textContent = totalAmt.toFixed(2) + ' ₼';
-    if (el(`${p}PayBreakdown`)) {
-        el(`${p}PayBreakdown`).innerHTML =
-            `<i class="fas fa-money-bill"></i> Nağd: <b>${cashAmt.toFixed(2)} ₼</b> (${cashCount})<br>` +
-            `<i class="fas fa-credit-card"></i> Kart: <b>${cardAmt.toFixed(2)} ₼</b> (${cardCount})`;
-    }
-
-    if (el(`${p}CourierStat`)) {
-        let h = '';
-        const cSorted = Object.entries(courierCount).sort((a,b) => b[1]-a[1]);
-        cSorted.forEach(([name, cnt]) => {
-            const debt = courierDebt[name];
-            const netStr = debt ? ` | Borc: <b>${debt.net.toFixed(2)} ₼</b>` : '';
-            const cardStr = debt && debt.card > 0 ? ` | Kart: <b>${debt.card.toFixed(2)} ₼</b>` : '';
-            h += `<div style="display:flex;justify-content:space-between;border-top:1px solid #f1f5f9;padding-top:3px;margin-top:3px"><span>${name}</span><span>${cnt} sif.${netStr}${cardStr}</span></div>`;
-        });
-        el(`${p}CourierStat`).innerHTML = h || 'Məlumat yoxdur';
-    }
-
-    if (el(`${p}SellerStat`)) {
-        let h = '';
-        const sSorted = Object.entries(sellerCount).sort((a,b) => b[1]-a[1]);
-        sSorted.forEach(([name, cnt]) => {
-            h += `<div style="display:flex;justify-content:space-between;border-top:1px solid #f1f5f9;padding-top:3px;margin-top:3px"><span>${name}</span><b>${cnt}</b></div>`;
-        });
-        el(`${p}SellerStat`).innerHTML = h || 'Məlumat yoxdur';
-    }
-}
-
-function resetStats(panel) {
-    const p = CONFIG[panel].prefix;
-    const zeroEl = id => { const e = document.getElementById(id); if(e) e.textContent = '0'; };
-    zeroEl(`${p}TotalCount`);
-    const amtEl = document.getElementById(`${p}TotalAmount`);
-    if (amtEl) amtEl.textContent = '0.00 ₼';
-    ['PayBreakdown','CourierStat','SellerStat'].forEach(s => {
-        const e = document.getElementById(`${p}${s}`);
-        if (e) e.textContent = '—';
-    });
-}
-
-// ═══════════════════════════════════════════════
-//  UPDATE ORDER DETAILS (Optimistic)
-// ═══════════════════════════════════════════════
-function updateDetails(panel, orderId) {
-    const cfg = CONFIG[panel];
-    const p = cfg.prefix;
-    const addr  = document.getElementById(`${p}-addr-${orderId}`).value;
-    const notes = document.getElementById(`${p}-notes-${orderId}`).value;
-    const price = document.getElementById(`${p}-price-${orderId}`).value;
-    const pay   = document.getElementById(`${p}-pay-${orderId}`).value;
-
-    const card = document.getElementById(`${p}-order-${orderId}`);
-    
-    // Dərhal görünüşü yenilə və hesablamanı apar
-    card.dataset.payment = pay;
-    recalcStats(panel);
-
-    fetchWithTimeout(cfg.UPDATE_URL, {
-        method: 'POST',
-        body: new URLSearchParams({
-            action:          'updateOrderDetails',
-            orderId:         orderId,
-            deliveryAddress: addr,
-            specialNotes:    notes,
-            orderPrice:      price,
-            paymentMethod:   pay
-        })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            showToast('Dəyişikliklər saxlanıldı ✓');
-        } else {
-            showToast('Xəta: ' + (data.message || 'Bilinmir'), 'error');
-        }
-    })
-    .catch(() => {
-        showToast('İnternet xətası. Saxlanılmadı.', 'error');
-    });
-}
-
-// ═══════════════════════════════════════════════
-//  CHANGE STATUS (Optimistic UI)
-// ═══════════════════════════════════════════════
-function changeStatus(panel, orderId) {
-    const cfg = CONFIG[panel];
-    const p = cfg.prefix;
-    
-    const statusEl = document.getElementById(`${p}-status-${orderId}`);
-    const newStatus = statusEl.value;
-    const card = document.getElementById(`${p}-order-${orderId}`);
-    const badge = document.getElementById(`${p}-statusBadge-${orderId}`);
-    const courierDisp = document.getElementById(`${p}-courierDisp-${orderId}`).innerText;
-
-    // Əvvəlki dəyəri yadda saxla ki, xəta olanda geri qaytaraq
-    const oldStatus = badge.textContent;
-
-    // Dərhal UI yeniləməsi (Gözləmə yoxdur)
-    badge.textContent = newStatus;
-    card.className = `order-card ${getStatusClass(newStatus, courierDisp)}`;
-    card.dataset.status = newStatus;
-    recalcStats(panel);
-
-    fetchWithTimeout(cfg.API_URL, {
-        method: 'POST',
-        body: new URLSearchParams({ action: 'updateOrderStatusAndPayment', orderId: orderId, status: newStatus })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            showToast(`Status: ${newStatus}`, 'success');
-        } else {
-            throw new Error('Server imtina etdi');
-        }
-    })
-    .catch(() => {
-        // Uğursuz olduqda geri qaytarmaq
-        statusEl.value = oldStatus;
-        badge.textContent = oldStatus;
-        card.className = `order-card ${getStatusClass(oldStatus, courierDisp)}`;
-        card.dataset.status = oldStatus;
-        recalcStats(panel);
-        showToast('Status dəyişdirilmədi. İnternet xətası.', 'error');
-    });
-}
-
-// ═══════════════════════════════════════════════
-//  ASSIGN COURIER (Optimistic UI)
-// ═══════════════════════════════════════════════
-function assignCourier(panel, orderId) {
-    const cfg = CONFIG[panel];
-    const p = cfg.prefix;
-    const sel = document.getElementById(`${p}-courierSel-${orderId}`);
-    const courierName = sel.value;
-    if (!courierName) return;
-
-    const card = document.getElementById(`${p}-order-${orderId}`);
-    const disp = document.getElementById(`${p}-courierDisp-${orderId}`);
-    const topDisp = document.getElementById(`${p}-cardTopCour-${orderId}`);
-    const statusVal = document.getElementById(`${p}-status-${orderId}`).value;
-
-    // Əvvəlki dəyər (Rollback üçün)
-    const oldCourier = disp.innerText;
-
-    // Dərhal UI yeniləməsi
-    disp.innerText = courierName;
-    topDisp.innerText = '· ' + courierName;
-    card.dataset.courier = courierName;
-    card.className = `order-card ${getStatusClass(statusVal, courierName)}`;
-    recalcStats(panel);
-
-    fetchWithTimeout(cfg.API_URL, {
-        method: 'POST',
-        body: new URLSearchParams({ action: 'assignOrder', orderId: orderId, assignedTo: courierName })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            showToast(`Kuryer təyin edildi: ${courierName}`, 'success');
-        } else {
-            throw new Error('Server imtina etdi');
-        }
-    })
-    .catch(() => {
-        // Uğursuz olduqda geri qaytar
-        sel.value = oldCourier === 'Təyin edilməyib' ? '' : oldCourier;
-        disp.innerText = oldCourier;
-        topDisp.innerText = oldCourier === 'Təyin edilməyib' ? '' : '· ' + oldCourier;
-        card.dataset.courier = oldCourier;
-        card.className = `order-card ${getStatusClass(statusVal, oldCourier)}`;
-        recalcStats(panel);
-        showToast('Kuryer təyin edilmədi (İnternet xətası)', 'error');
-    });
-}
-
-// ═══════════════════════════════════════════════
-//  DELETE ORDER (Optimistic UI)
-// ═══════════════════════════════════════════════
-function deleteOrder(panel, orderId) {
-    if (!confirm('Bu sifarişi silmək istədiyinizə əminsiniz?')) return;
-
-    const cfg = CONFIG[panel];
-    const p = cfg.prefix;
-    const card = document.getElementById(`${p}-order-${orderId}`);
-
-    // Dərhal kartı gizlət və statiskanı yenilə
-    card.style.display = 'none';
-    recalcStats(panel);
-
-    fetchWithTimeout(cfg.UPDATE_URL, {
-        method: 'POST',
-        body: new URLSearchParams({ action: 'deleteOrder', orderId: orderId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            card.remove();
-            showToast('Sifariş silindi', 'success');
-        } else {
-            throw new Error(data.message || 'Server Xətası');
-        }
-    })
-    .catch(err => {
-        // Uğursuz olduqda kartı geri qaytar
-        card.style.display = 'block';
-        recalcStats(panel);
-        showToast('Silinmə xətası: ' + err.message, 'error');
-    });
-}
-
-// ═══════════════════════════════════════════════
-//  IMAGE MODAL (Dual Support)
-// ═══════════════════════════════════════════════
-function buildDrivePreviewUrl(raw) {
-    if (!raw || raw.trim() === '') return null;
-    let url = raw.trim();
-    const match1 = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (match1) return `https://drive.google.com/file/d/${match1[1]}/preview`;
-    const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (match2 && url.includes('drive.google.com')) return `https://drive.google.com/file/d/${match2[1]}/preview`;
-    if (url.includes('/preview')) return url;
-    if (url.includes('drive.google.com')) return url.replace(/\/view(\?.*)?$/, '/preview');
-    return url;
-}
-
-function openImageModal(rawUrl, isRawImage = false) {
-    const modal = document.getElementById('imageModal');
-    const frame = document.getElementById('modalFrame');
-    const imgCont = document.getElementById('modalImgContainer');
-    const img = document.getElementById('modalImg');
-
-    if (isRawImage || rawUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) || rawUrl.includes('raw.githubusercontent.com')) {
-        frame.style.display = 'none';
-        imgCont.style.display = 'flex';
-        img.src = rawUrl;
-    } else {
-        const previewUrl = buildDrivePreviewUrl(rawUrl);
-        if (!previewUrl) {
-            showToast('Şəkil linki tapılmadı', 'error');
-            return;
-        }
-        imgCont.style.display = 'none';
-        frame.style.display = 'block';
-        frame.src = previewUrl;
-    }
-
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeImageModal() {
-    const modal = document.getElementById('imageModal');
-    const frame = document.getElementById('modalFrame');
-    const img = document.getElementById('modalImg');
-    
-    modal.classList.remove('open');
-    frame.src = 'about:blank';
-    img.src = '';
-    document.body.style.overflow = '';
-}
-
-function handleModalBgClick(e) {
-    if (e.target === document.getElementById('imageModal')) closeImageModal();
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImageModal(); });
-
-// ═══════════════════════════════════════════════
-//  TOAST & ESCAPE
-// ═══════════════════════════════════════════════
-function showToast(msg, type = 'success') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
-    toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${msg}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => {
-        toast.style.transition = 'opacity 0.3s, transform 0.3s';
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-function escHtml(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-function escAttr(str) {
-    return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-}
+$("chips").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-status]");
+  if (!button) return;
+  state.status = button.dataset.status;
+  renderList();
+});
+$("chips").addEventListener("change", (event) => {
+  if (event.target.id !== "courierFilter") return;
+  state.courier = event.target.value;
+  renderList();
+});
+$("search").addEventListener("input", (event) => {
+  state.query = event.target.value;
+  renderList();
+});
+$("date").addEventListener("change", (event) => { if (event.target.value) load(event.target.value, false); });
+$("prevDay").onclick = () => load(shiftDate(state.date, -1), false);
+$("nextDay").onclick = () => load(shiftDate(state.date, 1), false);
+$("todayBtn").onclick = () => load(todayISO(), false);
+$("reloadBtn").onclick = () => load(state.date, true);
+$("analyzeBtn").onclick = showReport;
+$("modalClose").onclick = closeModal;
+$("modal").addEventListener("click", (event) => { if (event.target.id === "modal") closeModal(); });
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeModal();
+  if (event.key === "/" && !event.metaKey && !event.ctrlKey && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+    event.preventDefault();
+    $("search").focus();
+  }
+});
+
+const saved = sessionStorage.getItem("panel-date");
+load(saved && /^\d{4}-\d{2}-\d{2}$/.test(saved) ? saved : todayISO(), false);
 </script>
 </body>
 </html>
